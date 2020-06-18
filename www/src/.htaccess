@@ -1,0 +1,7 @@
+RewriteEngine on
+
+# v2.1
+
+RewriteRule ^shops.html$ index-shops.html	[L]
+
+RewriteRule ^answer$ bridge/wx/answer-center.php [L]

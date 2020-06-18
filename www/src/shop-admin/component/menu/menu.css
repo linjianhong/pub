@@ -1,0 +1,90 @@
+fixed-menu {
+  position: fixed;
+  z-index: 601;
+  right: 1em;
+  bottom: 3em;
+}
+
+fixed-menu .menu-btn {
+  position: absolute;
+  z-index: 661;
+  bottom: 0;
+  right: 0;
+}
+
+fixed-menu img {
+  width: 3em;
+  height: 3em;
+}
+
+fixed-menu .menu-back {
+  position: fixed;
+  z-index: 602;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+pop-menu-box-menu.left-bottom {
+  position: absolute;
+  z-index: 603;
+  right: 3em;
+  bottom: 0;
+}
+
+pop-menu-box-menu {
+  width: 12em;
+  min-height: 5em;
+  background: rgba(224, 224, 224, 0.92);
+  border: solid 1px #ccc;
+  border-radius: .5em;
+  padding: .3em;
+}
+
+pop-menu-box-menu > .item {
+  padding: .6em .3em .6em 2em;
+  color: #5555cc;
+}
+pop-menu-box-menu > .item.checked {
+  font-weight: 900;
+  color: #000000;
+}
+
+pop-menu-box-menu > .sep {
+  margin: .6em 0;
+  border-top: solid 1px #888888;
+  border-bottom: solid 1px #ffffff;
+}
+
+
+.pop-menu-box-back{
+  position: fixed;
+  z-index: 602;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.pop-menu-box-body {
+  position: relative;
+  display: block;
+}
+pop-menu-box-menu, .pop-menu-box-menu{
+  display: block;
+}
+.pop-menu-box-menu {
+  position: absolute;
+  z-index: 603;
+  padding: .3em;
+}
+.pop-menu-box-menu.top-left    { top: 100%; left: 0;} /* 上方, 左对齐*/
+.pop-menu-box-menu.left-top    { bottom: 0; right: 100%;} /* 左边, 上对齐*/
+.pop-menu-box-menu.top-right   { top: 100%; right: 0;}
+.pop-menu-box-menu.right-top   { top: 100%; right: 0;}
+.pop-menu-box-menu.bottom-left { top: 100%; left: 0;} /* 下方, 左对齐*/
+.pop-menu-box-menu.left-bottom { bottom: 100%; right: 100%;} /* 左边, 下对齐*/
+.pop-menu-box-menu.bottom-right   { bottom: 100%; right: 0;}
+.pop-menu-box-menu.right- bottom  { bottom: 100%; right: 0;}

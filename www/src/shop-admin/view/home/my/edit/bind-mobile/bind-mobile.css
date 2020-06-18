@@ -1,0 +1,33 @@
+.dform-input-item.ttb>.body.mobile-code-input {
+  padding: 0;
+}
+
+.dform-input-item.ttb>.body>dlg-mobile-confirm {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-code-input-box {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-code-input-box>input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+  font-size: inherit;
+  color: inherit;
+  height: 1.47058824em;
+  line-height: 1.47058824;
+  text-align: center;
+}
+
+.mobile-code-btn {
+  width: 12em;
+  border-left: solid 1px #bbb;
+  height: 100%;
+  padding: .5em .6em;
+}

@@ -1,0 +1,13 @@
+.dform-input-item.ttb>.body.dform-tags {
+  padding: .5em;
+}
+
+.dform-tags-item {
+  padding: .5em;
+}
+
+.dform-tags-item>i {
+  font-size: 1.2em;
+  padding: .1em .1em 0 0;
+  width: 1.1em;
+}

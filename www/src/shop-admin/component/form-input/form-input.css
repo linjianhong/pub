@@ -1,0 +1,47 @@
+form-input-cert > *{
+  width: 100%;
+}
+form-input-cert > * > dj-form > *{
+  margin-bottom: 0;
+}
+
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-1{
+  background: #ff0000;
+  color: #888888;
+}
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-1 .e{
+  color: #ffffff;
+  font-weight: 900;
+}
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-2{
+  background: #ff8888;
+}
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-2 .e{
+  color: #ff0000;
+  font-weight: 900;
+}
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-3{
+  background: #ffcccc;
+}
+form-edit-box pop-page-box-body.body dj-form-item-host >* > .b.form-input-cert-pass-3 .e{
+  color: #ff8888;
+  font-weight: 900;
+}
+
+form-input-cert[mode="show"] {
+  padding: .5em;
+  border: solid 1px #ccc;
+  border-radius: .5em;
+  margin-left: 0.8em;
+}
+
+form-input-manning{
+  background: #f8f8f8;
+}
+form-input-manning djui-input{
+  border: solid 1px #ccc;
+  border-radius: .3em;
+  padding: .5em .8em;
+  background: #ffffff;
+  margin: .5em;
+}

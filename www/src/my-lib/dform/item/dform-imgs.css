@@ -1,0 +1,119 @@
+dform-imgs {
+  display: inline-block;
+}
+
+dform-imgs>.box {
+  position: relative;
+}
+
+dform-imgs>.box>.img {
+  position: relative;
+  width: 5em;
+  height: 5em;
+  margin: 0 .5em .5em 0;
+  /* width: calc(33% - .5em); */
+}
+
+dform-imgs>.box>.img.active {
+  border: solid 2px #00f;
+}
+
+.imgs-edit-btn {
+  background: #f80;
+  border-radius: 5px;
+  margin: .5em;
+  padding: .5em 1em;
+  color: #fff;
+}
+
+dform-imgs>.box>.img.uploading, .img-add-btn {
+  border: solid 1px #cccccc;
+}
+
+dform-imgs>.box>.img.uploading {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+dform-imgs>.box>.img.uploading>.per {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.img-add-btn{
+  position: relative;
+}
+.img-add-btn>*{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.img-add-btn>div:after, .img-add-btn>div:before {
+  content: ' ';
+  position: absolute;
+  background: #cccccc;
+}
+
+.img-add-btn>div::before {
+  top: 50%;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+}
+
+.img-add-btn>div:after {
+  left: 50%;
+  top: 20%;
+  width: 1px;
+  height: 60%;
+}
+
+.img-add-btn>input[type='file'] {
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+dform-imgs>.box>.img video, 
+dform-imgs>.box>.img img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 删除图标 */
+
+.icon-del {
+  border: 0.1em solid currentColor;
+  border-top: none;
+  border-radius: 0 0 0.2em 0.2em;
+  width: 1em;
+  height: .8em;
+  /* margin: 50px auto; */
+  position: relative;
+  margin-top: .3em;
+  color: #550055;
+}
+
+.icon-del::after {
+  content: " ";
+  width: 1.4em;
+  height: 0.1em;
+  position: absolute;
+  top: 0;
+  left: -0.3em;
+  background-color: currentcolor;
+}
+
+.icon-del::before {
+  content: " ";
+  border-radius: 0.2em 0.2em 0 0;
+  position: absolute;
+  top: -0.2em;
+  left: 0em;
+  height: 0.2em;
+  width: .6em;
+  border: 0.1em solid currentColor;
+  border-bottom: none;
+}

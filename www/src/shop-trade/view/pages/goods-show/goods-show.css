@@ -1,0 +1,46 @@
+.goods-item-body {
+  background: #fff;
+}
+
+.goods-item-body>.goods-name, .goods-item-body>.money {
+  padding: 5px 5px;
+}
+
+.goods-item-body>.goods-name {
+  font-size: 1.1em;
+  height: 1.6em;
+}
+
+.mini-goods-img-box {
+  border: solid 1px #eee;
+}
+
+.mini-goods-img-box>img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.wx-share-img {
+  height: 4.0em;
+  width: 4.0em;
+  border-radius: .36em;
+  margin: .1em .5em 0 0;
+}
+
+.wx-share-desc>p {
+  margin: 0;
+}
+
+.wx-share-img9>img {
+  width: 31%;
+  padding: .6%;
+}
+
+.wx-share-img9.totle-1>img {
+  width: 58%;
+}
+
+.wx-share-img9.totle-4>img {
+  width: 45%;
+}

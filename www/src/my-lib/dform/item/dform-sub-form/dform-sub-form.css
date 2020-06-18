@@ -1,0 +1,21 @@
+.dform-input-item.ttb>.body.array {
+  padding: 0;
+}
+
+.dform-input-item.ttb>.body.array>dform-array>.row {
+  min-height: 3em;
+  border-bottom: solid 1px #eeeeee;
+  padding: .3em;
+}
+
+.dform-input-item.ttb>.body.array>dform-array>.add-btn {
+  min-height: 3em;
+  color: #f80;
+  text-align: center;
+  padding: .8em;
+  background: #eeeeee;
+}
+
+.dform-array-text>* {
+  margin: .1em;
+}

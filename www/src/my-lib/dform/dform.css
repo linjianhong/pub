@@ -1,0 +1,105 @@
+[dform-input]>select,[dform-input2]>select {
+  min-width: 2em;
+}
+
+.dform-input-item.ttb {
+  margin-top: 1.0em;
+}
+
+dform-input2:first-child .dform-input-item.ttb ,
+dform-input:first-child .dform-input-item.ttb {
+  margin-top: 0;
+}
+
+.dform-input-item.edit-line>.body,
+.dform-input-item.ttb>.body {
+  border: solid 1px #ccc;
+  border-radius: .3em;
+  background: #fff;
+  padding: .5em .6em;
+}
+
+.dform-input-item.ttb>.body.combo,
+.dform-input-item.edit-line>.body.combo,
+.dform-input-item.ttb>.body.combo>*,
+.dform-input-item.edit-line>.body.combo>*{
+  padding: 0;
+}
+.dform-input-item.ttb>.body.imgs {
+  padding: 0;
+  border: solid 0;
+}
+
+.dform-input-item.ttb>.body.imgs>dform-imgs>.box>.img.add {
+  background: #eeeeee;
+}
+
+.dform-input-item.ttb>.body.invalid {
+  border-color: #f00;
+}
+
+.dform-input-item.edit-line>.body>textarea, .dform-input-item.edit-line>.body>select, .dform-input-item.edit-line>.body>input,
+.dform-input-item.ttb>.body>textarea, .dform-input-item.ttb>.body>select, .dform-input-item.ttb>.body>input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+  font-size: inherit;
+  color: inherit;
+  height: 1.47058824em;
+  line-height: 1.47058824;
+}
+
+.dform-input-item.edit-line>.body>dform-date, .dform-input-item.edit-line>.body>dform-time, .dform-input-item.edit-line>.body>dform-date-time,
+.dform-input-item.ttb>.body>dform-date, .dform-input-item.ttb>.body>dform-time, .dform-input-item.ttb>.body>dform-date-time {
+  display: block;
+}
+
+.dform-input-item.edit-line>.body>dform-date>input, .dform-input-item.edit-line>.body>dform-time>input, .dform-input-item.edit-line>.body>dform-date-time>input,
+.dform-input-item.ttb>.body>dform-date>input, .dform-input-item.ttb>.body>dform-time>input, .dform-input-item.ttb>.body>dform-date-time>input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+  font-size: inherit;
+  color: inherit;
+  height: 1.47058824em;
+  line-height: 1.47058824;
+}
+
+.dform-input-item.edit-line>.body>textarea,
+.dform-input-item.ttb>.body>textarea {
+  min-height: 3.5em;
+}
+
+/* 下拉框*/
+
+.dform-input-item.edit-line>.body.dropdown,
+.dform-input-item.ttb>.body.dropdown{
+  position: relative;
+  z-index: 1;
+}
+
+.dform-input-item.edit-line>.body.dropdown:after,
+.dform-input-item.ttb>.body.dropdown:after {
+  content: " ";
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  border-width: 2px 2px 0 0;
+  border-color: #C8C8CD;
+  border-style: solid;
+  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+  position: absolute;
+  z-index: -1;
+  right: 15px;
+  margin-top: -4px;
+  bottom: 1.1em;
+}
+
+.dform-input-item.ttb>.top>.prompt.error {
+  color: #f00;
+}

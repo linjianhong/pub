@@ -1,0 +1,51 @@
+
+.v-roll>.enter, .v-roll>.leave {
+  position: absolute;
+  width: 100%;
+  height: 3em;
+}
+
+.v-roll>.enter {
+  top: 0;
+}
+
+.v-roll>.leave {
+  top: -3em;
+}
+
+
+
+.pop-page-box {
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+}
+
+form-edit-box>.pop-page-box {
+  width: auto;
+  height: auto;
+}
+
+.djui-fixed-box>form-edit-box>.pop-page-box {
+  width: 100vw;
+  height: 100vh;
+}
+
+pop-page-box-title {
+  padding: .5em;
+  background: -webkit-linear-gradient( #88f, #55f);
+  /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient( #88f, #55f);
+  /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(#88f, #55f);
+  /* Firefox 3.6 - 15 */
+  background: linear-gradient(#88f, #55f);
+  /* 标准的语法 */
+  border-bottom: solid 1px #cccccc;
+}
+
+pop-page-box-title>.title {
+  font-size: 1.5em;
+  color: #fff;
+  font-weight: 900;
+}

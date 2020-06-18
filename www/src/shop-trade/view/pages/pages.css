@@ -1,0 +1,164 @@
+.header.xp-warning {
+  background: -webkit-linear-gradient( #fa6, #f80);
+  /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient( #fa6, #f80);
+  /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(#fa6, #f80);
+  /* Firefox 3.6 - 15 */
+  background: linear-gradient(#fa6, #f80);
+  /* 标准的语法 */
+  color: #fff;
+}
+
+.group-list-parent>* {
+  padding-left: .8em;
+}
+
+.group-list .item {
+  padding: .8em;
+  border-bottom: solid 1px #ccc;
+}
+
+.group-list .item.active {
+  background: #fff;
+  color: #000;
+  font-weight: 900;
+}
+
+.goods-tag {
+  background: #ccc;
+  color: #fff;
+  border-radius: .3em;
+  margin: 0 .3em 0 0;
+  padding: .1em;
+}
+
+.input-spin {
+  padding: .5em;
+}
+
+.input-spin * {
+  line-height: 1;
+}
+.input-spin>.btn {
+  font-weight: 900;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+}
+
+.input-spin>.add {
+  background: #cc0;
+}
+
+.action-bar {
+  position: fixed;
+  height: 45px;
+}
+
+.action-bar.bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #eee;
+  border-top: solid 1px #ccc;
+}
+
+action-bar-order.action-bar.bottom {
+  background: #fff;
+}
+
+haibao>img {
+  width: 100%;
+}
+
+.goods-list>.goods-mini-item {
+  width: 50%;
+  padding: 0;
+  margin: 0;
+}
+
+.goods-list>.goods-mini-item:nth-child(even) {
+  padding: 3px 6px 3px 3px;
+}
+
+.goods-list>.goods-mini-item:nth-child(odd) {
+  padding: 3px 3px 3px 6px;
+}
+
+.cart-bk {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #eee;
+}
+
+.cart-header {
+  width: 100%;
+  height: 120px;
+  padding: 20px;
+  color: #fff;
+  font-size: 25px;
+  background-image: -webkit-linear-gradient(right, #ff5000 0%, #FF8400 100%);
+  background-image: linear-gradient(-90deg, #ff5000 0%, #FF8400 100%);
+}
+
+.cart-body {
+  margin-top: 80px;
+  padding: 0 15px;
+}
+
+.cart-body>cart-item {
+  position: relative;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.cart-img {
+  width: 90px;
+  height: 90px;
+  margin-right: 10px;
+}
+
+.cart-img>img {
+  width: 100%;
+  height: 100%;
+}
+
+.order-body {
+  padding: .6em;
+}
+
+.order-img {
+  width: 90px;
+  height: 90px;
+  margin-right: 10px;
+}
+
+.order-img>img {
+  width: 100%;
+  height: 100%;
+  border-radius: .5em;
+}
+
+.radius-em1 {
+  border-radius: .5em;
+}
+
+.address-icon {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #f80;
+  font-size: 2em;
+  color: #fff;
+}
+
+.order-state {
+  background: #f80;
+  color: #fff;
+  font-size: 1.5em;
+  padding: 2em;
+}

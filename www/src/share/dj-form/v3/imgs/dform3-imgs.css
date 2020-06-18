@@ -1,0 +1,83 @@
+dform3-imgs {
+  display: inline-block;
+}
+
+dform3-imgs>.box {
+  position: relative;
+}
+
+dform3-imgs>.box>.img {
+  position: relative;
+  width: 5em;
+  height: 5em;
+  margin: 0 .5em .5em 0;
+  /* width: calc(33% - .5em); */
+}
+
+dform3-imgs>.box>.img.active {
+  border: solid 2px #00f;
+}
+
+.dform3-imgs-edit-btn {
+  background: #f80;
+  border-radius: 5px;
+  margin: .5em;
+  padding: .5em 1em;
+  color: #fff;
+}
+
+dform3-imgs>.box>.img.uploading, .img-add-btn {
+  border: solid 1px #cccccc;
+}
+
+dform3-imgs>.box>.img.uploading {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+dform3-imgs>.box>.img.uploading>.per {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.img-add-btn{
+  position: relative;
+}
+.img-add-btn>*{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.img-add-btn>div:after, .img-add-btn>div:before {
+  content: ' ';
+  position: absolute;
+  background: #cccccc;
+}
+
+.img-add-btn>div::before {
+  top: 50%;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+}
+
+.img-add-btn>div:after {
+  left: 50%;
+  top: 20%;
+  width: 1px;
+  height: 60%;
+}
+
+.img-add-btn>input[type='file'] {
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+dform3-imgs>.box>.img video, 
+dform3-imgs>.box>.img img {
+  width: 100%;
+  height: 100%;
+}

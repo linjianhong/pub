@@ -1,0 +1,48 @@
+.caption.row-like-table {
+  border: solid 1px #888;
+}
+
+.caption.row-like-table+.caption.row-like-table{
+  border-top: solid 0;
+}
+
+.caption.row-like-table>* {
+  border-right: solid 1px #888;
+}
+
+.caption.row-like-table>*:last-child {
+  border-right: solid 0;
+}
+
+input.white,
+dj-item.shop-edit-cell>input, dj-item.shop-edit-cell>select, dj-item.shop-edit-cell>textarea {
+  border: solid 0;
+  padding: 3px;
+  margin: 0;
+  line-height: 1;
+  height: 100%;
+  width: 100%;
+}
+
+dj-item.shop-edit-cell>dform3-dropdown,
+dj-item.shop-edit-cell>dform3-combo {
+  height: 100%;
+}
+dj-item.shop-edit-cell.dform-combo-dropdown>.info ,
+dj-item.shop-edit-cell.dform-combo-dropdown>.caret{
+  height: 100%;
+}
+
+.shop-edit-btn{
+  padding: .5em 2em;
+  font-size: 1.2em;
+  font-weight: 900;
+  border-radius: .3em;
+}
+
+.shop-edit-group-box{
+  padding: .5em;
+}
+.shop-edit-group-box .chain-select-item {
+  font-size: 1.2em;
+}

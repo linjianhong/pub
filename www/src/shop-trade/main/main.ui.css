@@ -1,0 +1,17 @@
+.info-rows {
+  padding: 1em 0 0;
+}
+
+.fa-icon {
+  padding: .5em;
+  text-align: center;
+}
+
+.fa-icon>.fa {
+  font-size: 2em;
+  font-weight: 900;
+}
+
+.fa-icon>.text {
+  color: #ccc;
+}

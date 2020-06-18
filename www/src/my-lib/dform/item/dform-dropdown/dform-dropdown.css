@@ -1,0 +1,81 @@
+.dform-input-item.ttb>.body.dform-dropdown,
+.dform-input-item.ttb>.body.dform-combo,
+.dform-input-item.edit-line>.body.dform-dropdown,
+.dform-input-item.edit-line>.body.dform-combo
+ {
+  padding: 0;
+}
+
+.dform-combo-dropdown {
+  position: relative;
+}
+
+.dform-combo-dropdown>* {
+  font-size: inherit;
+  color: inherit;
+}
+
+.dform-combo-dropdown>.back {
+  z-index: 1;
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+}
+
+.dform-combo-dropdown>.caret {
+  z-index: 1;
+  width: 3em;
+  background: #eee;
+  border-left: solid 1px #ccc;
+}
+
+.dform-combo-dropdown>.info{
+  position: relative;
+  z-index: 2;
+  height: 2.5em;
+}
+.dform-combo-dropdown>.info>input, .dform-combo-dropdown>.info>.text, .dform-combo-dropdown>.caret {
+  height: 2.5em;
+}
+
+.dform-combo-dropdown>.info>input, .dform-combo-dropdown>.info>.text {
+  padding: 0 .6em;
+  z-index: 1;
+}
+
+.dform-combo-dropdown>.info>input {
+  z-index: 3;
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+}
+
+.dform-combo-dropdown>.list {
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  max-height: 15em;
+  overflow-y: auto;
+  padding: .6em 0;
+  background: #fff;
+  border: solid 1px #ccc;
+  top: 100%;
+  overflow-y: auto;
+}
+
+.dform-combo-dropdown>.list>* {
+  padding: .5em .6em;
+  min-height: 2.6em;
+}
+
+.dform-combo-dropdown>.list>*:hover {
+  background: #ccf;
+}
+
+.dform-combo-dropdown>.list>.active {
+  background: #00f;
+  color: #fff;
+}

@@ -1,0 +1,84 @@
+.info-row.me>*>i {
+  color: #888888;
+}
+
+.info-row.me>*>*>.t1 {
+  color: #000088;
+}
+
+.info-row.mobile>*>i, .info-row.mobile>*>*>.t1 {
+  color: #066;
+}
+
+.info-row.wx>*>i, .info-row.wx>*>*>.t1 {
+  color: #090;
+}
+
+.info-row.settings>*>i, .info-row.settings>*>*>.t1 {
+  color: #900;
+}
+
+.info-row.favorite>*>i, .info-row.favorite>*>*>.t1 {
+  color: #600;
+}
+
+.info-row.about>*>i, .info-row.about>*>*>.t1 {
+  color: #f80;
+}
+
+.headimgurl-1 {
+  height: 5em;
+  width: 5em;
+  border-radius: 50%;
+  margin: 1em;
+  border: solid 1px #eee;
+}
+
+
+
+.icon-cells-box {
+  margin: 15px 5px;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.icon-cells-box>.icon-cell-caption {
+  border-bottom: solid 1px #ccc;
+  width: 100%;
+}
+
+.icon-cells-box>.icon-cell-caption.text {
+  padding: 1em;
+}
+
+.icon-cells-box>.icon-cell-caption.tab {
+  padding: 0 .3em;
+}
+
+
+.icon-cells>.icon-cell.btns {
+  height: 10em;
+  padding: 1em 0 0;
+}
+
+.icon-cells>.icon-cell>.badge {
+  width: 2em;
+  height: 2em;
+  position: absolute;
+  top: .5em;
+  right: .5em;
+  background: #f00;
+  color: #fff;
+  border-radius: 100%;
+  font-weight: 900;
+}
+.icon-cells>.icon-cell>i.fa {
+  font-size: 3em;
+  margin-bottom: .2em;
+}
+
+.icon-cells>.icon-cell {
+  height: 5em;
+  padding: 1em 0 0;
+  margin: 1em;
+}
