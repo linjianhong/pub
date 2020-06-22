@@ -7,6 +7,11 @@ use \MyClass\CDbBase;
 class CUser
 {
   static $TABLE_USER = "shop_user";
+  static $POWER_DEFINE = [
+    ['name' => '基本权限', 'list' => ['商品上架', '分组配置',]],
+    ['name' => '系统权限', 'list' => ['用户管理', '备份数据']],
+    ['name' => '商城权限', 'list' => ['售前', '售后', '订单处理']],
+  ];
 
   public  $row;
 
@@ -29,7 +34,7 @@ class CUser
     return $this->row['attr'][$k];
   }
 
-  
+
 
 
   /**
@@ -77,6 +82,24 @@ class CUser
     return $baseinfo;
   }
 
+
+  /**
+   * 获取用户权限
+   */
+  public static function get_user_power($uid)
+  {
+    $user = new \APP\CUser($uid);
+    $superadmin = $user->attr('superadmin');
+    if ($superadmin) {
+      $def = self::$POWER_DEFINE;
+      $power = [];
+      foreach ($def as $row) {
+        $power[$row['name']] = $row['list'];
+      }
+      return $power;
+    }
+    return $user->attr('power');
+  }
 
   /**
    * 判断用户权限

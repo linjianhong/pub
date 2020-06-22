@@ -95,9 +95,9 @@ class CModuleDefine
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
             ['input' => '名称', 'w' => 8,],
             ['input' => '重量', 'model' => '重量', 'w' => 3,],
-            ['input' => '标签2','w' => 3,],
-            ['input' => '标签3','w' => 3,],
-            ['input' => '标签4','w' => 3,],
+            ['input' => '标签2', 'w' => 3,],
+            ['input' => '标签3', 'w' => 3,],
+            ['input' => '标签4', 'w' => 3,],
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
@@ -200,6 +200,70 @@ class CModuleDefine
       ],
     ],
 
+    '商品分类配置' => [
+      'captions' => [
+        [
+          'type' => "row", 'css' => "padding-1 flex", 'cells' => [
+            ['css' => "em-15 b-900 padding-1", 'type' => "text", 'text' => "商品分类配置："],
+            ['css' => "flex-cc padding-v-3", 'type' => "calcu", 'text' => "=code"],
+          ]
+        ], [
+          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
+            ['input' => '商品名称', 'model' => 'name', 'w' => 8,],
+          ]
+        ], [
+          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
+            ['input' => '上级分类', 'model' => 'v1', 'w' => 8,],
+          ]
+        ], [
+          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
+            ['input' => '显示序号', 'model' => 'v2', 'w' => 3,],
+          ]
+        ],
+      ],
+
+      'btns' => [
+        [
+          '$var' => [],
+          'show' => [
+            'name' => "保存",
+            'css' => "box-primary",
+            'can_ac' => "=1",
+          ],
+          'disabled' => "=!\$form.dirty",
+          'mode' => 'ajax-json',
+          'data' => [
+            'api' => "shop_admin/update_detail_group",
+            'search' => ['code' => "=code", 'value' => "=\$form.value"],
+          ],
+        ], [
+          '$var' => [],
+          'show' => [
+            'name' => "上架",
+            'css' => "box-warning",
+            'can_ac' => "=status!='已上架'",
+          ],
+          'mode' => 'ajax-json',
+          'data' => [
+            'api' => "shop_admin/set_onsale",
+            'search' => ['code' => "=code"],
+          ],
+        ], [
+          '$var' => [],
+          'show' => [
+            'name' => "下架",
+            'css' => "box-stop",
+            'can_ac' => "=status=='已上架'",
+          ],
+          'mode' => 'ajax-json',
+          'data' => [
+            'api' => "shop_admin/unset_onsale",
+            'search' => ['code' => "=code"],
+          ],
+        ],
+      ],
+    ],
+
   ];
 
 
@@ -242,7 +306,7 @@ class CModuleDefine
   public static function configAll()
   {
     $base_config = self::$CONFIG;
-    foreach (['商城后台配置'] as $config_name) {
+    foreach (['商城后台配置', '商品分类配置'] as $config_name) {
       $config = &$base_config[$config_name];
       if (isset($config['captions'])) $config['captions'] = \DJApi\map($config['captions'], function ($captions) {
         if (isset($captions['php'])) {

@@ -7,16 +7,6 @@ use SQL\CBackup;
 
 class class_admin
 {
-  static $POWER_DEFINE = [
-    ['name' => '基本权限', 'list' => ['查询',]],
-    ['name' => '系统权限', 'list' => ['用户管理', '备份数据']],
-    ['name' => '商城权限', 'list' => ['查看商城', '商城后台', '查看价格']],
-    ['name' => '商城菜单', 'list' => ['商城首页', '商品分类']],
-    //['name' => '新建流程', 'list' => ['生产流程', '销售流程', '购买产品流程', '退货流程', '铺货流程']],
-    ['name' => '报表权限', 'list' => ['清单', '统计']],
-    //['name' => '字典权限', 'list' => ['产品套件字典', '用户字典', '客户字典', '产品字典', '木工字典'']],
-  ];
-
   /**
    * 统一入口，要求登录, 要求登录
    */
@@ -43,7 +33,7 @@ class class_admin
    */
   public static function get_my_power($query, $verifyData)
   {
-    $power = \CONFIG\CPower::get_user_power($verifyData['uid']);
+    $power = \APP\CUser::get_user_power($verifyData['uid']);
     return \DJApi\API::OK(["power" => $power]);
   }
 

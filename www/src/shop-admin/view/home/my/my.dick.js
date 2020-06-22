@@ -101,12 +101,20 @@
         url: "admin/backup_db",
       },
 
-      "admin-商城后台": {
+      "admin-商品上架": {
         fa: "bank",
-        color: "#F80",
-        text: "商城后台",
-        t3: { text: "商城后台管理，仅系统管理员用户" },
+        color: "#c60",
+        text: "商品上架",
+        t3: { text: "商品上架管理，仅系统管理员用户" },
         state: "shop-edit",
+      },
+
+      "admin-分组配置": {
+        fa: "object-group",
+        color: "#06c",
+        text: "分组配置",
+        t3: { text: "商品分组配置，仅系统管理员用户" },
+        state: "group-edit",
       },
 
       "admin-查看价格": {

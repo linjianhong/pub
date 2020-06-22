@@ -1,13 +1,13 @@
 /* 查询结果列表 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageShopEdit", {
+  angular.module("dj.router.frame").component("pageGroupEdit", {
     footer: { hide: true },
     requireLogin: true,
     autoDestroy: true,
     pageTitle: (newPage, $q, $http) => {
       var type = newPage.state.search && newPage.state.search.type || "";
-      return `商品上架`;
+      return `商品分组配置`;
     },
     template: `
     <div class="flex flex-1 flex-stretch" >
@@ -31,7 +31,7 @@
         </div>
         <div class="flex-1 flex-v v-scroll">
           <div class="bb-ccc padding-3 {{code==item.id&&'box-primary'||'text-primary'}}" ng-click="editCode(item.id)" ng-repeat="item in R.list|filter:(TAB.status&&{status:TAB.status}||'')|filter:R.text_filter  track by $index">
-            <div><span class="text-8">[{{item.attr.value['分类11']||'未分类'}}]</span> <span class="">{{item.attr.value['名称']||'[未命名]'}}</span></div>
+            <div><span class="text-8">[{{item.attr.value['v1']||'未分类'}}]</span> <span class="">{{item.attr.value['name']||'[未命名]'}}</span></div>
           </div>
         </div>
       </div>
@@ -57,10 +57,9 @@
       var TAB = $scope.TAB = {
         list: [
           { text: "全部", test_status: () => 1 },
-          { text: "草稿", test_status: (status) => status == "已启用", status: "已启用" },
           { text: "上架", test_status: (status) => status == "已上架", status: "已上架" },
           { text: "下架", test_status: (status) => status == "已下架", status: "已下架" }],
-        active: 2,
+        active: 1,
         status: "已上架",
         change: (index, name) => {
           if (!TAB.list[index]) return;
@@ -69,6 +68,7 @@
           $scope.code = "";
         },
         setActiveByCode: (code) => {
+          console.log("setActiveByCode",code)
           var theItem = R.list.find(item => item.id == code);
           if (!theItem || !theItem.attr || !theItem.attr.value) return false;
           $scope.detail = theItem;
@@ -180,7 +180,7 @@
       ];
 
       $http.post("商城配置").then(json => {
-        FORM.config = angular.merge({}, json.datas.config);
+        FORM.config = angular.merge({}, json.datas.groups);
       }).catch(e => {
         console.error("商城配置 Error: ", e)
       });
@@ -188,7 +188,7 @@
       /** 初始化 */
       function reload() {
         return $http.post("shop_admin/li").then(json => {
-          R.full_list = (json.datas.list || []).map(item => {
+          R.full_list = (json.datas.groups || []).map(item => {
             item.attr = item.attr || { value: {} };
             item.attr.value = item.attr.value || {};
             return item;
@@ -222,7 +222,7 @@
       /** 添加 */
       $scope.add = () => {
         $http.post("显示对话框/confirm", { title: "您确定要添加一个商品？", body: "添加后，你可以编辑相关数据后，进行上架" }).then(() => {
-          $http.post("shop_admin/create").then(json => {
+          $http.post("shop_admin/create_group").then(json => {
             console.log("添加", json);
             if (json.datas.code) {
               reload().then(() => $scope.editCode(json.datas.code));

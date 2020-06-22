@@ -87,7 +87,7 @@
           /** header 数据 */
           var default_header = {
             left: [btnGoback],
-            right: ['qrcode', btnHome],
+            right: [btnHome],
           }
           $scope.header = false;
           $scope.footer = false;
