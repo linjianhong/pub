@@ -108,8 +108,8 @@ class CModuleDefine
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
             ['input' => '统一价格', 'model' => 'price1', 'w' => 2,],
-            ['input' => '主分类', 'model' => '分类11', 'w' => 2, 'type' => "combo", 'q-list' => "促销,肉类,海产,火锅料,佐料,其它",],
-            ['input' => '主分类2', 'model' => '分类12', 'w' => 2, 'type' => "combo", 'q-list' => "",],
+            ['input' => '主分类', 'model' => '分类11', 'w' => 2, 'type' => "combo", 'list' => "商品分类",],
+            ['input' => '主分类2', 'model' => '分类12', 'w' => 2, 'type' => "combo", 'list' => "商品分类2",],
             ['input' => '主分类3', 'model' => '分类13', 'w' => 2],
           ]
         ], [
@@ -213,7 +213,7 @@ class CModuleDefine
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
-            ['input' => '上级分类', 'model' => 'v1', 'w' => 8,],
+            ['input' => '上级分类', 'model' => 'v1', 'type' => "dj-dropdown", 'list' => "商品分类",'w' => 8,],
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [

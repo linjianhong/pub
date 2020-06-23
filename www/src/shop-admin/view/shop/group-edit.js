@@ -1,6 +1,8 @@
 /* 查询结果列表 */
 !(function (angular, window, undefined) {
 
+  "即时商品分类";
+
   angular.module("dj.router.frame").component("pageGroupEdit", {
     footer: { hide: true },
     requireLogin: true,
@@ -13,15 +15,6 @@
     <div class="flex flex-1 flex-stretch" >
       <div resize-x class="flex-v w-em30 bk-f8 shrink0" >
         <div class="flex-stretch bb-ccc header xp">
-          <div class="flex-1 flex">
-            <div class="text-8">分类:</div>
-            <chain-select class="shop-edit-group-box flex-1 text-primary" config="GROUP"></chain-select>
-          </div>
-          <div class="w-em10 flex-v padding-1 padding-h-2">
-            <input class="white radius" ng-model="R.text_filter" placeholder="关键词筛选">
-          </div>
-        </div>
-        <div class="flex-stretch bb-ccc header xp">
           <tab-bar class="text-c" list="TAB.list"
             tab-click="TAB.click($n, item)"
             change="TAB.change($n, item)"
@@ -31,7 +24,7 @@
         </div>
         <div class="flex-1 flex-v v-scroll">
           <div class="bb-ccc padding-3 {{code==item.id&&'box-primary'||'text-primary'}}" ng-click="editCode(item.id)" ng-repeat="item in R.list|filter:(TAB.status&&{status:TAB.status}||'')|filter:R.text_filter  track by $index">
-            <div><span class="text-8">[{{item.attr.value['v1']||'未分类'}}]</span> <span class="">{{item.attr.value['name']||'[未命名]'}}</span></div>
+            <div><span class="text-8">{{item.attr.value['v1']&&'　'}}</span> <span class="">{{item.attr.value['name']||'[未命名]'}}</span></div>
           </div>
         </div>
       </div>
@@ -51,6 +44,33 @@
 
       var R = $scope.R = {
         text_filter: "",
+        sort_k: (nth) => {
+          return (1e9 + (+nth || -1) + "-").substr(1, 99);
+        },
+        sort_list: () => {
+          R.list.map(item => {
+            item.attr = item.attr || { value: {} };
+            item.attr.value = item.attr.value || {};
+          });
+          var index = R.list.map(item => {
+            var a = { item };
+            var isParent = !item.attr.value["v1"];
+            if (isParent) {
+              var k = R.sort_k(item.attr.value["v2"] || item.id);
+            } else {
+              var parent = R.list.find(a => a.id == item.attr.value["v1"] && !a.attr.value["v1"]);
+              var k = parent ? R.sort_k(parent.attr.value["v2"] || parent.id) : R.sort_k(0);
+              k += R.sort_k(item.attr.value["v2"]);
+            }
+            a.k = item.k = k;
+            return a;
+          })
+          R.list.sort((a, b) => {
+            var ka = index.find(i => i.item == a).k;
+            var kb = index.find(i => i.item == b).k;
+            return ka == kb ? 0 : ka > kb ? 1 : -1;
+          })
+        },
       }
 
       /** 标签功能 */
@@ -68,7 +88,7 @@
           $scope.code = "";
         },
         setActiveByCode: (code) => {
-          console.log("setActiveByCode",code)
+          console.log("setActiveByCode", code)
           var theItem = R.list.find(item => item.id == code);
           if (!theItem || !theItem.attr || !theItem.attr.value) return false;
           $scope.detail = theItem;
@@ -154,6 +174,10 @@
               FORM.updateDetailItems(json.datas.need_update);
               FORM.initDetail($scope.detail);
               FORM.initBtns();
+              /** 更新编辑控件中的下拉框 */
+              FORM.config = angular.merge({}, FORM.config);
+              /** 更新上级分类显示 */
+              R.sort_list();
             }
             TAB.setActiveByCode($scope.detail.id);
             // console.log("done", json, btn.show);
@@ -195,29 +219,13 @@
           }).sort((a, b) => (a.attr.value["名称"] || "").compUseNumber(b.attr.value["名称"] || ""));
           R.list = angular.extend([], R.full_list);
           R.list.map(item => item.status = item.status || "已启用");
-          GROUP.DICK = SHOP_FN.get_goods_group(R.list);
+          R.sort_list();
         }).catch(e => {
           console.error(e);
         });
       }
       reload();
 
-      /** 产品分类筛选功能 */
-      var GROUP = $scope.GROUP = {
-        text: "",
-        selectPrompt: ["选择主分类", "选择分类2", "选择分类3"],
-        sep: "~",
-        showing: false,
-        toggle: () => GROUP.showing = !GROUP.showing,
-        ondone: (arr) => {
-          GROUP.showing = false;
-          var text = arr.join(GROUP.sep);
-          if (GROUP.text != text) {
-            GROUP.text = text;
-            R.list = (R.full_list || []).filter(item => SHOP_FN.filter_group(item, arr));
-          }
-        }
-      }
 
       /** 添加 */
       $scope.add = () => {

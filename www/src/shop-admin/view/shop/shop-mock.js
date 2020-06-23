@@ -33,6 +33,50 @@
       }
     });
 
+    /**  */
+    sign.registerHttpHook({
+      match: /^(下拉列表-)?商品分类$/,
+      hookRequest: function (config, mockResponse, match) {
+        var ajax = $http.post("shop_admin/li").then(json => {
+          var list = json.datas.groups.map(item => {
+            item.attr = item.attr || { value: {} };
+            item.attr.value = item.attr.value || {};
+            return item;
+          }).filter(item => !item.attr.value["v1"]).map(item => {
+            return {
+              value: item.id,
+              title: item.attr.value["name"],
+            };
+          });
+          return { list }
+        });
+
+        return mockResponse(ajax);
+      }
+    });
+
+    /**  */
+    sign.registerHttpHook({
+      match: /^(下拉列表-)?商品分类2$/,
+      hookRequest: function (config, mockResponse, match) {
+        var ajax = $http.post("shop_admin/li").then(json => {
+          var list = json.datas.groups.map(item => {
+            item.attr = item.attr || { value: {} };
+            item.attr.value = item.attr.value || {};
+            return item;
+          }).filter(item => item.attr.value["v1"]).map(item => {
+            return {
+              value: item.id,
+              title: item.attr.value["name"],
+            };
+          });
+          return { list }
+        });
+
+        return mockResponse(ajax);
+      }
+    });
+
   }]);
 
   theModule.run(["sign", "$http", "$q", "$rootScope", "DjState", function (sign, $http, $q, $rootScope, DjState) {

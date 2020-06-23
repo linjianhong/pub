@@ -189,8 +189,8 @@
         </div>
         <div class="caret flex-cc"  ng-click="clickCaret()" ng-if="config.mode!='show'"><i class="fa fa-caret-down"></i></div>
         <div class="list" ng-if="listShowing">
-          <div class="bb-eee {{item.value==value&&'active'||''}}" ng-click="selectItem(item)" ng-repeat="item in list|filter:(config.showFilter&&filterText||'') track by $index">{{item.title||item.value}}</div>
-          <div class="{{!value&&'active'||''}}" ng-click="selectItem({})"></div>
+          <div class="bb-eee {{(item==value||item.title==value||item.value==value)&&'active'||''}}" ng-click="selectItem(item)" ng-repeat="item in list|filter:(config.showFilter&&filterText||'') track by $index">{{item.title||item.value}}</div>
+          <div class="{{!value&&'active'||''}}" ng-click="selectItem('')"></div>
         </div>
         <div class="back" ng-click="clickBack()" ng-if="listShowing"></div>`;
       function link($scope, $http, $q, $element, $compile, $timeout) {
@@ -200,7 +200,7 @@
         $scope.$watch("config", config => {
           ajaxList = getListByConfig(config, $http, $q).then(list => {
             return ajaxList = $scope.list = list.filter(a => a || a === 0).map(item => {
-              if (!angular.isObject(item)) return { title: "" + item, value: "" + item, json: "" + item };
+              if (!angular.isObject(item)) return { title: "" + item, value: "" + item };
               return item;
             });
           });
@@ -239,7 +239,7 @@
         });
         /** 监听用户修改 */
         $scope.selectItem = function (item) {
-          $scope.value = item && item.value || "";
+          $scope.value = item && item.title || item.value|| item || "";
           showList(false);
         }
 
