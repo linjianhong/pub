@@ -48,9 +48,9 @@
   }
   function fit123(dick1, dick2, dick3, k1, k2, k3) {
     if (!k1 || k1 != dick1.name) return false;
-    if (!dick2) return true;
+    if (!k2 && !dick2) return true;
     if (!k2 || k2 != dick2.name) return false;
-    if (!dick3) return true;
+    if (!k3 && !dick3) return true;
     if (!k3 || k3 != dick3.name) return false;
     return true
   }
@@ -64,11 +64,62 @@
     return true;
   }
 
+
+  var GROUP = {
+    sort_k: (nth) => {
+      return (1e9 + (+nth || -1) + "-").substr(1, 99);
+    },
+
+    /**
+     * 将数据库中的分类列表，转换为树结构
+     */
+    tree: function (base_list, goods_list) {
+      var tree = [];
+      base_list = angular.merge([], base_list);
+      base_list.map(item => {
+        item.attr = item.attr || { value: {} };
+        item.attr.value = item.attr.value || {};
+        item.name = item.attr.value["name"];
+        var isParent = !item.attr.value["v1"];
+        if (isParent) {
+          tree.push(item);
+          item.k = GROUP.sort_k(item.attr.value["v2"] || item.id);
+          item.sub = item.sub || [];
+        } else {
+          var parent = base_list.find(a => a.id == item.attr.value["v1"] && !a.attr.value["v1"]);
+          if (parent) {
+            parent.sub = parent.sub || [];
+            parent.sub.push(item);
+            item.k = GROUP.sort_k(item.attr.value["v2"]);
+          } else {
+            tree.push(item);
+            item.k = GROUP.sort_k(-item.id);
+          }
+        }
+      });
+      tree.sort((a, b) => a.k == b.k ? 0 : a.k > b.k ? 1 : -1);
+      tree.map(item => item.sub && item.sub.sort((a, b) => a.k == b.k ? 0 : a.k > b.k ? 1 : -1));
+
+
+      (goods_list || []).map(goods => {
+        if (!goods || !goods.attr || !goods.attr.value) return;
+        var value = goods.attr.value;
+        add2dick(tree, value["分类11"], value["分类12"], value["分类13"]);
+        add2dick(tree, value["分类21"], value["分类22"], value["分类23"]);
+        add2dick(tree, value["分类31"], value["分类32"], value["分类33"]);
+      });
+
+      return tree;
+    },
+
+  }
+
   theModule.factory("SHOP_FN", [function () {
     return {
       get_goods_group,
       filter_group,
       fit,
+      GROUP,
     }
   }])
 

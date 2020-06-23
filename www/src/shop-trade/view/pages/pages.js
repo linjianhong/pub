@@ -30,30 +30,63 @@
           </div>
         </div>
         <div class="flex-1 v-scroll">
-          <div class="flex bb-ccc" ng-repeat="item in D.list track by $index">
-            <div class="flex-v flex-1 padding-2">
-              <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
-              <div class="flex-left">
-                <div class="goods-tag" ng-if="item.item.attr.value['重量']">{{item.item.attr.value['重量']}}</div>
-                <div class="goods-tag" ng-if="item.item.attr.value['标签1']">{{item.item.attr.value['标签1']}}</div>
-                <div class="goods-tag" ng-if="item.item.attr.value['标签2']">{{item.item.attr.value['标签2']}}</div>
-                <div class="goods-tag" ng-if="item.item.attr.value['标签3']">{{item.item.attr.value['标签3']}}</div>
+          <div class="" ng-repeat="dick1 in D.DICK track by $index">
+
+            <div class="goods-list-dick-name bb-ccc" ng-if="dick1.list.length">{{dick1.name}}</div>
+            <div class="flex bb-ccc bk-f" ng-repeat="item in dick1.list track by $index">
+              <div class="flex-v flex-1 padding-2">
+                <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
+                <div class="flex-left">
+                  <div class="goods-tag" ng-if="item.item.attr.value['重量']">{{item.item.attr.value['重量']}}</div>
+                  <div class="goods-tag" ng-if="item.item.attr.value['标签1']">{{item.item.attr.value['标签1']}}</div>
+                  <div class="goods-tag" ng-if="item.item.attr.value['标签2']">{{item.item.attr.value['标签2']}}</div>
+                  <div class="goods-tag" ng-if="item.item.attr.value['标签3']">{{item.item.attr.value['标签3']}}</div>
+                </div>
+                <div class="text-warning em-15 b-900" ng-if="item.item.attr.value['price1']">¥ {{item.item.attr.value['price1']|number:2}}</div>
+                <div class="text-stop em-12" ng-if="!item.item.attr.value['price1']">时价</div>
               </div>
-              <div class="text-warning em-15 b-900" ng-if="item.item.attr.value['price1']">¥ {{item.item.attr.value['price1']|number:2}}</div>
-              <div class="text-stop em-12" ng-if="!item.item.attr.value['price1']">时价</div>
+              <div class="flex flex-v-center shrink0 input-spin em-15">
+                <div class="text-a em-15" ng-if="item.item.n">
+                  <div ng-click="D.dec(item.item,1)"><i class="text-c fa fa-minus-square-o"></i></div>
+                  <div ng-click="D.dec(item.item,10)"><i class="text-6 fa fa-minus-square-o"></i></div>
+                </div>
+                <div class="n padding-h-2" >{{item.item.n||''}}</div>
+                <div class="text-info em-15">
+                  <div ng-click="D.add(item.item,1)"><i class="fa fa-plus-square"></i></div>
+                  <div ng-click="D.add(item.item,10)"><i class=" text-warning fa fa-plus-square"></i></div>
+                </div>
+              </div>
             </div>
-            <div class="flex flex-v-center shrink0 input-spin em-15">
-              <div class="text-a em-15" ng-if="item.item.n">
-                <div ng-click="D.dec(item.item,1)"><i class="text-c fa fa-minus-square-o"></i></div>
-                <div ng-click="D.dec(item.item,10)"><i class="text-6 fa fa-minus-square-o"></i></div>
-              </div>
-              <div class="n padding-h-2" >{{item.item.n||''}}</div>
-              <div class="text-info em-15">
-                <div ng-click="D.add(item.item,1)"><i class="fa fa-plus-square"></i></div>
-                <div ng-click="D.add(item.item,10)"><i class=" text-warning fa fa-plus-square"></i></div>
+
+            <div class="" ng-repeat="dick2 in dick1.sub track by $index">
+              <div class="goods-list-dick-name bb-ccc" ng-if="dick2.list.length">{{dick1.name}} - {{dick2.name}}</div>
+              <div class="flex bb-ccc bk-f" ng-repeat="item in dick2.list track by $index">
+                <div class="flex-v flex-1 padding-2">
+                  <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
+                  <div class="flex-left">
+                    <div class="goods-tag" ng-if="item.item.attr.value['重量']">{{item.item.attr.value['重量']}}</div>
+                    <div class="goods-tag" ng-if="item.item.attr.value['标签1']">{{item.item.attr.value['标签1']}}</div>
+                    <div class="goods-tag" ng-if="item.item.attr.value['标签2']">{{item.item.attr.value['标签2']}}</div>
+                    <div class="goods-tag" ng-if="item.item.attr.value['标签3']">{{item.item.attr.value['标签3']}}</div>
+                  </div>
+                  <div class="text-warning em-15 b-900" ng-if="item.item.attr.value['price1']">¥ {{item.item.attr.value['price1']|number:2}}</div>
+                  <div class="text-stop em-12" ng-if="!item.item.attr.value['price1']">时价</div>
+                </div>
+                <div class="flex flex-v-center shrink0 input-spin em-15">
+                  <div class="text-a em-15" ng-if="item.item.n">
+                    <div ng-click="D.dec(item.item,1)"><i class="text-c fa fa-minus-square-o"></i></div>
+                    <div ng-click="D.dec(item.item,10)"><i class="text-6 fa fa-minus-square-o"></i></div>
+                  </div>
+                  <div class="n padding-h-2" >{{item.item.n||''}}</div>
+                  <div class="text-info em-15">
+                    <div ng-click="D.add(item.item,1)"><i class="fa fa-plus-square"></i></div>
+                    <div ng-click="D.add(item.item,10)"><i class=" text-warning fa fa-plus-square"></i></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
       <div class="flex flex-stretch bt-ccc">
@@ -89,21 +122,24 @@
         load();
         return { save, load };
       })();
+
       var D = $scope.D = {
         full_list: [],
         DICK: {},
         initList: () => {
           D.list = [];
           D.DICK.map(dick1 => {
+            dick1.list = [];
             D.full_list.filter(item => SHOP_FN.fit(item, dick1, "")).map(item => {
-              D.list.push({
+              dick1.list.push({
                 item,
                 dick1,
               });
             });
             (dick1.sub || []).map(dick2 => {
+              dick2.list = [];
               D.full_list.filter(item => SHOP_FN.fit(item, dick1, dick2)).map(item => {
-                D.list.push({
+                dick2.list.push({
                   item,
                   dick1,
                   dick2,
@@ -149,12 +185,12 @@
           D.full_list.map(item => {
             if (item.n > 0) {
               D.order.n += item.n;
-              D.order.types ++;
+              D.order.types++;
               D.order.money += item.n * (item.attr.value['price1'] || 0);
               D.order.list.push({
                 id: item.id,
                 n: item.n,
-                name: item.attr.value["名称"], 
+                name: item.attr.value["名称"],
                 price: item.attr.value["price1"]
               });
             }
@@ -165,10 +201,14 @@
         $scope.row = json.datas.shop;
         $scope.goods = json.datas.goods;
         D.full_list = json.datas.goods || [];
-        D.DICK = SHOP_FN.get_goods_group(D.full_list);
+        var groups = json.datas.groups || [];
+        console.log("groups", groups);
+        var baseDick = SHOP_FN.GROUP.tree(groups,D.full_list);
+        D.DICK = baseDick;
         D.initList();
         console.log("D.DICK", D.DICK, "D.full_list", D.full_list)
-        console.log("D.list", D.list)
+        console.log("baseDick", baseDick);
+        console.log("D.list", D.list);
       }).catch(e => console.error(e));
 
       $scope.icons = [

@@ -115,15 +115,15 @@ class CModuleDefine
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
             ['input' => '会员价格', 'model' => 'price2', 'w' => 2,],
-            ['input' => '次分类', 'model' => '分类21', 'w' => 2, 'type' => "combo", 'q-list' => "肉类,海产,火锅料,佐料,其它",],
-            ['input' => '次分类2', 'model' => '分类22', 'w' => 2, 'type' => "combo", 'q-list' => "",],
+            ['input' => '次分类', 'model' => '分类21', 'w' => 2, 'type' => "combo", 'list' => "商品分类",],
+            ['input' => '次分类2', 'model' => '分类22', 'w' => 2, 'type' => "combo", 'list' => "商品分类2",],
             ['input' => '次分类2', 'model' => '分类23', 'w' => 2],
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
             ['input' => '促销价格', 'model' => 'price3', 'w' => 2,],
-            ['input' => '次分类', 'model' => '分类31', 'w' => 2, 'type' => "combo", 'q-list' => "肉类,海产,火锅料,佐料,其它",],
-            ['input' => '次分类2', 'model' => '分类32', 'w' => 2, 'type' => "combo", 'q-list' => "",],
+            ['input' => '次分类', 'model' => '分类31', 'w' => 2, 'type' => "combo", 'list' => "商品分类",],
+            ['input' => '次分类2', 'model' => '分类32', 'w' => 2, 'type' => "combo", 'list' => "商品分类2",],
             ['input' => '次分类2', 'model' => '分类33', 'w' => 2],
           ]
         ], [

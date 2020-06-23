@@ -54,7 +54,8 @@ class class_shop
 
     /* 简单列表 */
     $goods = \SHOP\CShop::goods();
-    return \DJApi\API::OK(['goods' => $goods, 'user' => $user_row]);
+    $groups = \SHOP\CShop::goods_groups();
+    return \DJApi\API::OK(['goods' => $goods, 'groups' => $groups, 'user' => $user_row]);
   }
 
 
