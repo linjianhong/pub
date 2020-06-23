@@ -147,6 +147,8 @@
               });
             })
           });
+          D.DICK.map(dick => dick.sub = dick.sub && dick.sub.filter(a => a.list && a.list.length));
+          D.DICK = D.DICK.filter(a => a.list && a.list.length || a.sub && a.sub.length);
           H.load().then(order => {
             console.log("order", order);
             (order.list || []).map(order_item => {
@@ -203,7 +205,7 @@
         D.full_list = json.datas.goods || [];
         var groups = json.datas.groups || [];
         console.log("groups", groups);
-        var baseDick = SHOP_FN.GROUP.tree(groups,D.full_list);
+        var baseDick = SHOP_FN.GROUP.tree(groups, D.full_list);
         D.DICK = baseDick;
         D.initList();
         console.log("D.DICK", D.DICK, "D.full_list", D.full_list)
