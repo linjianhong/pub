@@ -29,10 +29,10 @@
             </div>
           </div>
         </div>
-        <div class="flex-1 v-scroll">
+        <div class="flex-1 v-scroll pos-box">
           <div class="" ng-repeat="dick1 in D.DICK track by $index">
 
-            <div class="goods-list-dick-name bb-ccc" ng-if="dick1.list.length">{{dick1.name}}</div>
+            <div class="goods-list-dick-name bb-ccc" pos="{{dick1.name}}" ng-if="dick1.list.length">{{dick1.name}}</div>
             <div class="flex bb-ccc bk-f" ng-repeat="item in dick1.list track by $index">
               <div class="flex-v flex-1 padding-2">
                 <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
@@ -59,7 +59,7 @@
             </div>
 
             <div class="" ng-repeat="dick2 in dick1.sub track by $index">
-              <div class="goods-list-dick-name bb-ccc" ng-if="dick2.list.length">{{dick1.name}} - {{dick2.name}}</div>
+              <div class="goods-list-dick-name bb-ccc" pos="{{dick1.name}}-{{dick2.name}}" ng-if="dick2.list.length">{{dick1.name}} - {{dick2.name}}</div>
               <div class="flex bb-ccc bk-f" ng-repeat="item in dick2.list track by $index">
                 <div class="flex-v flex-1 padding-2">
                   <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
@@ -165,6 +165,17 @@
         },
         scrollto: (dick1, dick2) => {
           console.log("选择", dick1.name, dick2 && dick2.name)
+
+          var ele_pos = document.querySelector("[pos='" + dick1.name + (dick2 ? "-" + dick2.name : "") + "']", $element[0]);
+          var header = document.querySelector(".header", $element[0]);
+          var box = document.querySelector(".pos-box", $element[0]);
+          var top = ele_pos.offsetTop - header.offsetHeight;
+          D.scrolling = true;
+          box.scrollTo({
+            top,
+            behavior: 'smooth' //  smooth(平滑滚动),instant(瞬间滚动),默认auto
+          });
+          //setTimeout(() => D.scrolling = false, 500);
         },
         add: (item, n) => {
           item.n = (item.n || 0) + n;
@@ -199,6 +210,39 @@
           })
         },
       }
+
+      setTimeout(() => {
+        var box = document.querySelector(".pos-box", $element[0]);
+        var header = document.querySelector(".header", $element[0]);
+        var timerId;
+        box.addEventListener('scroll', () => {
+          if (D.scrolling) {
+            clearTimeout(timerId);
+            timerId = setTimeout(() => {
+              D.scrolling = false;
+            }, 100);
+            return;
+          }
+          //console.log("识别位置", +new Date())
+          var scrollTop = box.scrollTop + header.offsetHeight;
+          var dick1, dick2;
+          dick1 = D.DICK.find(dick1 => {
+            var ele_pos = document.querySelector("[pos='" + dick1.name + "']", $element[0]).parentElement;
+            if (ele_pos.offsetTop + ele_pos.offsetHeight >= scrollTop) {
+              dick2 = (dick1.sub || []).find(dick2 => {
+                var ele_pos = document.querySelector("[pos='" + dick1.name + "-" + dick2.name + "']", $element[0]).parentElement;
+                return ele_pos.offsetTop <= scrollTop && ele_pos.offsetTop + ele_pos.offsetHeight >= scrollTop;
+              });
+              return true;
+            }
+          });
+          D.dick1 = dick1;
+          D.dick2 = dick2;
+          $scope.$apply();
+        });
+
+      }, 1000);
+
       $http.post("店铺商品列表", 8008001).then(json => {
         $scope.row = json.datas.shop;
         $scope.goods = json.datas.goods;
@@ -219,117 +263,6 @@
     }]
   });
 
-  theModule.component("pageGoodsGroup", {
-    pageTitle: "产品分类",
-    requireLogin: true,
-    autoDestroy: true,
-    pageCss: "bk-e",
-    header: { hide: true },
-    footer: { hide: true },
-    template: `
-    <div class="flex header xp padding-1">
-      <div class="flex-1 flex-left flex-v-center padding-1">
-        <div class="">产品分类：</div>
-        <chain-select class="flex-1 text-primary b-900" config="selectGoods"></chain-select>
-      </div>
-      <div class="w-em8">　</div>
-    </div>
-    <a href="#/home" class="fixed rt2 flex-cc"><i class="fa fa-home b-900"></i></a>
-    <a href="#/my" class="fixed rt1 flex-cc"><i class="fa fa-user-o b-900"></i></a>
-
-
-    <div class="goods-list flex-wrap flex-top flex-left">
-      <goods-mini-item class="goods-mini-item" ng-click="showGoods(detail.id)" detail="detail" ng-repeat="detail in goods"></goods-mini-item>
-    </div>`,
-    controller: ["$scope", "$http", "DjState", "DjRouter", "SHOP_FN", function ctrl($scope, $http, DjState, DjRouter, SHOP_FN) {
-      var SEP = "~";
-      var g = (DjRouter.$search.g || "").split("-").join(SEP);
-
-      var selectGoods = $scope.selectGoods = {
-        text: g,
-        selectPrompt: ["选择主分类", "选择分类2", "选择分类3"],
-        sep: SEP,
-
-        /** 在 SHOP_FN.get_goods_group 中将被调用，从而实现实时更新 */
-        ondone: arr => {
-          console.log("点击了分类:", arr);
-          var text = arr.join(selectGoods.sep);
-          if (selectGoods.text != text) {
-            selectGoods.text = text;
-            DjState.replace("goods-group", { g: arr.join("-") });
-            WxShare();
-          }
-          $scope.goods = (goods_full_list || []).filter(item => SHOP_FN.filter_group(item, arr));
-        },
-      }
-
-      function WxShare() {
-        var title = selectGoods.text ? "产品分类 - " + selectGoods.text : "商品首页";
-        var desc = "微商城";
-        var imgUrl = "";
-        setTimeout(() => {
-          $http.post("WxJssdk/setShare", {
-            title: title, // 分享标题
-            desc: desc, // 分享描述
-            link: location.origin + location.pathname + "#/goods-group?g=" + selectGoods.text, // 分享链接
-            imgUrl: imgUrl || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
-            type: 'link', // 分享类型,music、video或link，不填默认为link
-          });
-        }, 100);
-      }
-      WxShare();
-
-      var goods_full_list;
-      $http.post("店铺商品列表", 8008001).then(json => {
-        goods_full_list = json.datas.goods || [];
-        selectGoods.DICK = SHOP_FN.get_goods_group(goods_full_list);
-      });
-
-      $scope.showGoods = code => DjState.go(this.mode || "goods-dick", { code });
-    }]
-  });
-
-
-  /** 产品详情 - 营销模式 */
-  theModule.component("pageGoodsDick", {
-    pageTitle: "产品详情",
-    requireLogin: false,
-    autoDestroy: true,
-    pageCss: "bk-e",
-    header: { hide: true },
-    footer: { hide: true },
-    template: `
-    <div class="flex-cc em-16 box-warning padding-2">产品详情</div>
-    <a href="#/home" class="fixed rt2 flex-cc"><i class="fa fa-home b-900"></i></a>
-    <a href="#/my" class="fixed rt1 flex-cc"><i class="fa fa-user-o b-900"></i></a>
-    <goods-show-detail detail="detail"></goods-show-detail>
-    <action-bar code="code"></action-bar>`,
-    controller: ["$scope", "$http", "DjState", "DjRouter", function ctrl($scope, $http, DjState, DjRouter) {
-      var code = $scope.code = DjRouter.$search.code;
-      function reload_self() {
-        $http.post("店铺商品列表", 8008001).then(json => {
-          var list = json.datas.goods || [];
-          var detail = $scope.detail = list.find(item => item.id == code);
-          var values = detail.attr.value;
-          if (angular.isArray(values["相关链接"])) {
-            values["相关链接-详情"] = values["相关链接"].map(link => list.find(item => item.id == link.id)).filter(a => !!a);
-          }
-          var imgUrl = values['标题图'][0] || values['缩略图'][0] || values['置顶图'][0] || values['详情图'][0];
-          values["描述"] = values["描述"] || "微商城";
-          setTimeout(() => {
-            $http.post("WxJssdk/setShare", {
-              title: values["名称"], // 分享标题
-              desc: values["描述"], // 分享描述
-              link: location.origin + location.pathname + "#/goods-dick?code=" + code, // 分享链接
-              imgUrl: imgUrl || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
-              type: 'link', // 分享类型,music、video或link，不填默认为link
-            });
-          }, 100);
-        });
-      }
-      reload_self();
-    }]
-  });
 
   /** 产品详情 - 商城模式 */
   theModule.component("pageGoodsShop", {
