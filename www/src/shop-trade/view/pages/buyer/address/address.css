@@ -1,0 +1,41 @@
+.fixed-page-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.fixed-bottom-80-box {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 80vh;
+}
+
+.fixed-bottom-80-box, .fixed-bottom-80-box>:first-child {
+  border-top-left-radius: .6em;
+  border-top-right-radius: .6em;
+}
+
+.fixed-page-box>.pop-title {
+  background: #eee;
+  border-bottom: solid 1px #ccc;
+  padding: .5em;
+}
+
+.address-first-name {
+  background: #ccc;
+  color: #fff;
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 100%;
+}
+
+.address-main-mark {
+  background-color: #fed;
+  color: #f80;
+  border-radius: .3em;
+  padding: .2em;
+}

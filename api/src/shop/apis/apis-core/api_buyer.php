@@ -6,6 +6,8 @@ use MyClass\CDbBase;
 
 class class_buyer
 {
+  static $TABLE_USER = "shop_user";
+
   /**
    * 统一入口，要求登录, 要求登录
    */
@@ -38,7 +40,7 @@ class class_buyer
     $code = $query['code'];
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     $attr = json_decode($user_row['attr'], true);
     if (!is_array($attr)) $attr = [];
     if (!is_array($attr['收藏'])) $attr['收藏'] = [];
@@ -56,9 +58,9 @@ class class_buyer
 
     $str_attr = \DJApi\API::cn_json($attr);
     if (!$user_row) {
-      $db->insert(CDbBase::table('stock_user_bind'), ['attr' => $str_attr, 'uid' => $uid, 't1' => date('Y-m-d H:i:s')]);
+      $db->insert(CDbBase::table(self::$TABLE_USER), ['attr' => $str_attr, 'uid' => $uid, 't1' => date('Y-m-d H:i:s')]);
     } else {
-      $db->update(CDbBase::table('stock_user_bind'), ['attr' => $str_attr], ['uid' => $uid]);
+      $db->update(CDbBase::table(self::$TABLE_USER), ['attr' => $str_attr], ['uid' => $uid]);
     }
     \DJApi\API::debug(["收藏" => $attr['收藏'], 'DB' => $db->getShow()]);
     return \DJApi\API::OK();
@@ -76,7 +78,7 @@ class class_buyer
     $uid = $verifyData['uid'];
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     if (!$user_row) {
       return \DJApi\API::OK(['list' => []]);
     } else {
@@ -100,7 +102,7 @@ class class_buyer
     $n = $query['n'];
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     $attr = json_decode($user_row['attr'], true);
     if (!is_array($attr)) $attr = [];
     if (!is_array($attr['购物车'])) $attr['购物车'] = [];
@@ -121,9 +123,9 @@ class class_buyer
 
     $str_attr = \DJApi\API::cn_json($attr);
     if (!$user_row) {
-      $db->insert(CDbBase::table('stock_user_bind'), ['attr' => $str_attr, 'uid' => $uid, 't1' => date('Y-m-d H:i:s')]);
+      $db->insert(CDbBase::table(self::$TABLE_USER), ['attr' => $str_attr, 'uid' => $uid, 't1' => date('Y-m-d H:i:s')]);
     } else {
-      $db->update(CDbBase::table('stock_user_bind'), ['attr' => $str_attr], ['uid' => $uid]);
+      $db->update(CDbBase::table(self::$TABLE_USER), ['attr' => $str_attr], ['uid' => $uid]);
     }
     \DJApi\API::debug(["加购" => $in_cart, 'DB' => $db->getShow()]);
     return \DJApi\API::OK();
@@ -141,7 +143,7 @@ class class_buyer
     $uid = $verifyData['uid'];
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     if (!$user_row) {
       return \DJApi\API::OK(['list' => []]);
     } else {
@@ -166,9 +168,9 @@ class class_buyer
     else unset($value['main']);
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     if (!$user_row) {
-      $db->insert(CDbBase::table('stock_user_bind'), [
+      $db->insert(CDbBase::table(self::$TABLE_USER), [
         "uid" => $uid,
         "t1" => date("Y-m-d H:i:s"),
         "attr" => \DJApi\API::cn_json(['收货地址' => [$value]])
@@ -185,7 +187,7 @@ class class_buyer
         }
       }
       $attr['收货地址'] = $list;
-      $db->update(CDbBase::table('stock_user_bind'), ["attr" => \DJApi\API::cn_json($attr)], ["uid" => $uid]);
+      $db->update(CDbBase::table(self::$TABLE_USER), ["attr" => \DJApi\API::cn_json($attr)], ["uid" => $uid]);
       return \DJApi\API::OK([1]);
     }
   }
@@ -204,7 +206,7 @@ class class_buyer
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "无效数据");
     $db = \MyClass\CDbBase::db();
     /* 查询 */
-    $user_row = $db->get(CDbBase::table('stock_user_bind'), '*', ['AND' => ['uid' => $uid]]);
+    $user_row = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['AND' => ['uid' => $uid]]);
     if (!$user_row) {
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "非法提交");
     }
@@ -213,7 +215,7 @@ class class_buyer
     $list = $attr['收货地址'];
     if (!is_array(($list))) $list = [];
     $attr['收货地址'] = $value;
-    $db->update(CDbBase::table('stock_user_bind'), ["attr" => \DJApi\API::cn_json($attr)], ["uid" => $uid]);
+    $db->update(CDbBase::table(self::$TABLE_USER), ["attr" => \DJApi\API::cn_json($attr)], ["uid" => $uid]);
     return \DJApi\API::OK([1]);
   }
 
