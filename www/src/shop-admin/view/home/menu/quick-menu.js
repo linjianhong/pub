@@ -24,7 +24,7 @@
       </div>`,
     controller: ["$scope", "$http", "$q", "DjState", function ctrl($scope, $http, $q, DjState) {
 
-      $scope.otherPowerFa = { "基本权限": "folder-open-o", "系统权限": "cogs" };
+      $scope.otherPowerFa = { "基本权限": "folder-open-o", "商城后台": "user-o", "系统权限": "cogs" };
       var otherPowerNames = $scope.otherPowerNames = Object.keys($scope.otherPowerFa);
       var otherPower = $scope.otherPower = {};
 

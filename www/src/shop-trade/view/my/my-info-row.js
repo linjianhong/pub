@@ -35,8 +35,8 @@
 
           $q.when(ajaxMe).then(me => {
 
-            if (me.stock_userinfo && me.stock_userinfo.mobile) {
-              $scope.mobile = me.stock_userinfo.mobile;
+            if (me.mobile) {
+              $scope.mobile = me.mobile;
               $scope.mobileHide = $scope.mobile;
               $scope.myInfo.t3.text = $scope.mobileHide.replace(/\d{4}(?=\d{4}$)/, "****");
             }

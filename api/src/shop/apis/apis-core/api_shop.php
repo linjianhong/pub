@@ -29,7 +29,7 @@ class class_shop
   {
     $user = new \APP\CUser($verifyData['uid']);
     $power = $user->power();
-    return \DJApi\API::OK(["power" => $power]);
+    return \DJApi\API::OK(["power" => $power,"user" => $user]);
   }
 
 
@@ -60,28 +60,6 @@ class class_shop
 
 
 
-  static $show_more = [
-    "查看价格" => [
-      ["统一价格", "price1"],
-      ["显示价格", "price2"],
-      ["划线价格", "price3"],
-      ["占地长度(米)", "占地长度"],
-      ["占地宽度(米)", "占地宽度"],
-      ["高度(米)", "高度"],
-      ["重量(KG)", "重量"],
-      ["包装体积(方)", "包装体积"],
-      ["发货范围", "发货范围"],
-    ],
-    "无" => [
-      ["占地长度(米)", "占地长度"],
-      ["占地宽度(米)", "占地宽度"],
-      ["高度(米)", "高度"],
-      ["重量(KG)", "重量"],
-      ["包装体积(方)", "包装体积"],
-      ["发货范围", "发货范围"],
-    ],
-  ];
-
   /**
    * 接口： shop/me
    * 列出商城已上架的商品
@@ -90,11 +68,10 @@ class class_shop
   public static function me($query, $verifyData)
   {
     $uid = $verifyData['uid'];
-    $stock_user_row = \MyClass\CStockUser::base_userinfo($uid);
-    $power = \MyClass\CStockUser::get_my_power($verifyData);
+    $user = new \APP\CUser($uid);
+    $user_row = $user->row;
+    $power = $user->power();
     $power = $power['商城权限'];
-    if (in_array("查看价格", $power)) $show_more = self::$show_more['查看价格'];
-    if (!$show_more) $show_more = self::$show_more['无'];
 
     // 微信信息
     $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid, 'appname' => 'xls']);
@@ -104,6 +81,6 @@ class class_shop
       $wx = $wxInfo[0];
     }
 
-    return \DJApi\API::OK(['wx' => $wx, 'power' => $power, 'show_more' => $show_more, 'mobile' => $stock_user_row['mobile'], 'attr' => $stock_user_row['attr']]);
+    return \DJApi\API::OK(['wx' => $wx, 'power' => $power, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
   }
 }

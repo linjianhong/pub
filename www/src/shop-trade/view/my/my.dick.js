@@ -69,17 +69,34 @@
         state: "about"
       },
 
-      "home": {
+      "商城菜单-商城首页": {
         fa: "bank",
         color: "#c60",
         text: "商城首页",
         t3: { text: "商城首页" },
         state: "home"
       },
-      "商品分类": {
+
+      "商城菜单-我的订单": {
         fa: "folder",
         color: "#088",
-        text: "商品分类",
+        text: "我的订单",
+        t3: { text: "商城首页" },
+        state: "home"
+      },
+
+      "商城菜单-地址设置": {
+        fa: "folder",
+        color: "#088",
+        text: "地址设置",
+        t3: { text: "商城首页" },
+        state: "goods-group"
+      },
+
+      "商城菜单-订单处理": {
+        fa: "folder",
+        color: "#088",
+        text: "订单处理",
         t3: { text: "商城首页" },
         state: "goods-group"
       },

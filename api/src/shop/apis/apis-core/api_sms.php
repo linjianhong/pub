@@ -94,9 +94,9 @@ class class_sms
   {
     $phone = $query['phone'];
     $code = $query['code'];
-    return \MyClass\CStockUser::bind_mobile($verify['uid'], ['mobile' => $phone, 'code' => $code]);
+    return \APP\CUser::bind_mobile($verify['uid'], ['mobile' => $phone, 'code' => $code]);
     $params = [
-      'module' => \MyClass\CStockUser::$module,
+      'module' => \APP\CUser::$module,
       'phone' => $phone,
       'code' => $code,
     ];

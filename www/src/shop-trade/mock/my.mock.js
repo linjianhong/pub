@@ -10,7 +10,7 @@
       match: /^我的-基本信息$/,
       hookRequest: function (config, mockResponse, match) {
         var param = config.data;
-        var post = angular.extend({ api: "user/info", data: {}, delay: 1.2e6 }, param);
+        var post = angular.extend({ api: "shop/me", data: {}, delay: 1.2e6 }, param);
         // console.log("请求: 我的-基本信息, post=", post, "param=", param);
         return mockResponse($http.post("缓存请求", post));
       }

@@ -117,14 +117,6 @@
         state: "group-edit",
       },
 
-      "admin-查看价格": {
-        fa: "bank",
-        color: "#F80",
-        text: "查看价格",
-        t3: { text: "查看价格" },
-        poweronly: "权限标志",
-      },
-
       "admin-user": {
         fa: "users",
         color: "#808",
@@ -146,94 +138,20 @@
         t3: { text: "添加或移除用户，管理用户权限" },
         state: "admin-user-list"
       },
-      "admin-role": {
-        fa: "user-circle-o",
-        color: "#585",
-        text: "角色管理",
-        t3: { text: "管理角色配置，方便管理用户权限" },
-        state: "admin-role"
-      },
-      "admin-power-dick": {
+
+      "商城后台-订单列表": {
         fa: "book",
         color: "#855",
-        text: "权限字典",
-        t3: { text: "添加或移除用户，管理用户权限" },
-        state: "admin-power-dick"
+        text: "订单列表",
+        state: "order-list",
       },
-
-      "产品套件字典": {
-        fa: "book",
-        color: "#855",
-        text: "产品套件字典",
-        state: "dick-edit",
-        search: { type: "产品套件字典" },
-      },
-      "产品字典": {
+      "商城后台-订单统计": {
         fa: "book",
         color: "#585",
-        text: "产品字典",
-        state: "dick-edit",
-        search: { type: "产品字典" },
-      },
-      "客户字典": {
-        fa: "book",
-        color: "#558",
-        text: "客户字典",
-        state: "dick-edit",
-        search: { type: "客户字典" },
-      },
-      "木工字典": {
-        fa: "book",
-        color: "#f80",
-        text: "木工字典",
-        state: "dick-edit",
-        search: { type: "木工字典" },
-      },
-      "开料单字典": {
-        fa: "book",
-        color: "#f80",
-        text: "开料单字典",
-        state: "dick-edit",
-        search: { type: "开料单字典" },
+        text: "订单统计",
+        state: "query",
       },
 
-
-      "快速查询1": {
-        fa: "binoculars",
-        color: "#860",
-        text: "生产状态",
-        state: "query-q-produce",
-      },
-      "油漆统计表": {
-        fa: "shield",
-        color: "#d63",
-        text: "油漆统计表",
-        state: "query-more-quick",
-        search: { type: "油漆统计表" },
-      },
-      "油漆验收报表": {
-        fa: "shield",
-        color: "#d63",
-        text: "油漆验收报表",
-        state: "query-more-quick",
-        search: { type: "油漆验收报表" },
-      },
-      
-      "任务": {
-        fa: "table",
-        color: "#008",
-        text: "任务",
-        state: "task-list",
-        search: { },
-      },
-      
-      "签到": {
-        fa: "coffee",
-        color: "#f80",
-        text: "签到",
-        state: "signin-report",
-        search: { },
-      },
     }
 
 

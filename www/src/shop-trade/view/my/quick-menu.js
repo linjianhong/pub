@@ -30,9 +30,12 @@
 
       ajax_power.then(power => {
 
-        console.log("");
+        console.log("power=", power, "otherPowerNames=", otherPowerNames,);
 
         ajax_iconRows.then(iconRows => {
+
+          console.log("iconRows=", iconRows, "otherPowerNames=", otherPowerNames,);
+
           otherPowerNames.map(otherPowerName => {
             var myPower = power[otherPowerName] || [];
             otherPower[otherPowerName] = myPower.map(item => iconRows.find(iconRow => iconRow.text == item)).filter(item => item && !item.poweronly).map(iconRow => {

@@ -253,7 +253,12 @@ class class_buyer
         'attr' => '',
       ]);
     }
+    return \DJApi\API::OK(['order' => ['id' => $order_id]]);
 
+
+
+
+    /** 支持微信支付时，启用以下代码 */
     $appid = 'wx3a807a2f301479ae';
 
     $openid_json = \DJApi\API::post(SERVER_API_ROOT, "user/bind/get_bind", [

@@ -38,7 +38,7 @@
     template: `
       <div class="flex header xp-warning padding-1">
         <div class="flex-1 flex-left flex-v-center padding-1">
-          <div class="padding-1 em-15">通用微商城</div>
+          <div class="padding-1 em-15">广西冻品商城</div>
         </div>
         <div class="flex">
           <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
@@ -313,7 +313,7 @@
         <div class="text-0">计 <d class="text-stop">{{D.order.n||0}}</d> 件</div>
       </div>
       <div class="flex-1 text-warning em-15 b-900 flex-cc">¥ {{(D.order.money||0)|number:2}}</div>
-      <div class="{{D.order.n&&'box-warning'||'box-disabled'}} w-em6 em-12 flex-cc" ng-click="D.sureOrder()">确认订单</div>
+      <div class="{{D.order.n&&D.address&&'box-warning'||'box-disabled'}} w-em6 em-12 flex-cc" ng-click="D.sureOrder()">确认订单</div>
     </div>`,
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
@@ -356,13 +356,18 @@
         },
 
         sureOrder: () => {
+          if (!D.address || !D.order.n) return;
           var post = {
             reciever: D.address,
             items: D.order.items,
             totle: D.order.money,
           }
           console.log("确认订单", post);
-          $http.post("显示对话框/alert", ["请保持手机畅通，客服人员将会尽快与你联系", "提交成功",]);
+          $http.post("buyer/create_order", post).then(json => {
+            $http.post("显示对话框/alert", ["请保持手机畅通，客服人员将会尽快与你联系", "提交成功",]);
+          }).catch(e => {
+            console.error(e)
+          });
         },
       }
 
