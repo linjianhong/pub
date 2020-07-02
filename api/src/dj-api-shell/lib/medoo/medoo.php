@@ -292,13 +292,12 @@ class medoo
 	protected function data_implode($data, $conjunctor, $outer_conjunctor = null)
 	{
 		$wheres = array();
-
 		foreach ($data as $key => $value)
 		{
 			$type = gettype($value);
 
 			if (
-				preg_match("/^(AND|OR)\s*#?/i", $key, $relation_match) &&
+				preg_match("/^(AND|OR)\s*(#.*)?$/i", $key, $relation_match) &&
 				$type == 'array'
 			)
 			{
