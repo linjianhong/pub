@@ -104,6 +104,15 @@ haibao>img {
   color: #fff;
 }
 
-.order-row-box>order-row {
+.order-row-box>*>order-row {
   margin: .2em .5em 1.2em;
+}
+
+.order-btns{
+  padding: .2em;
+}
+.order-btns>*{
+  padding: .5em 1em;
+  margin: .2em 1em;
+  border-radius: .3em;
 }

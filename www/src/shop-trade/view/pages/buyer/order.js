@@ -8,12 +8,12 @@
       <div class="order-row">
         <div class="flex padding-1 bb-ccc">
           <div class="text-info">订单号：{{order['id']}}</div>
-          <div class="text-8">{{order['t_order']}}</div>
+          <div class="text-8">{{order['t_order']|amDateFormat:'D日HH时mm分'}}</div>
         </div>
         <div class="bk-f">
           <div class="bb-ccc padding-1 flex" ng-repeat="row in order.list track by $index">
             <div class="" ng-init="values=goods[row.code].attr.value">
-              <div class="em-15 b-900">{{goods[row.code].attr.value['名称']}}</div>
+              <div class="em-12 b-900">{{goods[row.code].attr.value['名称']}}</div>
               <div class="flex-left">
                 <div class="goods-tag" ng-if="goods[row.code].attr.value['重量' ]">{{goods[row.code].attr.value['重量']}}</div>
                 <div class="goods-tag" ng-if="goods[row.code].attr.value['标签1']">{{goods[row.code].attr.value['标签1']}}</div>

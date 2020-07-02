@@ -38,7 +38,44 @@ class class_order_admin
     $uid = $verifyData['uid'];
 
     return \DJApi\API::OK([
-      'orders' => \SHOP\COrder::orders(['uid' => $uid]),
+      'orders' => \SHOP\COrder::orders(['t_order[>]' => '1999-12-31'],['id','uid', 'totle', 'reciever', 't_file', 't_send', 't_order']),
     ]);
+  }
+
+
+  /**
+   * 接口： order_admin/order_send
+   * 订单发货
+   * @return {list:[id]}
+   */
+  public static function order_send($query, $verifyData)
+  {
+    $uid = $verifyData['uid'];
+    $order_id = $query['id'];
+    return  \SHOP\COrder::order_send($order_id);
+  }
+
+  /**
+   * 接口： order_admin/order_unsend
+   * 订单退回发货
+   * @return {list:[id]}
+   */
+  public static function order_unsend($query, $verifyData)
+  {
+    $uid = $verifyData['uid'];
+    $order_id = $query['id'];
+    return  \SHOP\COrder::order_unsend($order_id);
+  }
+
+  /**
+   * 接口： order_admin/order_file
+   * 订单完成
+   * @return {list:[id]}
+   */
+  public static function order_file($query, $verifyData)
+  {
+    $uid = $verifyData['uid'];
+    $order_id = $query['id'];
+    return  \SHOP\COrder::order_file($order_id);
   }
 }

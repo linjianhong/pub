@@ -362,11 +362,16 @@
             items: D.order.items,
             totle: D.order.money,
           }
-          console.log("确认订单", post);
-          $http.post("buyer/create_order", post).then(json => {
-            $http.post("显示对话框/alert", ["请保持手机畅通，客服人员将会尽快与你联系", "提交成功",]);
-          }).catch(e => {
-            console.error(e)
+          $http.post("显示对话框/confirm", ["下单后，请保持手机畅通，客服人员将会尽快与你联系。确认下单？", "下单确认",]).then(() => {
+            console.log("确认订单", post);
+            $http.post("buyer/create_order", post).then(json => {
+              $http.post("显示对话框/toast", ["下单成功!", 1200]).then(() => {
+                H.save({});
+                DjState.go("my-order-list", { tab: 1 });
+              });
+            }).catch(e => {
+              console.error(e)
+            });
           });
         },
       }
@@ -424,30 +429,39 @@
       active="{{TAB.active}}"
     ></tab-bar>
     <div class="order-row-box flex-1 padding-1 bk-e v-scroll">
-      <order-row class="bk-f8 flex radius box-ccc" order="order" ng-repeat="order in list|filter:TAB.filter track by $index"></order-row>
+      <div class="" ng-repeat="order in list|filter:TAB.filter track by $index">
+        <div class="padding-2 b-900 em-15 text-running" order="order" ng-if="order.showLast=='月'">{{order['t_order']|amDateFormat:'YYYY年MM月'}}</div>
+        <order-row class="bk-f8 flex radius box-ccc" order="order"></order-row>
+      </div>
     </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
+    controller: ["$scope", "$http", "$q", "$element", "DjRouter", "DjState", function ctrl($scope, $http, $q, $element, DjRouter, DjState) {
+      var tab = DjRouter.$search.tab;
+      var TAB_LIST = [
+        { text: "全部", filter: "" },
+        { text: "待发货", filter: { status: "待发货" } },
+        { text: "待收货", filter: { status: "待收货" } },
+        { text: "完成", filter: { status: "完成" } },
+      ];
       $element.addClass("flex-v flex-1");
 
       var TAB = $scope.TAB = {
-        list: [
-          { text: "全部", filter: "" },
-          { text: "待发货", filter: { status: "待发货" } },
-          { text: "待收货", filter: { status: "待收货" } },
-          { text: "完成", filter: { status: "完成" } },
-        ],
-        active: 0,
-        filter: "",
+        list: TAB_LIST,
+        active: tab || 0,
+        filter: tab && TAB_LIST[tab] && TAB_LIST[tab].filter || "",
         change: (index, name) => {
-          if (!TAB.list[index]) return;
+          if (!TAB_LIST[index]) return;
           TAB.active = index;
-          TAB.filter = TAB.list[index].filter;
+          TAB.filter = TAB_LIST[index].filter;
         },
       }
 
       $http.post("我的订单列表").then(json => {
-        $scope.list = json.datas.orders;
-
+        $scope.list = json.datas.orders.sort((a, b) => b['t_order'].compUseNumber(a['t_order']));
+        $scope.list.map((order, i) => {
+          if (!i || order['t_order'].substr(0, 7) != $scope.list[i - 1]['t_order'].substr(0, 7)) {
+            order.showLast = "月";
+          }
+        })
       }).catch(e => console.error(e));
 
       $scope.icons = [
@@ -468,7 +482,69 @@
     pageCss: "bk-f8",
     header: { hide: true },
     footer: { hide: true },
-    template: `
+    template: function () {
+      if (angular.isPC) return `
+    <div class="flex header xp-warning padding-1">
+      <div class="flex-1 flex-left padding-1">
+        <div class="padding-1 em-15 b-900">订单管理(PC界面)</div>
+      </div>
+      <div class="flex">
+        <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
+          <i class="fa fa-{{icon.fa}}"></i>
+        </div>
+      </div>
+    </div>
+    <tab-bar class="text-c bb-ccc" list="TAB.list"
+      tab-click="TAB.click($n, item)"
+      change="TAB.change($n, item)"
+      active="{{TAB.active}}"
+    ></tab-bar>
+    <div class="order-row-box flex-center padding-1">
+      <table class="border-cc order-admin">
+        <tr class="title">
+          <td class="center b-900">序号</td>
+          <td class="center b-900">订单号</td>
+          <td class="center b-900">下单日期</td>
+          <td class="center b-900">用户</td>
+          <td class="center b-900">地址</td>
+          <td class="center b-900">列表</td>
+          <td class="center b-900">总金额</td>
+          <td class="center b-900">状态</td>
+          <td class="center b-900">操作</td>
+        </tr>
+        <tr class="item" ng-repeat="order in list|filter:TAB.filter track by $index">
+          <td class="center padding-1">{{$index+1}}</td>
+          <td class="center padding-1">{{order.id}}</td>
+          <td class="center padding-1">{{order.t_order|amDateFormat:'YYYY-MM-DD'}}</td>
+          <td class="center padding-1">{{order.uid}}</td>
+          <td class="padding-1">
+            <div class="flex-5 w-em20">{{order.reciever.location}} {{order.reciever.detail}}</div>
+            <div class="flex">
+              <div class="flex-1 text-primary">{{order.reciever.name}}</div>
+              <div class="text-active">{{order.reciever.mobile}}</div>
+            </div>
+          </td>
+          <td class="padding-1">
+            <div class="v-scroll ">
+              <div class="flex" ng-repeat="row in order.list track by $index">
+                <div class="flex-5">{{goods[row.code].attr.value['名称']}}　</div>
+                <div class="">{{row.price|number:2}} × {{row.n}}</div>
+              </div>
+            </div>
+          </td>
+          <td class="right padding-h-1">{{order.totle|number:2}}</td>
+          <td class="center padding-1">{{order.status}}</td>
+          <td>
+            <div class="flex order-btns">
+              <div class="box-warning" ng-if="order.status=='待发货'" ng-click="order_send(order)">发货</div>
+              <div class="box-primary" ng-if="order.status=='待收货'" ng-click="order_unsend(order)">退回发货</div>
+              <div class="box-primary" ng-if="order.status=='待收货'" ng-click="order_file(order)">完成</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>`;
+      else return `
     <div class="flex header xp-warning padding-1">
       <div class="flex-1 flex-left padding-1">
         <div class="padding-1 em-15 b-900">订单管理</div>
@@ -486,7 +562,8 @@
     ></tab-bar>
     <div class="order-row-box flex-1 padding-1 bk-e v-scroll">
       <order-row class="bk-f8 flex radius box-ccc" order="order" ng-repeat="order in list|filter:TAB.filter track by $index"></order-row>
-    </div>`,
+    </div>`;
+    },
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
 
@@ -494,7 +571,7 @@
         list: [
           { text: "全部", filter: "" },
           { text: "待发货", filter: { status: "待发货" } },
-          { text: "待收货", filter: { status: "待收货" } },
+          { text: "已发货", filter: { status: "待收货" } },
           { text: "完成", filter: { status: "完成" } },
         ],
         active: 0,
@@ -507,9 +584,30 @@
       }
 
       $http.post("order_admin/order_list").then(json => {
-        $scope.list = json.datas.orders;
-
+        $scope.list = json.datas.orders.sort((a, b) => b['t_order'].compUseNumber(a['t_order']));
+        console.log("$scope.list=", $scope.list)
       }).catch(e => console.error(e));
+
+      $http.post("店铺商品列表", 8008001).then(json => {
+        $scope.goods = {};
+        json.datas.goods.map(item => $scope.goods[item.id] = item);
+      }).catch(e => console.error(e));
+
+      $scope.order_send = order => {
+        $http.post("order_admin/order_send", { id: order.id }).then(json => {
+          order.status = "待收货";
+        }).catch(e => console.error(e));
+      }
+      $scope.order_unsend = order => {
+        $http.post("order_admin/order_unsend", { id: order.id }).then(json => {
+          order.status = "待发货";
+        }).catch(e => console.error(e));
+      }
+      $scope.order_file = order => {
+        $http.post("order_admin/order_file", { id: order.id }).then(json => {
+          order.status = "完成";
+        }).catch(e => console.error(e));
+      }
 
 
 

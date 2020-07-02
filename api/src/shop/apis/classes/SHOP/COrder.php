@@ -11,10 +11,10 @@ class COrder
   /**
    * 已上架的商品列表
    */
-  public static function orders($AND)
+  public static function orders($AND, $fields = ['id', 'totle', 'reciever', 't_file', 't_send', 't_order'])
   {
     $db = CDbBase::db();
-    $db_order_list = $db->select(CDbBase::table('buyer_order_list'), ['id', 'totle', 'reciever', 't_file', 't_send', 't_order'], ['AND' => $AND]);
+    $db_order_list = $db->select(CDbBase::table('buyer_order_list'), $fields, ['AND' => $AND]);
     if (!is_array($db_order_list)) {
       return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "订单不存在");
     }
@@ -29,7 +29,8 @@ class COrder
     $orders = [];
     foreach ($db_order_list as $row) {
       $row['list'] = [];
-      $row['status'] = $row['t_file'] ? '完成' : $row['t_send'] ? '待收货' : '待发货';
+      $row['reciever'] = json_decode($row['reciever'], true);
+      $row['status'] = $row['t_file'] ? '完成' : ($row['t_send'] ? '待收货' : '待发货');
       $orders[$row['id']] = $row;
     }
     foreach ($db_order_items as $row) {
@@ -46,30 +47,30 @@ class COrder
   }
 
   /**
-   * 商品分类
+   * 发货
    */
-  public static function goods_groups()
+  public static function order_send($order_id)
   {
     $db = CDbBase::db();
-    /* 分类 */
-    $db_group_rows = $db->select(CDbBase::table('shop_res_index'), ['id', 'name', 'v1', 'v2', 'status'], ['AND' => [
-      'type' => '商品分类',
-    ]]);
-    $groups = [];
-    foreach ($db_group_rows as $row) {
-      $groups[] = [
-        'id' => $row['id'],
-        'status' => $row['status'],
-        'attr' => [
-          'value' => [
-            'name' => $row['name'],
-            'v1' => $row['v1'],
-            'v2' => $row['v2'],
-            'v3' => $row['v3'],
-          ]
-        ],
-      ];
-    }
-    return $groups;
+    $n = $db->update(CDbBase::table('buyer_order_list'), ['t_send' => date('Y-m-d H:i:s')], ['AND' => ['id' => $order_id, 't_send[<]' => '1999-12']]);
+    \DJApi\API::debug(["n" => $n, 'DB' => $db->getShow()]);
+    if (!$n) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "订单不存在, 或发货失败");
+    return \DJApi\API::OK(['n' => 1]);
+  }
+  public static function order_unsend($order_id)
+  {
+    $db = CDbBase::db();
+    $n = $db->update(CDbBase::table('buyer_order_list'), ['t_send' => ''], ['AND' => ['id' => $order_id, 't_file[<]' => '1999-12', 't_send[>]' => '1999-12']]);
+    \DJApi\API::debug(["n" => $n, 'DB' => $db->getShow()]);
+    if (!$n) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "订单不存在, 或退回发货失败");
+    return \DJApi\API::OK(['n' => 1]);
+  }
+  public static function order_file($order_id)
+  {
+    $db = CDbBase::db();
+    $n = $db->update(CDbBase::table('buyer_order_list'), ['t_file' => date('Y-m-d H:i:s')], ['AND' => ['id' => $order_id, 't_file[<]' => '1999-12', 't_send[>]' => '1999-12']]);
+    \DJApi\API::debug(["n" => $n, 'DB' => $db->getShow()]);
+    if (!$n) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "订单不存在, 或退回发货失败");
+    return \DJApi\API::OK(['n' => 1]);
   }
 }
