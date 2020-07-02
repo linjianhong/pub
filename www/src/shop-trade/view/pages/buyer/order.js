@@ -10,7 +10,7 @@
           <div class="text-info">订单号：{{order['id']}}</div>
           <div class="text-8">{{order['t_order']}}</div>
         </div>
-        <div class="">
+        <div class="bk-f">
           <div class="bb-ccc padding-1 flex" ng-repeat="row in order.list track by $index">
             <div class="" ng-init="values=goods[row.code].attr.value">
               <div class="em-15 b-900">{{goods[row.code].attr.value['名称']}}</div>
@@ -50,7 +50,7 @@
       $http.post("店铺商品列表", 8008001).then(json => {
         $scope.goods = {};
         json.datas.goods.map(item => $scope.goods[item.id] = item);
-        console.log("$scope.goods=",$scope.goods)
+        console.log("$scope.goods=", $scope.goods)
       }).catch(e => console.error(e));
 
     }]

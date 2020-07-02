@@ -7,7 +7,7 @@
     pageCss: "bk-d",
     footer: { hide: true },
     template: `
-      <my-info-row class="info-rows" mode="me" ng-if="groups"></my-info-row>
+      <my-info-row class="info-rows" mode="me"></my-info-row>
       <quick-menu></quick-menu>`,
     controller: ["$scope", "$http", "DjState", "$q", function ctrl($scope, $http, DjState, $q) {
     }]

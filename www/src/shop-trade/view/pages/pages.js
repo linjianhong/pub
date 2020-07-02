@@ -265,7 +265,7 @@
       }).catch(e => console.error(e));
 
       $scope.icons = [
-        { css: "text-e", fa: "home", text: "我的", click: () => { DjState.go("my", {}); } },
+        { css: "text-e", fa: "user", text: "我的", click: () => { DjState.go("my", {}); } },
       ];
     }]
   });
@@ -404,13 +404,18 @@
     pageTitle: "我的订单列表",
     requireLogin: false,
     autoDestroy: true,
-    pageCss: "bk-e",
+    pageCss: "bk-f8",
     header: { hide: true },
     footer: { hide: true },
     template: `
     <div class="flex header xp-warning padding-1">
-      <div class="flex-1 flex-cc padding-1">
+      <div class="flex-1 flex-left padding-1">
         <div class="padding-1 em-15">我的订单</div>
+      </div>
+      <div class="flex">
+        <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
+          <i class="fa fa-{{icon.fa}}"></i>
+        </div>
       </div>
     </div>
     <tab-bar class="text-c bb-ccc" list="TAB.list"
@@ -418,8 +423,8 @@
       change="TAB.change($n, item)"
       active="{{TAB.active}}"
     ></tab-bar>
-    <div class="flex-1 padding-1 bk-e v-scroll">
-      <order-row class="bk-f flex radius box-ccc" order="order" ng-repeat="order in list track by $index"></order-row>
+    <div class="order-row-box flex-1 padding-1 bk-e v-scroll">
+      <order-row class="bk-f8 flex radius box-ccc" order="order" ng-repeat="order in list|filter:TAB.filter track by $index"></order-row>
     </div>`,
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
@@ -431,7 +436,8 @@
           { text: "待收货", filter: { status: "待收货" } },
           { text: "完成", filter: { status: "完成" } },
         ],
-        active: 2,
+        active: 0,
+        filter: "",
         change: (index, name) => {
           if (!TAB.list[index]) return;
           TAB.active = index;
@@ -439,20 +445,81 @@
         },
       }
 
-      var D = $scope.D = {
+      $http.post("我的订单列表").then(json => {
+        $scope.list = json.datas.orders;
+
+      }).catch(e => console.error(e));
+
+      $scope.icons = [
+        { css: "text-e", fa: "home", text: "商城首页", click: () => { DjState.go("home", {}); } },
+        { css: "text-e", fa: "user", text: "我的", click: () => { DjState.go("my", {}); } },
+      ];
+
+    }]
+  });
+
+
+
+  /** 订单管理 */
+  theModule.component("pageOrderAdmin", {
+    pageTitle: "订单管理",
+    requireLogin: false,
+    autoDestroy: true,
+    pageCss: "bk-f8",
+    header: { hide: true },
+    footer: { hide: true },
+    template: `
+    <div class="flex header xp-warning padding-1">
+      <div class="flex-1 flex-left padding-1">
+        <div class="padding-1 em-15 b-900">订单管理</div>
+      </div>
+      <div class="flex">
+        <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
+          <i class="fa fa-{{icon.fa}}"></i>
+        </div>
+      </div>
+    </div>
+    <tab-bar class="text-c bb-ccc" list="TAB.list"
+      tab-click="TAB.click($n, item)"
+      change="TAB.change($n, item)"
+      active="{{TAB.active}}"
+    ></tab-bar>
+    <div class="order-row-box flex-1 padding-1 bk-e v-scroll">
+      <order-row class="bk-f8 flex radius box-ccc" order="order" ng-repeat="order in list|filter:TAB.filter track by $index"></order-row>
+    </div>`,
+    controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
+      $element.addClass("flex-v flex-1");
+
+      var TAB = $scope.TAB = {
+        list: [
+          { text: "全部", filter: "" },
+          { text: "待发货", filter: { status: "待发货" } },
+          { text: "待收货", filter: { status: "待收货" } },
+          { text: "完成", filter: { status: "完成" } },
+        ],
+        active: 0,
+        filter: "",
+        change: (index, name) => {
+          if (!TAB.list[index]) return;
+          TAB.active = index;
+          TAB.filter = TAB.list[index].filter;
+        },
       }
 
-
-      $http.post("我的订单列表").then(json => {
+      $http.post("order_admin/order_list").then(json => {
         $scope.list = json.datas.orders;
 
       }).catch(e => console.error(e));
 
 
 
+      $scope.icons = [
+        { css: "text-e", fa: "home", text: "商城首页", click: () => { DjState.go("home", {}); } },
+        { css: "text-e", fa: "user", text: "我的", click: () => { DjState.go("my", {}); } },
+      ];
+
     }]
   });
-
 
 
 })(angular, window);

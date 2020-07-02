@@ -15,7 +15,7 @@
       </div>`,
     controller: ["$scope", "$http", "$q", "DjState", function ctrl($scope, $http, $q, DjState) {
 
-      $scope.otherPowerFa = { "商城菜单": "bank", "商城系统权限": "cogs" };
+      $scope.otherPowerFa = { "商城菜单": "bank", "商城管理": "cogs" };
       var otherPowerNames = $scope.otherPowerNames = Object.keys($scope.otherPowerFa);
       var otherPower = $scope.otherPower = {};
 

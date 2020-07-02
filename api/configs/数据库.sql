@@ -25,6 +25,17 @@ create table if not exists `shop_user`
   unique key `id` (`id`)
 )default charset=utf8;
 
+create table if not exists `shop_role`
+(
+  `id`          int(11)  not null auto_increment COMMENT 'id',
+  `name`        varchar(16) COMMENT '角色名称',
+  `attr`        text  COMMENT  '其它数据',
+  `t1`          varchar(32) DEFAULT '' COMMENT  '时间1, 生效时间',
+  `t2`          varchar(32) DEFAULT '' COMMENT  '时间2, 失效时间',
+  primary key (`id`),
+  unique key `id` (`id`)
+)default charset=utf8;
+
 
 
 create table if not exists `shop_res_index`
@@ -83,7 +94,7 @@ create table if not exists `buyer_order_list` (
   `why_return`     varchar(256) DEFAULT '' COMMENT '退货原因',
   `attr`           text  COMMENT '有关数据',
   primary key (`id`)
-) AUTO_INCREMENT=16126618 DEFAULT CHARSET=utf8;
+) AUTO_INCREMENT=20896618 DEFAULT CHARSET=utf8;
 
 -- 订单的商品列表
 -- drop table if exists `buyer_order_item`;

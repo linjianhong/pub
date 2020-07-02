@@ -69,19 +69,25 @@
       },
 
       "商城菜单-我的订单": {
-        fa: "folder",
-        color: "#088",
+        fa: "list-alt",
+        color: "#f80",
         text: "我的订单",
         t3: { text: "商城首页" },
         state: "my-order-list"
       },
 
-      "商城菜单-订单处理": {
-        fa: "folder",
+      "商城管理-订单管理": {
+        fa: "send",
         color: "#088",
-        text: "订单处理",
-        t3: { text: "商城首页" },
-        state: "goods-group"
+        text: "订单管理",
+        state: "order-admin"
+      },
+
+      "商城管理-订单统计": {
+        fa: "bar-chart",
+        color: "#038",
+        text: "订单统计",
+        state: "order-query"
       },
     }
 
