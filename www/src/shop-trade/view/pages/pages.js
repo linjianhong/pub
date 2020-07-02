@@ -282,30 +282,30 @@
     template: `
     <address-select class="margin-1" on-change="D.setAddress($value)" radius="radius-em1"></address-select>
     <div class="flex-1 v-scroll padding-1">
-        <div class="flex bb-ccc bk-f" ng-repeat="item in list track by $index">
-          <div class="flex-v flex-1 padding-2">
-            <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
-            <div class="flex-left">
-              <div class="goods-tag" ng-if="item.item.attr.value['重量']">{{item.item.attr.value['重量']}}</div>
-              <div class="goods-tag" ng-if="item.item.attr.value['标签1']">{{item.item.attr.value['标签1']}}</div>
-              <div class="goods-tag" ng-if="item.item.attr.value['标签2']">{{item.item.attr.value['标签2']}}</div>
-              <div class="goods-tag" ng-if="item.item.attr.value['标签3']">{{item.item.attr.value['标签3']}}</div>
-            </div>
-            <div class="text-warning em-15 b-900" ng-if="item.item.attr.value['price1']">¥ {{item.item.attr.value['price1']|number:2}}</div>
-            <div class="text-stop em-12" ng-if="!item.item.attr.value['price1']">时价</div>
+      <div class="flex bb-ccc bk-f" ng-repeat="item in list track by $index">
+        <div class="flex-v flex-1 padding-2">
+          <div class="em-15 b-900">{{item.item.attr.value['名称']}}</div>
+          <div class="flex-left">
+            <div class="goods-tag" ng-if="item.item.attr.value['重量']">{{item.item.attr.value['重量']}}</div>
+            <div class="goods-tag" ng-if="item.item.attr.value['标签1']">{{item.item.attr.value['标签1']}}</div>
+            <div class="goods-tag" ng-if="item.item.attr.value['标签2']">{{item.item.attr.value['标签2']}}</div>
+            <div class="goods-tag" ng-if="item.item.attr.value['标签3']">{{item.item.attr.value['标签3']}}</div>
           </div>
-          <div class="flex flex-v-center shrink0 input-spin em-15">
-            <div class="text-a em-15" ng-if="item.item.n">
-              <div ng-click="D.dec(item.item,1)"><i class="text-c fa fa-minus-square-o"></i></div>
-              <div ng-click="D.dec(item.item,10)"><i class="text-6 fa fa-minus-square-o"></i></div>
-            </div>
-            <div class="n padding-h-2" >{{item.item.n||''}}</div>
-            <div class="text-info em-15">
-              <div ng-click="D.add(item.item,1)"><i class="fa fa-plus-square"></i></div>
-              <div ng-click="D.add(item.item,10)"><i class=" text-warning fa fa-plus-square"></i></div>
-            </div>
+          <div class="text-warning em-15 b-900" ng-if="item.item.attr.value['price1']">¥ {{item.item.attr.value['price1']|number:2}}</div>
+          <div class="text-stop em-12" ng-if="!item.item.attr.value['price1']">时价</div>
+        </div>
+        <div class="flex flex-v-center shrink0 input-spin em-15">
+          <div class="text-a em-15" ng-if="item.item.n">
+            <div ng-click="D.dec(item.item,1)"><i class="text-c fa fa-minus-square-o"></i></div>
+            <div ng-click="D.dec(item.item,10)"><i class="text-6 fa fa-minus-square-o"></i></div>
+          </div>
+          <div class="n padding-h-2" >{{item.item.n||''}}</div>
+          <div class="text-info em-15">
+            <div ng-click="D.add(item.item,1)"><i class="fa fa-plus-square"></i></div>
+            <div ng-click="D.add(item.item,10)"><i class=" text-warning fa fa-plus-square"></i></div>
           </div>
         </div>
+      </div>
     </div>
     <div class="flex flex-stretch bt-ccc">
       <div class="padding-1 flex-v flex-cc br-ccc">
@@ -390,6 +390,61 @@
 
           console.log("list=", $scope.list)
         });
+
+      }).catch(e => console.error(e));
+
+
+
+    }]
+  });
+
+
+  /** 我的订单列表 */
+  theModule.component("pageMyOrderList", {
+    pageTitle: "我的订单列表",
+    requireLogin: false,
+    autoDestroy: true,
+    pageCss: "bk-e",
+    header: { hide: true },
+    footer: { hide: true },
+    template: `
+    <div class="flex header xp-warning padding-1">
+      <div class="flex-1 flex-cc padding-1">
+        <div class="padding-1 em-15">我的订单</div>
+      </div>
+    </div>
+    <tab-bar class="text-c bb-ccc" list="TAB.list"
+      tab-click="TAB.click($n, item)"
+      change="TAB.change($n, item)"
+      active="{{TAB.active}}"
+    ></tab-bar>
+    <div class="flex-1 padding-1 bk-e v-scroll">
+      <order-row class="bk-f flex radius box-ccc" order="order" ng-repeat="order in list track by $index"></order-row>
+    </div>`,
+    controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
+      $element.addClass("flex-v flex-1");
+
+      var TAB = $scope.TAB = {
+        list: [
+          { text: "全部", filter: "" },
+          { text: "待发货", filter: { status: "待发货" } },
+          { text: "待收货", filter: { status: "待收货" } },
+          { text: "完成", filter: { status: "完成" } },
+        ],
+        active: 2,
+        change: (index, name) => {
+          if (!TAB.list[index]) return;
+          TAB.active = index;
+          TAB.filter = TAB.list[index].filter;
+        },
+      }
+
+      var D = $scope.D = {
+      }
+
+
+      $http.post("我的订单列表").then(json => {
+        $scope.list = json.datas.orders;
 
       }).catch(e => console.error(e));
 

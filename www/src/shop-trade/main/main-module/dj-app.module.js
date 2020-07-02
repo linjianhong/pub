@@ -17,6 +17,7 @@
     "mock",
 
     "dform",
+    "shop",
   ])
 
 

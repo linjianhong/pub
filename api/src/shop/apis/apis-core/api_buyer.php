@@ -351,6 +351,44 @@ class class_buyer
 
 
   /**
+   * 接口： buyer/my_order_list
+   * 订单详情
+   * @return {list:[id]}
+   */
+  public static function my_order_list($query, $verifyData)
+  {
+    $uid = $verifyData['uid'];
+
+    $db = \MyClass\CDbBase::db();
+    $db_order_list = $db->select(CDbBase::table('buyer_order_list'), '*', ['uid' => $uid]);
+    if (!is_array($db_order_list)) {
+      return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "订单不存在");
+    }
+    $order_ids = [];
+    foreach ($db_order_list as $row) {
+      $order_ids[] = $row['id'];
+    }
+    \DJApi\API::debug(["db_order_list" => $db_order_list, 'order_ids' => $order_ids, 'DB' => $db->getShow()]);
+    $db_order_items = $db->select(CDbBase::table('buyer_order_item'), '*',  ['order_id' => $order_ids]);
+    \DJApi\API::debug(["items" => $db_order_items, 'order_ids' => $order_ids, 'DB' => $db->getShow()]);
+
+    $orders = [];
+    foreach ($db_order_list as $row) {
+      $row['list'] = [];
+      $orders[$row['id']] = $row;
+    }
+    foreach ($db_order_items as $row) {
+      $order_id = $row['order_id'];
+      $orders[$order_id]['list'][] = $row;
+    }
+
+    return \DJApi\API::OK([
+      'orders' => array_values($orders),
+    ]);
+  }
+
+
+  /**
    * 接口： buyer/check_order_pay
    * 查询订单支付情况
    * @return {list:[id]}

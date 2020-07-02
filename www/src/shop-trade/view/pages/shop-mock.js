@@ -2,7 +2,24 @@
 !(function (angular, window, undefined) {
 
   angular.module("dj.router.frame").run(["sign", "$http", function (sign, $http) {
-    /**  */
+
+    /** 我的订单列表 */
+    sign.registerHttpHook({
+      match: /^我的订单列表$/,
+      hookRequest: function (config, mockResponse, match) {
+        var ajax = $http.post("buyer/my_order_list", {}).then(json => {
+          json.datas.orders.map(item => {
+            item.list = item.list || [];
+          });
+          return json
+        });
+
+        return mockResponse(ajax);
+      }
+    });
+
+
+    /** 店铺商品列表 */
     sign.registerHttpHook({
       match: /^店铺商品列表$/,
       hookRequest: function (config, mockResponse, match) {
@@ -19,7 +36,7 @@
       }
     });
 
-    /**  */
+    /** 店铺用户 */
     var DEFAULT_HEAD_IMG = "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png";
     var DEFAULT_USERNAME = "游客";
     sign.registerHttpHook({

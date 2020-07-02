@@ -21,15 +21,6 @@
         state: "my-info-edit"
       },
 
-      "pre-order": {
-        fa: "list",
-        color: "#880",
-        text: "我的订单",
-        t2: { text: "尚无" },
-        t3: { text: "尚无数据" },
-        state: "pre-order-list"
-      },
-
 
       "mobile": {
         fa: "mobile",
@@ -82,15 +73,7 @@
         color: "#088",
         text: "我的订单",
         t3: { text: "商城首页" },
-        state: "home"
-      },
-
-      "商城菜单-地址设置": {
-        fa: "folder",
-        color: "#088",
-        text: "地址设置",
-        t3: { text: "商城首页" },
-        state: "goods-group"
+        state: "my-order-list"
       },
 
       "商城菜单-订单处理": {
