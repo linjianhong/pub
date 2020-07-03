@@ -1,2 +1,4 @@
-.form-power dform-tags .dform-tags-item { color: #ccc;}
-.form-power dform-tags .dform-tags-item.selected { color: #000;}
+.btns>* {
+  padding: .5em 1em;
+  margin: .3em;
+}

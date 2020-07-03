@@ -1,10 +1,10 @@
 /* 编辑用户 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageAdminUserEdit", {
+  angular.module("dj.router.frame").component("pageAdminRoleEdit", {
     pageTitle: (newPage, $q, $http) => {
       var search = newPage.state.search;
-      return $q.when(`编辑用户 - ${search.stock_uid || ''}`);
+      return $q.when(`编辑角色 - ${search.stock_uid || ''}`);
     },
     requireLogin: true,
     pageCss: "bk-d",

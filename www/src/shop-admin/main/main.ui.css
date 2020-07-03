@@ -182,3 +182,14 @@ dj-form.my-form>dj-form-item-host.mode-edit>*>.b {
 .page-btn-fixed.rt,
 .page-btn-fixed.rt1 { top: 10px; right: 10px; }
 .page-btn-fixed.rt2 { top: 10px; right: 50px; }
+
+
+input.good-style{
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  font-size: inherit;
+  color: inherit;
+  padding:.5em;
+  line-height: 1.47058824;
+}

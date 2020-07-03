@@ -7,6 +7,8 @@ use SQL\CBackup;
 
 class class_admin
 {
+  public static $TABLE_ROLE = "shop_role";
+  public static $TABLE_USER = "shop_user";
   /**
    * 统一入口，要求登录, 要求登录
    */
@@ -25,6 +27,78 @@ class class_admin
     }
     return self::$call($request->query, $verify['datas']);
   }
+
+
+
+
+  /**
+   * 接口： admin/role_list
+   * 列表角色
+   */
+  public static function role_list($query, $verifyData)
+  {
+    $db = CDbBase::db();
+    $db_roles = $db->select(CDbBase::table(self::$TABLE_ROLE), '*');
+    $roles = [];
+    foreach ($db_roles as $db_role) {
+      $db_role['attr'] = json_decode($db_role['attr'], true);
+      $roles[] = $db_role;
+    }
+    return \DJApi\API::OK([
+      "roles" => $roles,
+      "powers" => \APP\CUser::$POWER_DEFINE,
+    ]);
+  }
+
+
+  /**
+   * 接口： admin/role_create
+   * 创建角色
+   */
+  public static function role_create($query, $verifyData)
+  {
+    $db = CDbBase::db();
+    $datas = ['t1' => date('Y-m-d H:i:s')];
+    $insert_id = $db->insert(CDbBase::table(self::$TABLE_ROLE), $datas);
+    $datas['id'] = $insert_id;
+    return \DJApi\API::OK(["role" => $datas]);
+  }
+
+
+  /**
+   * 接口： admin/role_update
+   * 更新角色
+   */
+  public static function role_update($query, $verifyData)
+  {
+    $id = $query['id'];
+    $name = $query['name'];
+    $powers = $query['powers'];
+    $db = CDbBase::db();
+    $db_row = $db->get(CDbBase::table(self::$TABLE_ROLE), ['attr'], ['id' => $id]);
+    if (!is_array($db_row)) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "角色不存在");
+    $attr = json_decode($db_row['attr'], true);
+    foreach ($powers as $group => $arr) {
+      if (!is_array($attr['powers'][$group])) $attr['powers'][$group] = [];
+      $attr['powers'][$group] = array_values(array_unique(array_merge($attr['powers'][$group], $arr)));
+    }
+    $datas = [
+      'name' => $name,
+      'attr' => \DJApi\API::cn_json($attr),
+    ];
+    $n = $db->update(CDbBase::table(self::$TABLE_ROLE), $datas, ['id' => $id]);
+    return \DJApi\API::OK(["n" => $n]);
+  }
+
+
+
+
+
+
+
+
+
+
 
 
   /**

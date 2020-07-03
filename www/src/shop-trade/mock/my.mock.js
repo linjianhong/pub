@@ -17,5 +17,9 @@
     });
   }]);
 
+  $http.post("用户登录/等待登录成功").then(tokenData => {
+    $http.post("app/verify_token");
+  });
+
 
 })(angular, window);
