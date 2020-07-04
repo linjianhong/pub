@@ -29,7 +29,7 @@ class class_shop
   {
     $user = new \APP\CUser($verifyData['uid']);
     $power = $user->power();
-    return \DJApi\API::OK(["power" => $power,"user" => $user]);
+    return \DJApi\API::OK(["power" => $power, "user" => $user]);
   }
 
 
@@ -81,6 +81,6 @@ class class_shop
       $wx = $wxInfo[0];
     }
 
-    return \DJApi\API::OK(['wx' => $wx, 'power' => $power, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
+    return \DJApi\API::OK(['uid' => $uid, 'wx' => $wx, 'power' => $power, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
   }
 }

@@ -35,6 +35,7 @@
 
           $q.when(ajaxMe).then(me => {
 
+            $scope.myInfo.t2 = { text: me.uid ,css:"em-12 b-900"};
             if (me.mobile) {
               $scope.mobile = me.mobile;
               $scope.mobileHide = $scope.mobile;
