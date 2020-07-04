@@ -86,7 +86,7 @@
       "商城管理-订单统计": {
         fa: "bar-chart",
         color: "#038",
-        text: "订单统计",
+        text: "订单--------统计",
         state: "order-query"
       },
     }

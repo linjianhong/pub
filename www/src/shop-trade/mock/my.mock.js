@@ -15,11 +15,11 @@
         return mockResponse($http.post("缓存请求", post));
       }
     });
-  }]);
 
-  $http.post("用户登录/等待登录成功").then(tokenData => {
-    $http.post("app/verify_token");
-  });
+    $http.post("用户登录/等待登录成功").then(tokenData => {
+      $http.post("app/verify_token");
+    });
+  }]);
 
 
 })(angular, window);

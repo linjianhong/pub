@@ -28,16 +28,10 @@
 
       var ajax_iconRows = $http.post("my-dick").then(dick => Object.keys(dick.iconRows).map(k => dick.iconRows[k]))
 
-      ajax_power.then(power => {
-
-        console.log("power=", power, "otherPowerNames=", otherPowerNames,);
-
+      ajax_power.then(powers => {
         ajax_iconRows.then(iconRows => {
-
-          console.log("iconRows=", iconRows, "otherPowerNames=", otherPowerNames,);
-
           otherPowerNames.map(otherPowerName => {
-            var myPower = power[otherPowerName] || [];
+            var myPower = (powers.find(power => power.name == otherPowerName) || {}).list || [];
             otherPower[otherPowerName] = myPower.map(item => iconRows.find(iconRow => iconRow.text == item)).filter(item => item && !item.poweronly).map(iconRow => {
               return {
                 text: iconRow.text,
@@ -49,7 +43,6 @@
               };
             })
           });
-
         });
       }).catch(e => {
         $scope.user = {};

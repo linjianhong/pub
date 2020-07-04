@@ -29,24 +29,10 @@ class class_user
   public static function info($query, $verifyData)
   {
     $uid = $verifyData['uid'];
-    $R = [];
-
-    // 仓储系统用户信息
-    $stock_user_row = \MyClass\CStockUser::stock_userinfo($uid);
-    $R['stock_userinfo'] = $stock_user_row;
-
-    // 微信信息
-    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid, 'appname' => 'xls']);
-    \DJApi\API::debug(['从独立服务器获取微信信息', 'json' => $wxInfoJson, 'SERVER_API_ROOT' => SERVER_API_ROOT,  'uid' => $uid]);
-    if (\DJApi\API::isOk($wxInfoJson)) {
-      $wxInfo = $wxInfoJson['datas']['list'];
-      $R["wx"] = $wxInfo[0];
-    }
-
-    $power = \MyClass\CStockUser::get_my_power($verifyData);
-    $R["power"] = $power;
-    // 返回
-    return \DJApi\API::OK($R);
+    $user = new \APP\CUser($uid);
+    $user_row = $user->row;
+    $wx = $user->wx();
+    return \DJApi\API::OK(['uid' => $uid, 'wx' => $wx, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
   }
 
   /**
@@ -58,24 +44,9 @@ class class_user
   public static function uid2name($query, $verifyData)
   {
     $uid = $query['uid'];
-    $db = \MyClass\CDbBase::db();
-    $attr = $db->get(\MyClass\CDbBase::table('stock_user_bind'), "attr", ['uid' => $uid]);
-    $attr = json_decode($attr, true);
+    $user = new \APP\CUser($uid);
     // 返回
-    return \DJApi\API::OK($attr['name']);
+    return \DJApi\API::OK($user->row['attr']['name']);
   }
 
-  /**
-   * 接口： user/uid2name
-   * 读取自己的微信等信息
-   *
-   * @return {me}
-   */
-  public static function stock_user($query, $verifyData)
-  {
-    $uid = $query['uid'];
-    $stock_user_row = \MyClass\CStockUser::stock_userinfo($uid);
-    // 返回
-    return \DJApi\API::OK($stock_user_row);
-  }
 }

@@ -6,11 +6,11 @@ use \MyClass\CDbBase;
 
 class CUser
 {
-  static $module = '仙龙山一物一码';
+  static $module = '简易商城';
   static $TABLE_USER = "shop_user";
   static $POWER_DEFINE = [
     ['name' => '基本权限', 'list' => ['商品上架', '分组配置',]],
-    ['name' => '系统权限', 'list' => ['用户管理', '备份数据']],
+    ['name' => '系统权限', 'list' => ['角色管理','用户管理', '备份数据']],
     ['name' => '商城权限', 'list' => ['售前', '售后', '订单处理']],
     ['name' => '商城菜单', 'list' => ['商城首页', '我的订单', '地址设置']],
     ['name' => '商城管理', 'list' => ['订单管理', '订单统计']],
@@ -27,102 +27,30 @@ class CUser
     $this->row['attr'] = json_decode($this->row['attr'], true);
   }
 
-
-  /**
-   * 用户权限 基本数据
-   */
-  public  function attr($k)
-  {
-    if (!$k) return $this->row['attr'];
-    return $this->row['attr'][$k];
-  }
-
-
-
-
   /**
    * 获取用户权限
    */
   public function power()
   {
-    $superadmin = $this->attr('superadmin');
-    if ($superadmin) {
-      $def = self::$POWER_DEFINE;
-      $power = [];
-      foreach ($def as $row) {
-        $power[$row['name']] = $row['list'];
-      }
-      return $power;
+    return \APP\CRoleRight::get_user_power($this->row['uid']);
+  }
+
+  /**
+   * 获取用户微信呢称头像等信息
+   */
+  public function wx()
+  {
+    $uid = $this->row['uid'];
+    $wx = [];
+    // 微信信息
+    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid, 'appname' => 'xls']);
+    \DJApi\API::debug(['从独立服务器获取微信信息', 'json' => $wxInfoJson, 'SERVER_API_ROOT' => SERVER_API_ROOT,  'uid' => $uid]);
+    if (\DJApi\API::isOk($wxInfoJson)) {
+      $wxInfo = $wxInfoJson['datas']['list'];
+      $wx = $wxInfo[0];
     }
-    return $this->attr('power');
+    return $wx;
   }
-
-
-  /**
-   * 用户权限 基本数据
-   */
-  public static function get_power_attr($uid)
-  {
-    $db = CDbBase::db();
-    $attr = $db->get(CDbBase::table(self::$TABLE_USER), 'attr', ['uid' => $uid]);
-    \DJApi\API::debug(['attr' => $attr, 'DB' => $db->getShow()]);
-    if (!$attr) return [];
-    $attr = json_decode($attr, true);
-    return $attr;
-  }
-
-
-  /**
-   * 获取用户权限
-   */
-  public static function baseinfo($uid)
-  {
-    $db = CDbBase::db();
-    $baseinfo = $db->get(CDbBase::table(self::$TABLE_USER), '*', ['uid' => $uid]);
-    \DJApi\API::debug(['baseinfo' => $baseinfo, 'DB' => $db->getShow()]);
-    if (!$baseinfo['uid']) return [];
-    $baseinfo['attr'] = json_decode($baseinfo['attr'], true);
-    return $baseinfo;
-  }
-
-
-  /**
-   * 获取用户权限
-   */
-  public static function get_user_power($uid)
-  {
-    $user = new \APP\CUser($uid);
-    $superadmin = $user->attr('superadmin');
-    if ($superadmin) {
-      $def = self::$POWER_DEFINE;
-      $power = [];
-      foreach ($def as $row) {
-        $power[$row['name']] = $row['list'];
-      }
-      return $power;
-    }
-    return $user->attr('power');
-  }
-
-  /**
-   * 判断用户权限
-   */
-  public static function hasPower($uid, $powerGroup, $powerName)
-  {
-    $attr = self::get_power_attr($uid);
-    return $attr['superadmin'] || in_array($powerName, $attr['power'][$powerGroup]);
-  }
-  public static function uidHasPower($uid, $powerGroup, $powerName)
-  {
-    $db = CDbBase::db();
-    $mobile = $db->get(CDbBase::table('shop_user_bind'), 'mobile', ['uid' => $uid]);
-    if (!$mobile) return [];
-    $attr = $db->get(CDbBase::table('shop_user'), 'attr', ['mobile' => $mobile]);
-    $attr = json_decode($attr, true);
-    return $attr['superadmin'] || in_array($powerName, $attr['power'][$powerGroup]);
-  }
-
-
 
   /**
    * 用户自行绑定手机号

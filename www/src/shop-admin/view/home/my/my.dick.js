@@ -124,19 +124,12 @@
         t3: { text: "添加或移除用户，管理用户权限" },
         state: "admin-user"
       },
-      "admin-user-create": {
-        fa: "user-plus",
-        color: "#806",
-        text: "添加用户",
-        t3: { text: "添加用户，在赋与权限和绑定手机后，可自动对应生效" },
-        state: "admin-user-create"
-      },
-      "admin-user-list": {
-        fa: "users",
-        color: "#33c",
-        text: "用户列表",
-        t3: { text: "添加或移除用户，管理用户权限" },
-        state: "admin-user-list"
+      "admin-role": {
+        fa: "user-secret",
+        color: "#386",
+        text: "角色管理",
+        t3: { text: "角色管理, 各用户根据角色，获得权限" },
+        state: "admin-role"
       },
 
       "商城后台-订单列表": {
@@ -148,7 +141,7 @@
       "商城后台-订单统计": {
         fa: "book",
         color: "#585",
-        text: "订单统计",
+        text: "订单--------统计",
         state: "query",
       },
 

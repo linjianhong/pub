@@ -27,9 +27,8 @@ class class_shop
    */
   public static function get_my_power($query, $verifyData)
   {
-    $user = new \APP\CUser($verifyData['uid']);
-    $power = $user->power();
-    return \DJApi\API::OK(["power" => $power, "user" => $user]);
+    $power = \APP\CRoleRight::get_user_power($verifyData['uid']);
+    return \DJApi\API::OK(["power" => $power]);
   }
 
 
@@ -40,22 +39,10 @@ class class_shop
    */
   public static function shop_goods($query, $verifyData)
   {
-    $uid = $verifyData['uid'];
-    $user = new \APP\CUser($uid);
-    $user_row = $user->row;
-
-    // 微信信息
-    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid, 'appname' => 'xls']);
-    \DJApi\API::debug(['从独立服务器获取微信信息', 'json' => $wxInfoJson, 'SERVER_API_ROOT' => SERVER_API_ROOT,  'uid' => $uid]);
-    if (\DJApi\API::isOk($wxInfoJson)) {
-      $wxInfo = $wxInfoJson['datas']['list'];
-      $user_row["wx"] = $wxInfo[0];
-    }
-
     /* 简单列表 */
     $goods = \SHOP\CShop::goods();
     $groups = \SHOP\CShop::goods_groups();
-    return \DJApi\API::OK(['goods' => $goods, 'groups' => $groups, 'user' => $user_row]);
+    return \DJApi\API::OK(['goods' => $goods, 'groups' => $groups]);
   }
 
 
@@ -70,17 +57,8 @@ class class_shop
     $uid = $verifyData['uid'];
     $user = new \APP\CUser($uid);
     $user_row = $user->row;
-    $power = $user->power();
-    $power = $power['商城权限'];
+    $wx = $user->wx();
 
-    // 微信信息
-    $wxInfoJson = \DJApi\API::post(SERVER_API_ROOT, "user/mix/wx_infos", ['uid' => $uid, 'appname' => 'xls']);
-    \DJApi\API::debug(['从独立服务器获取微信信息', 'json' => $wxInfoJson, 'SERVER_API_ROOT' => SERVER_API_ROOT,  'uid' => $uid]);
-    if (\DJApi\API::isOk($wxInfoJson)) {
-      $wxInfo = $wxInfoJson['datas']['list'];
-      $wx = $wxInfo[0];
-    }
-
-    return \DJApi\API::OK(['uid' => $uid, 'wx' => $wx, 'power' => $power, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
+    return \DJApi\API::OK(['uid' => $uid, 'wx' => $wx, 'mobile' => $user_row['mobile'], 'attr' => $user_row['attr']]);
   }
 }

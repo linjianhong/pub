@@ -21,17 +21,24 @@
           </div>
         </div>
       </div>
-      <div class="min-w-em60 flex-1 flex-v flex-left flex-stretch br-ccc bk-d padding-2 v-scroll">
-        <div class="padding-1" ng-if="R.active">
+      <div class="min-w-em60 flex-1 flex-v flex-left flex-stretch br-ccc bk-f padding-2 v-scroll">
+        <div class="padding-1 bk-e" ng-if="R.active">
           <div class="flex-left padding-1">
             <div class="padding-1 w-em6">用户名称</div>
-            <input class="w-em20 good-style radius" ng-model="R.editing.admin.name" ng-change="R.calcuNewValue()">
+            <input class="w-em20 good-style box-ccc radius" ng-model="R.editing.name" ng-change="R.calcuNewValue()">
           </div>
-          <div class="flex-left padding-1" ng-repeat="n in '12345'">
-            <div class="padding-1 w-em6">角色 {{n}}</div>
-            <input class="w-em20 good-style radius" ng-model="R.editing.admin['角色'+n]" ng-change="R.calcuNewValue()">
+          <div class="margin-2" ng-repeat="group in R.groups">
+            <div class="padding-h-1">{{group.name}}</div>
+            <div class="flex-wrap flex-left padding-1 box-ccc radius bk-f">
+              <div class="padding-2" ng-repeat="role in group.list track by $index" ng-click="R.toggle(group,role)">
+                <div class="flex {{role.b&&'text-0'||'text-c'}}">
+                  <i class="em-12 fa fa-{{role.b&&'check-'||''}}square-o"> </i>
+                  <div class="padding-h-1">{{role.name}}</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="btns flex-wrap flex-right padding-3">
+          <div class="btns flex-wrap flex-right padding-3 bt-ccc">
             <div class="{{R.dirty&&'box-primary'||'box-disabled'}} radius" ng-click="R.save()">保存</div>
           </div>
         </div>
@@ -56,6 +63,10 @@
     controller: ["$scope", "$http", "$element", "$timeout", "DjState", function ctrl($scope, $http, $element, $timeout, DjState) {
       $element.addClass("flex-v flex-1");
 
+      var ADMIN_KEYS = ["name", "自己角色", "管理角色"];
+      var TEXT_KEYS = ["name"];
+      var ROLE_KEYS = ["自己角色", "管理角色"];
+
       var R = $scope.R = {
         text_filter: "",
         list: [],
@@ -63,11 +74,23 @@
         init: () => {
           R.list.map(user => {
             user.uid = user.uid || "";
-            user.name = user.name || "";
             user.mobile = user.mobile || "";
-            user.admin = user.admin || {};
-            user.admin.roles = user.admin.roles || [];
+            user.admin = angular.merge({}, user.admin);
+            R.ADMIN_KEYS.text.map(k => user.admin[k] = user.admin[k] || "");
+            R.ADMIN_KEYS.role.map(k => user.admin[k] = user.admin[k] || []);
           });
+          R.groups = R.ADMIN_KEYS.role.map(name => {
+            var list = R.roles.map(item => {
+              return { name: item.name, id: item.id, b: 0 };
+            });
+            return { name, list };
+          });
+        },
+
+        toggle: (group, role) => {
+          role.b = !role.b;
+          R.calcuNewValue();
+          $scope.prompt = "";
         },
 
         /** 添加 */
@@ -76,6 +99,7 @@
             R.list.push(json.datas.user);
             R.init();
             R.edit(json.datas.user);
+            R.add.showing = false;
           }).catch(e => {
             R.add.prompt = e.errmsg || e;
             $timeout(() => {
@@ -87,12 +111,21 @@
 
         edit: user => {
           R.active = user;
-          R.editing = {
-            uid: user.uid,
-            name: user.name,
-            mobile: user.mobile,
-            admin: user.admin,
-          };
+          R.oldValue = {};
+          R.editing = {};
+          R.ADMIN_KEYS.text.map(k => {
+            R.oldValue[k] = R.editing[k] = user.admin[k];
+          });
+          R.ADMIN_KEYS.role.map(k => {
+            R.oldValue[k] = angular.extend([], user.admin[k]);
+            R.editing[k] = angular.extend([], user.admin[k]);
+          });
+          R.groups.map(group => {
+            var roles = user.admin[group.name];
+            group.list.map(item => {
+              item.b = roles.indexOf(item.id) >= 0;
+            });
+          });
         },
 
         save: user => {
@@ -102,10 +135,13 @@
           }
           R.ajaxing = false;
           R.prompt = "正在保存...";
-          $http.post("显示对话框/confirm", { title: "更新角色的权限？", body: "更新后，对应用户的权限将立即改变。确认要更新？" }).then(() => {
-            $http.post("admin/role_update", { id: R.active.id, name: R.roleName, powers: R.newValue }).then(json => {
-              R.active.attr.powers = R.newValue;
-              R.active.name = R.roleName;
+          $http.post("显示对话框/confirm", { title: "更新用户数据？", body: "更新后，对应用户的权限将立即改变。确认要更新？" }).then(() => {
+            var post = { id: R.active.id, uid: R.active.uid, values: {} };
+            R.ADMIN_KEYS.text.map(k => R.editing[k] && (post.values[k] = R.editing[k]));
+            R.ADMIN_KEYS.role.map(k => R.editing[k].length && (post.values[k] = R.editing[k]));
+            $http.post("admin/user_update", post).then(json => {
+              angular.merge(R.active.admin, R.editing);
+              angular.merge(R.oldValue, R.editing);
               R.dirty = false;
               R.prompt = "保存成功";
               $timeout(() => {
@@ -118,27 +154,21 @@
           });
         },
 
-        toggle: (group, role) => {
-          role.b = !role.b;
-          R.calcuNewValue();
-          $scope.prompt = "";
-        },
-
         calcuNewValue: () => {
-          R.newValue = {};
           R.groups.map(group => {
-            var names = [];
+            var ids = [];
             group.list.map(item => {
-              item.b && names.push(item.name);
+              item.b && ids.push(item.id);
             });
-            names.length > 0 && (R.newValue[group.name] = names);
+            R.editing[group.name] = ids;
           });
-          R.dirty = !angular.equals(R.newValue, R.active.attr.powers) || R.active.name != R.roleName;
+          R.dirty = !angular.equals(R.editing, R.oldValue);
         },
       }
 
       $http.post("admin/user_list").then(json => {
-        R.role_names = json.datas.role_names;
+        R.ADMIN_KEYS = json.datas.ADMIN_KEYS;
+        R.roles = json.datas.roles;
         R.list = json.datas.users;
         R.init();
         console.log("json", json)

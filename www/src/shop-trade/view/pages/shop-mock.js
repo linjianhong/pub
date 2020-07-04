@@ -36,55 +36,6 @@
       }
     });
 
-    /** 店铺用户 */
-    var DEFAULT_HEAD_IMG = "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png";
-    var DEFAULT_USERNAME = "游客";
-    sign.registerHttpHook({
-      match: /^店铺用户$/,
-      hookRequest: function (config, mockResponse, match) {
-        var ajax = $http.post("shop/me").then(json => {
-          var attr = json.datas.attr || {};
-          var wx = json.datas.wx || {};
-          var name = attr.name || wx.nickname || DEFAULT_USERNAME;
-          var headimg = wx.headimgurl || DEFAULT_HEAD_IMG;
-          var show_more = json.datas.show_more || [];
-          return {
-            user: {
-              attr, wx, name, headimg, show_more
-            }
-          }
-          console.log("店铺用户", json.datas);
-        });
-
-        return mockResponse(ajax);
-      }
-    });
-
-    /**  */
-    sign.registerHttpHook({
-      match: /^店铺模板$/,
-      hookRequest: function (config, mockResponse, match) {
-        var tplName = config.data;
-        return mockResponse(TPL_GOODS.find(item => item.name == tplName) || {});
-      }
-    });
   }]);
-
-
-  var TPL_GOODS = [
-    {
-      name: "2019模板",
-      before: [],
-      after: [
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-1.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-2.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-3.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-4.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-5.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-6.jpg",
-        "http://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/images/tpl-goods/2019-7.jpg",
-      ]
-    }
-  ];
 
 })(angular, window);
