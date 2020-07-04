@@ -33,7 +33,7 @@ class class_admin
 
   /**
    * 接口： admin/role_list
-   * 列表角色
+   * 列表角色, 用于角色管理
    */
   public static function role_list($query, $verifyData)
   {
@@ -91,6 +91,75 @@ class class_admin
   }
 
 
+
+  /**
+   * 接口： admin/user_list
+   * 列表用户, 用于用户管理
+   */
+  public static function user_list($query, $verifyData)
+  {
+    $db = CDbBase::db();
+    $role_names = $db->select(CDbBase::table(self::$TABLE_ROLE), 'name', ['AND' => ['name[!]' => '', 't2[<]' => '1999-12']]);
+
+    $db_users = $db->select(CDbBase::table(self::$TABLE_USER), '*');
+    $users = [];
+    foreach ($db_users as $db_user) {
+      $attr = json_decode($db_user['attr'], true);
+      $users[] = [
+        'id' => $db_user['id'],
+        'uid' => $db_user['uid'],
+        'mobile' => $db_user['mobile'],
+        'admin' => $attr['admin'],
+      ];
+    }
+
+    return \DJApi\API::OK([
+      "role_names" => $role_names,
+      "users" => $users,
+    ]);
+  }
+
+  /**
+   * 接口： admin/user_create
+   * 创建用户
+   * uid 不可已存在
+   */
+  public static function user_create($query, $verifyData)
+  {
+    $uid = $query['uid'];
+    if (!$uid) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "用户id无效");
+    $db = CDbBase::db();
+    $datas = ['uid' => $uid, 'attr' => '{"admin":""}', 't1' => date('Y-m-d H:i:s')];
+    $insert_id = $db->insert(CDbBase::table(self::$TABLE_USER), $datas);
+    $datas['id'] = $insert_id;
+    return \DJApi\API::OK(["user" => $datas]);
+  }
+
+
+  /**
+   * 接口： admin/role_update
+   * 更新用户
+   */
+  public static function user_update($query, $verifyData)
+  {
+    $id = $query['id'];
+    $name = $query['name'];
+    $powers = $query['powers'];
+    $db = CDbBase::db();
+    $db_row = $db->get(CDbBase::table(self::$TABLE_USER), ['uid','attr'], ['id' => $id]);
+    if (!is_array($db_row)) return \DJApi\API::error(\DJApi\API::E_PARAM_ERROR, "角色不存在");
+    $attr = json_decode($db_row['attr'], true);
+    foreach ($powers as $group => $arr) {
+      if (!is_array($attr['powers'][$group])) $attr['powers'][$group] = [];
+      $attr['powers'][$group] = array_values(array_unique(array_merge($attr['powers'][$group], $arr)));
+    }
+    $datas = [
+      'name' => $name,
+      'attr' => \DJApi\API::cn_json($attr),
+    ];
+    $n = $db->update(CDbBase::table(self::$TABLE_USER), $datas, ['id' => $id]);
+    return \DJApi\API::OK(["n" => $n]);
+  }
 
 
 

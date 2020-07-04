@@ -45,7 +45,7 @@
         <div class="flex-cc text-stop">{{prompt}}</div>
       </div>
     </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "SHOP_FN", "$timeout", function ctrl($scope, $http, $q, $element, SHOP_FN, $timeout) {
+    controller: ["$scope", "$http", "$q", "$element", "$timeout", function ctrl($scope, $http, $q, $element,  $timeout) {
       $element.addClass("flex-v flex-1");
 
       var R = $scope.R = {
