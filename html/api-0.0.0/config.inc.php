@@ -35,8 +35,8 @@ const CODES = [
       "files" => [
         "lib-2cc3ab6c0c.css",
         "lib-9dc2c90f07.js",
-        "app-cee1fb0235.css",
-        "app-c40e9be728.js"
+        "app-fc3fd49517.css",
+        "app-4b1e57a7c9.js"
       ]
     ]
   ],
@@ -53,8 +53,8 @@ const CODES = [
       "files" => [
         "lib-2cc3ab6c0c.css",
         "lib-9dc2c90f07.js",
-        "app-6e047bd415.css",
-        "app-9f28e09225.js"
+        "app-3cda317408.css",
+        "app-d98586d33a.js"
       ]
     ]
   ],
