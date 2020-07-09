@@ -1,7 +1,7 @@
 /* 我的页面 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("myInfoRow", {
+  angular.module("dj-view").component("myInfoRow", {
     template: `<info-row d="myInfo"></info-row>`,
     bindings: {
       mode: '@',

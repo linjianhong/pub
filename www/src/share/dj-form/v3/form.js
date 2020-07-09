@@ -239,7 +239,7 @@
         });
         /** 监听用户修改 */
         $scope.selectItem = function (item) {
-          $scope.value = item && item.title || item.value|| item || "";
+          $scope.value = item && item.title || item.value || item || "";
           showList(false);
         }
 
@@ -534,7 +534,7 @@
       bindParams: '<',
       bindCaption: "<",
     },
-    controller: ["$scope", "$rootScope", "$http", "$q", "DjRouter", "DjState", function ctrl($scope, $rootScope, $http, $q, DjRouter, DjState) {
+    controller: ["$scope", "$rootScope", "$http", "$q", "DjState", function ctrl($scope, $rootScope, $http, $q, DjState) {
 
       this.$onChanges = (changes) => {
         if (changes.bindParams && changes.bindParams.currentValue) {

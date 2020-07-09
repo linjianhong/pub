@@ -21,8 +21,8 @@
   ])
 
 
-  theApp.run(["DjRouter", "$http", function (DjRouter, $http) {
-    DjRouter.when("bbb", "query")
+  theApp.run(["DjState", "$http", function (DjState, $http) {
+    DjState.when("bbb", "query")
       .otherwise($http.post("用户登录/状态").then(() => "home").catch(() => "home"));
   }]);
 

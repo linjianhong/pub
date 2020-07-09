@@ -3,7 +3,7 @@
 
   "即时商品分类";
 
-  angular.module("dj.router.frame").component("pageGroupEdit", {
+  angular.module("dj-view").component("pageGroupEdit", {
     footer: { hide: true },
     requireLogin: true,
     autoDestroy: true,

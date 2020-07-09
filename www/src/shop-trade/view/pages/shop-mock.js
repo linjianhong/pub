@@ -1,7 +1,7 @@
 /* 查询结果列表 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").run(["sign", "$http", function (sign, $http) {
+  angular.module("dj-view").run(["sign", "$http", function (sign, $http) {
 
     /** 我的订单列表 */
     sign.registerHttpHook({

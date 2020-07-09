@@ -1,7 +1,7 @@
 /* 我的页面 */
 !(function (angular, window, undefined) {
 
-  var theModule = angular.module("dj.router.frame");
+  var theModule = angular.module("dj-view");
 
   theModule.component("pageBindMobile", {
     pageTitle: "绑定手机",

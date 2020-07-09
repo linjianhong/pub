@@ -2,7 +2,7 @@
 /* 功能页面 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("quickMenu", {
+  angular.module("dj-view").component("quickMenu", {
     template: `
       <div class="icon-cells-box" ng-if="otherPower[otherPowerName].length" ng-repeat="otherPowerName in otherPowerNames">
         <div class="icon-cell-caption text"><i class="fa fa-{{otherPowerFa[otherPowerName]}} text-warning em-15"></i>　{{otherPowerName}}</div>

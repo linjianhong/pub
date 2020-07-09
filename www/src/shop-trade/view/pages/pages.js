@@ -1,6 +1,6 @@
 !(function (angular, window, undefined) {
 
-  var theModule = angular.module("dj.router.frame");
+  var theModule = angular.module("dj-view");
 
   /** 本地订单数据 */
   var H = (function () {
@@ -434,8 +434,8 @@
         <order-row class="bk-f8 flex radius box-ccc" order="order"></order-row>
       </div>
     </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "DjRouter", "DjState", function ctrl($scope, $http, $q, $element, DjRouter, DjState) {
-      var tab = DjRouter.$search.tab;
+    controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
+      var tab = DjState.$search.tab;
       var TAB_LIST = [
         { text: "全部", filter: "" },
         { text: "待发货", filter: { status: "待发货" } },

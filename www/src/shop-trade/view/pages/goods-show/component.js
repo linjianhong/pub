@@ -1,6 +1,6 @@
 !(function (angular, window, undefined) {
 
-  var theModule = angular.module("dj.router.frame");
+  var theModule = angular.module("dj-view");
 
   /** 图片、视频 - 类型识别 */
   function fileType(url) {

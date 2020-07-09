@@ -14,7 +14,7 @@
       args: "<",
       onChange: "&",
     },
-    controller: ["$scope", "$http", "DjState", "DjRouter", function ctrl($scope, $http, DjState, DjRouter) {
+    controller: ["$scope", "$http", "DjState", function ctrl($scope, $http, DjState) {
 
       this.$onChanges = (changes) => {
         if (changes.args && changes.args.currentValue) {
@@ -89,7 +89,7 @@
     bindings: {
       param: "<",
     },
-    controller: ["$scope", "$http", "DjState", "DjRouter", function ctrl($scope, $http, DjState, DjRouter) {
+    controller: ["$scope", "$http", "DjState", function ctrl($scope, $http, DjState) {
 
       this.$onChanges = (changes) => {
         if (changes.param && changes.param.currentValue) {

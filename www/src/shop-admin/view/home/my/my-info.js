@@ -1,7 +1,7 @@
 /* 我的页面 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageMyInfo", {
+  angular.module("dj-view").component("pageMyInfo", {
     pageTitle: "个人信息",
     requireLogin: true,
     pageCss: "bk-d",

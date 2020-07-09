@@ -1,7 +1,7 @@
 /* 查询结果列表 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageShopEdit", {
+  angular.module("dj-view").component("pageShopEdit", {
     footer: { hide: true },
     requireLogin: true,
     autoDestroy: true,
@@ -46,27 +46,31 @@
         <goods-show class="em-05 margin-1 box-ccc" code="code"></goods-show>
       </div>
     </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "SHOP_FN", "$timeout", function ctrl($scope, $http, $q, $element, SHOP_FN, $timeout) {
+    controller: ["$scope", "$http", "$q", "$element", "SHOP_FN", "$timeout", "DjState", function ctrl($scope, $http, $q, $element, SHOP_FN, $timeout, DjState) {
       $element.addClass("flex-v flex-1");
+      var tab = angular.extend({ tab: 2 }, DjState.$search).tab;
 
       var R = $scope.R = {
         text_filter: "",
       }
 
+      var TAB_LIST = [
+        { text: "全部", test_status: () => 1 },
+        { text: "草稿", test_status: (status) => status == "已启用", status: "已启用" },
+        { text: "上架", test_status: (status) => status == "已上架", status: "已上架" },
+        { text: "下架", test_status: (status) => status == "已下架", status: "已下架" }
+      ];
       /** 标签功能 */
       var TAB = $scope.TAB = {
-        list: [
-          { text: "全部", test_status: () => 1 },
-          { text: "草稿", test_status: (status) => status == "已启用", status: "已启用" },
-          { text: "上架", test_status: (status) => status == "已上架", status: "已上架" },
-          { text: "下架", test_status: (status) => status == "已下架", status: "已下架" }],
-        active: 2,
-        status: "已上架",
+        list: TAB_LIST,
+        active: tab,
+        status: (TAB_LIST[tab] || {}).status || "",
         change: (index, name) => {
           if (!TAB.list[index]) return;
           TAB.active = index;
           TAB.status = TAB.list[index].status || "";
           $scope.code = "";
+          DjState.replace("shop-edit", { tab: index })
         },
         setActiveByCode: (code) => {
           var theItem = R.list.find(item => item.id == code);

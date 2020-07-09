@@ -2,10 +2,12 @@
 angular.module('dj-view', [
   'angularMoment',
   "dj.observable",
-  "dj.router.frame",
+  "dj.router",
 ]).run(["moment", function (moment) {
   moment.locale('zh-cn');
 }]);
+
+angular.module("dj.router", ["dj.router.ver2"]);
 
 angular.module('dj-component', [
   'dj-form',

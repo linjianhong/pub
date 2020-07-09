@@ -1,7 +1,7 @@
 /* 角色管理 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageAdminRole", {
+  angular.module("dj-view").component("pageAdminRole", {
     pageTitle: "角色管理",
     requireLogin: true,
     pageCss: "bk-d",

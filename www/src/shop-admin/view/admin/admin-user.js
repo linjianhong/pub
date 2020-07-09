@@ -1,7 +1,7 @@
 /* 用户管理 */
 !(function (angular, window, undefined) {
 
-  angular.module("dj.router.frame").component("pageAdminUser", {
+  angular.module("dj-view").component("pageAdminUser", {
     pageTitle: "用户管理",
     requireLogin: true,
     pageCss: "bk-d",
