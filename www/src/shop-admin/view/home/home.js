@@ -2,9 +2,10 @@
 !(function (angular, window, undefined) {
 
   angular.module("dj-view").component("pageMy", {
-    pageTitle: "我的 - 首页",
+    pageTitle: "我的首页",
     requireLogin: true,
     pageCss: "bk-d",
+    header: { hide: true },
     footer: { hide: true },
     template: `
       <my-info-row class="info-rows" mode="me"></my-info-row>

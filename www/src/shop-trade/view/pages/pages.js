@@ -29,7 +29,7 @@
 
 
   theModule.component("pageHome", {
-    pageTitle: "商城 - 首页",
+    pageTitle: "商城首页",
     requireLogin: true,
     autoDestroy: true,
     pageCss: "bk-e",

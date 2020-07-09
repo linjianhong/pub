@@ -64,8 +64,15 @@
             $scope[name] = v;
           });
         });
+
+        var pageTitleValue = {}
         router.observe("pageTitle", function (pageTitle) {
-          $http.post("设置页面标题", pageTitle);
+          pageTitleValue.title = pageTitle;
+          $http.post("设置页面标题", pageTitleValue);
+        });
+        router.observe("header", function (header) {
+          pageTitleValue.hide = !!header.hide;
+          $http.post("设置页面标题", pageTitleValue);
         });
 
         if (标题栏) {
@@ -298,7 +305,7 @@
       var hide = !!title.hide;
       title = title.title || title.text || title || "";
       if (hide) {
-        setHtmlTitle((title && (title + '-') || '') + defaultTitle.text)
+        setHtmlTitle((title && (title + ' - ') || '') + defaultTitle.text)
       }
       else {
         setHtmlTitle(defaultTitle.text);
@@ -312,7 +319,7 @@
       match: /^设置页面标题$/,
       hookRequest: function (config, mockResponse, match) {
         var param = config.data;
-        setTitleAuto(param.title || param);
+        setTitleAuto(param || {});
         return mockResponse.resolve(1);
       }
     });
