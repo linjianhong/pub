@@ -940,33 +940,13 @@ class CDJ
     return $C::$method($args);
   }
 
-  public function dick($dickName, $value, $textField, $valueField = "id")
-  {
-    if (!$value && $value !== 0) return "";
-    $dick = CDick::get($dickName);
-    // \DJApi\API::debug(['dick'=>$dick,'value'=>$value,'textField'=>$textField, 'valueField'=>$valueField]);
-    foreach ($dick as $row) {
-      if ($row[$valueField] == $value) return $row[$textField];
-    }
-    return "";
-  }
 
-  public function stock_user($uid)
-  {
-    $stock_userinfo = \MyClass\CStockUser::stock_userinfo($uid);
-    // \DJApi\API::debug(['stock_user' => $stock_userinfo, 'uid' => $uid]);
-    return $stock_userinfo;
-  }
 
   public function &DATE($str = '')
   {
     return new CDATE($str);
   }
 
-  public function &产品清单()
-  {
-    return new CProductList();
-  }
 
   static $DJ;
   static function &getDJ()
@@ -1053,53 +1033,6 @@ class CDATE
   }
 }
 
-
-class CDick
-{
-  public static $_DICKS = [];
-  public static function get($dickName)
-  {
-    if (!self::$_DICKS[$dickName]) self::read($dickName);
-    return self::$_DICKS[$dickName];
-  }
-  public static function read($dickName)
-  {
-    $db = \MyClass\CDbBase::db();
-
-    if ($dickName == '产品字典') {
-      $cp_row = $db->select(\MyClass\CDbBase::table('stock_dick_product'), "*");
-      foreach ($cp_row as $k => $row) {
-        if ($row['attr']) {
-          $cp_row[$k]['attr'] = json_decode($row['attr']);
-        } else {
-          $cp_row[$k]['attr'] = [];
-        }
-      }
-      return self::$_DICKS[$dickName] = $cp_row;
-    }
-
-    if ($dickName == '客户字典') {
-      $db_rows = $db->select(\MyClass\CDbBase::table('stock_dick_client'), "*");
-      foreach ($db_rows as $k => $row) {
-        if ($row['attr']) {
-          $db_rows[$k]['attr'] = json_decode($row['attr']);
-        } else {
-          $db_rows[$k]['attr'] = [];
-        }
-      }
-      return self::$_DICKS[$dickName] = $db_rows;
-    }
-
-    if ($dickName == '工人字典') {
-      $R = \MyClass\CStockUser::list_worker();
-      \DJApi\API::debug(['工人字典' => $R]);
-      return self::$_DICKS[$dickName] = $R;
-    }
-
-
-    return self::$_DICKS[$dickName] = [];
-  }
-}
 
 
 /** 全局函数

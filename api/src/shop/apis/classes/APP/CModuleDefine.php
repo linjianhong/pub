@@ -16,72 +16,6 @@ class CModuleDefine
   public static $CONFIG = [
 
     '字典配置' => [
-      [ // 木工字典
-        'name' => '木工字典',
-        'items' => [
-          '姓名;input;;不可空',
-        ],
-        'title' => "=姓名",
-        'valueMap' => [
-          'value' => '姓名',
-        ],
-        'server' => [
-          'create_item' => [
-            [
-              'type' => 'DB',
-              'data' => [
-                'class' => 'CDB_common',
-                'table' => 'stock_dick_datas',
-                'method' => 'sure_data_rows',
-                'mode' => '添加一行',
-                'row' => [
-                  'k1' => "木工",
-                  'v1' => "=姓名",
-                  't1' => "=now",
-                  't2' => "=''",
-                ],
-              ],
-            ]
-          ],
-          'update_item' => [
-            [
-              'type' => 'DB',
-              'data' => [
-                'class' => 'CDB_common',
-                'table' => 'stock_dick_datas',
-                'method' => 'sure_data_rows',
-                'mode' => '更新一行',
-                'AND' => [
-                  'k1' => "木工",
-                  'id' => "=id",
-                ],
-                'row' => [
-                  'v1' => "=姓名",
-                ],
-              ],
-            ]
-          ],
-          'delete_item' => [
-            [
-              'type' => 'DB',
-              'data' => [
-                'class' => 'CDB_common',
-                'table' => 'stock_dick_datas',
-                'method' => 'sure_data_rows',
-                'mode' => '更新一行',
-                'AND' => [
-                  'k1' => "木工",
-                  'id' => "=id",
-                ],
-                'row' => [
-                  't2' => "=now",
-                ],
-              ],
-            ]
-          ],
-
-        ],
-      ],
     ],
 
     '商城后台配置' => [
@@ -324,47 +258,5 @@ class CModuleDefine
     }
     return $base_config;
   }
-  public static function configUseTypeAsKey()
-  {
-    $config = [];
-    foreach (self::configAll()['config'] as $row) {
-      $config[$row['type']] = $row;
-    }
-    return $config;
-  }
-  public static function configTypesByMode()
-  {
-    $names = [];
-    foreach (self::configAll()['config'] as $row) {
-      $names[$row['mode']][] = $row['type'];
-    }
-    return $names;
-  }
 
-
-  /** 资源配置 */
-  public static function getConfig($type)
-  {
-    foreach (self::configAll()['config'] as $config) {
-      if ($config['type'] == $type) return $config;
-    }
-    return false;
-  }
-
-  /** 操作定义 */
-  public static function getAcDefine(&$config, $oldStatus, $ac)
-  {
-    foreach ($config['actions'] as $v) {
-      if ($v['name'] == $ac && (!$oldStatus || in_array($oldStatus, $v['from']))) return $v;
-    }
-    return false;
-  }
-  /** 是否有下一操作 */
-  public static function hasAc(&$config, $oldStatus, $ac)
-  {
-    foreach ($config['actions'] as $v) {
-      if ($v['name'] == $ac && (!$oldStatus || in_array($oldStatus, $v['from']))) return true;
-    }
-    return false;
-  }
 }

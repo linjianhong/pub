@@ -216,17 +216,6 @@ class class_app
     return \DJApi\API::post(SERVER_API_ROOT, "user/user/verify_token", $request->query);
   }
 
-  /**
-   * 接口： app/readDisk
-   * 读取字典
-   * @request param
-   *
-   * @return list
-   */
-  public static function readDisk($request)
-  {
-    return \MyClass\CDick::readDisk($request->query);
-  }
 
 
   /**
