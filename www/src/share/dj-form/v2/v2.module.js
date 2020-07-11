@@ -1,1 +1,0 @@
-angular.module("dj-form-v2", []);

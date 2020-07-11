@@ -10,13 +10,11 @@ angular.module('dj-view', [
 angular.module("dj.router", ["dj.router.ver2"]);
 
 angular.module('dj-component', [
-  'dj-form',
   'dj-pop'
 ]);
 
 angular.module('dj-service', [
   'dj-http',
-  'dj-localStorage-table',
 ]);
 
 angular.module('dj-filter', [

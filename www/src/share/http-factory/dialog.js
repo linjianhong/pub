@@ -18,6 +18,7 @@
     sign.registerHttpHook({
       match: /^显示对话框\/(.*)$/,
       hookRequest: function (config, mockResponse, match) {
+        console.log("显示对话框",config)
         var param = config.data;
         if (!angular.isArray(param) && angular.isObject(param)) {
           var paramList = paramMaps.find(item => item.type == match[1]);
@@ -28,7 +29,9 @@
             param = Object.keys(param).map(k => param[k]);
           }
         }
-        return mockResponse.resolve(DjPop[match[1]].apply({}, param));
+        var dlg = DjPop[match[1]].apply({}, param);
+        dlg.catch(e => console.error(e));
+        return mockResponse.resolve(dlg);
       }
     });
   }]);
