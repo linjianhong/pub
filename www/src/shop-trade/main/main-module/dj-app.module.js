@@ -6,7 +6,6 @@
     "ngAnimate",
     "dj-view",
     "dj-service",
-    "dj-component",
     "dj-filter",
 
     "dj-login",
