@@ -144,14 +144,12 @@
  * @param oldPage Old Page Data, include State, component and it's params
  */function ___() { }
 
-!(function (angular, window, undefined) {
+ !(function (angular, window, undefined) {
   var defaultRootModuleName = "dj-app";
-  var routerModuleName = "dj.router.ver1";
   var stateModuleName = "dj.router.state.ver1";
   var frameModuleName = "dj.router.frame.ver1";
-  var stateModule = angular.module(stateModuleName, []);
-  var frameModule = angular.module(frameModuleName, ["ngAnimate", stateModuleName]);
-  angular.module(routerModuleName, [frameModuleName, stateModuleName]);
+  var stateModule = angular.module(stateModuleName);
+  var frameModule = angular.module(frameModuleName);
 
 
   /** 限制缓存页面数量(未启用) */
@@ -253,6 +251,9 @@
     /** 历史记录类 */
     var DjHistory = {
       activeState: null,
+      getState: function () {
+        return history.state && history.state.t === DjHistory_t && history.state || {};
+      },
       getHistoryStateId: function () {
         return history.state && history.state.t === DjHistory_t && history.state.id || 0;
       },
@@ -270,6 +271,7 @@
         // console.log("DjHistory.go", href, ", location.href=", location.href);
         if (decodeURIComponent(location.href) == decodeURIComponent(href)) return DjHistory.replace(state);
         location.href = decodeURIComponent(href);
+        state.id && DjHistory.replace(state);
       },
       push: function (state) {
         DjHistory.activeState = state;
@@ -281,7 +283,8 @@
         DjHistory.activeState = state;
         // console.log("DjHistory replace", state);
         if (!state.id) state.autoID();
-        history.replaceState({ t: DjHistory_t, id: state.id }, null, state.href());
+        state.replace = 1;
+        history.replaceState({ t: DjHistory_t, id: state.id, replace: 1 }, null, state.href());
       }
     }
 
@@ -506,6 +509,11 @@
         }
         var oldState = STATE.parseHash(location.href);
         // if (STATE.broadcast$DjRouteChangeStart(newState, oldState).defaultPrevented) return;
+        STATE.replacing = 1;
+        setTimeout(() => {
+          STATE.replacing = 0;
+        }, 200);
+        newState.replace = 1;
         STATE.DjHistory.replace(newState);
         if (gotoState) $rootScope.$broadcast("$DjRoutePageReload", newState, oldState)
       }
@@ -540,7 +548,7 @@
       static replace(path, search, priorDelay, gotoState) {
         var newState = STATE.stateOf(path, search);
         return newState.ready(newState => {
-          console.log("替换当前页面, activeState.id=", (STATE.DjHistory.activeState || { id: 0 }).id, "newState.id=", newState.id);
+          // console.log("替换当前页面, activeState.id=", (STATE.DjHistory.activeState || { id: 0 }).id, "newState.id=", newState.id);
           newState.id <= 0 && (newState.id = STATE.DjHistory.getHistoryStateId());
           DjStateQueue.push("replace", priorDelay || 0, [newState, gotoState])
         }
@@ -552,7 +560,7 @@
        * 替换浏览器的历史记录的当前项
        * 页面将被重新加载
        */
-      static replaceSearch(search, priorDelay) {
+      static search(search, priorDelay) {
         if (!STATE.DjHistory.activeState) return;
         var newState = STATE.stateOf(STATE.DjHistory.activeState.path, search);
         return DjStateQueue.push("go", priorDelay || 0, [newState]);
@@ -576,13 +584,15 @@
     $rootScope.$watch(function () {
       return decodeURIComponent(STATE.parseHash(location.hash).hash());
     }, function (hash, oldHash) {
-      // console.log("rootScope.$watch  ", hash, " <= ", oldHash);
-      onUrlChange(hash);
+      var state = STATE.DjHistory.getState();
+      // console.log("rootScope.$watch  ", hash, " <= ", oldHash, state);
+      if (!STATE.replacing) onUrlChange(hash);
     });
 
     $browser.onUrlChange((hash) => {
-      // console.log("browser.onUrlChange  ", hash)
-      onUrlChange(hash)
+      var state = STATE.DjHistory.getState();
+      // console.log("browser.onUrlChange  ", hash, "history.state=", STATE.DjHistory.getState())
+      if (!STATE.replacing) onUrlChange(hash)
     });
 
     /**
@@ -594,7 +604,8 @@
       // console.log("onUrlChange", newUrl);
       var newState = STATE.parseHash(newUrl);
       newState.ready(newState => {
-        // console.log("就绪 newState ", newState.search, newState);
+        // console.log("就绪 newState ", newState, oldState);
+        if (newState.equals(oldState)) return;
         var newStateId = STATE.DjHistory.getHistoryStateId();
         onStateByUrlChange(newState, newStateId);
         oldState = newState;
@@ -614,6 +625,7 @@
     function onUrlChangeSuccess(newState, oldState) {
       /** 必须在 locationChangeSuccess 中才能正确得到 history 数据*/
       // console.log("页面准备", newState.search, newState, oldState);
+      DjState.$search = angular.extend({}, newState.search);
       var historyStateId = STATE.DjHistory.getHistoryStateId();
       STATE.StateCache.gotoHistoryPage(historyStateId)
         .then(states => {

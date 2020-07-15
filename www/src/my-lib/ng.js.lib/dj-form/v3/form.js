@@ -474,7 +474,7 @@
       }
 
       /** 查找配置中的计算项，生成表达式 */
-      $scope.$watch("bindParams.config.captions", vNew => initExpress($scope.captions = vNew));
+      $scope.$watch("bindParams.config.captions", vNew => initExpress($scope.captions = vNew || []));
       function initExpress(captions) {
         captions.map(caption => {
           if (angular.isArray(caption.cells)) {

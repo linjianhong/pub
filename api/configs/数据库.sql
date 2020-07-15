@@ -41,7 +41,7 @@ create table if not exists `shop_role`
 create table if not exists `shop_res_index`
 (
   `id`          int(11)  not null auto_increment COMMENT  'id',
-  `type`        varchar(64) DEFAULT '' COMMENT '物资类型', -- 现金/应收款/木材/家具单件/家具套件/固定资产 ……
+  `type`        varchar(64) DEFAULT '' COMMENT '物资类型',
   `name`        varchar(64) DEFAULT '' COMMENT  '物资名称',
   `v1`          varchar(128) DEFAULT '' COMMENT '数据1',
   `v2`          varchar(128) DEFAULT '' COMMENT '数据2',

@@ -6,27 +6,6 @@
   /** 路由监听 */
   theConfigModule.run(['$rootScope', '$http', '$q', 'DjState', function ($rootScope, $http, $q, DjState) {
 
-    /** 监听用户登录状态 */
-    var LogStatus = (function () {
-      var LogStatus = {
-        isLogged: false
-      }
-      $rootScope.$on("用户登录状态", (event, status) => {
-        // console.log("监听用户登录状态", status);
-        LogStatus.isLogged = !!status.mode;
-      });
-      LogStatus.recheck = function () {
-        return $http.post("用户登录/状态").then(tokenData => {
-          // console.log("用户登录/状态", tokenData);
-          return LogStatus.isLogged = true;
-        }).catch(e => {
-          return LogStatus.isLogged = false;
-        });
-      }
-      LogStatus.recheck();
-      return LogStatus
-    })();
-
 
     /** 是否要求登录 */
     function checkNeedLogin(state) {
@@ -45,7 +24,7 @@
 
 
     /** 路由监听，微信分享 */
-    $rootScope.$on("$DjPageNavgateStart", function (event, newPage, oldPage) {
+    $rootScope.$on("$DjPageNavgateSuccess", function (event, newPage, oldPage) {
       var param = (newPage.component || {}).param || {};
 
       /** 微信分享 */
@@ -56,7 +35,7 @@
         if (!wxShareParam) {
           // console.log("使用默认分享", wxShareParam);
           $http.post("WxJssdk/setShare", {
-            title: "微商城", // 分享标题
+            title: "迷你订单系统", // 分享标题
             desc: "欢迎使用", // 分享描述
             link: location.origin + location.pathname + "#/my", // 分享链接
             imgUrl: "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
@@ -85,30 +64,29 @@
     });
 
 
+    /** 监听路由, 检查登录 */
+    function onRouterCheckLogin(data, lastPromiseData) {
+      if (data.promise) return data.promise.then(promiseData => {
+        data.promise = false;
+        return onRouterCheckLogin(data, promiseData);
+      });
+
+      data.promise = $http.post("用户登录/状态").then(() => {
+        // console.log("用户登录/状态", tokenData);
+        return "已登录";
+      }).catch(e => {
+        var newPage = data.newPage;
+        var newState = newPage.state;
+        return $q.when(checkNeedLogin(newState)).then(needLogin => {
+          if (!needLogin) return "无需登录";
+          return $http.post("自动微信登录", { newState }).then(() => lastPromiseData);
+        });
+      });
+    }
+
     /** 路由监听 */
-    $rootScope.$on('$DjRouteChangeStart', function (event, newState, oldState) {
-      LogStatus.recheck();
-
-      var needLogin = checkNeedLogin(newState);
-      // console.log("DjRouteChangeStart", newState, oldState);
-
-      if (!newState || !angular.equals(newState, oldState)) {
-        if (needLogin && !LogStatus.isLogged) {
-          console.log("需要登录", newState, "event=", event);
-          event.preventDefault();
-
-          return DjState.go(
-            /** 检查登录状态 */
-            $http.post("用户登录/状态").then(tokenData => {
-              LogStatus.isLogged = true;
-              return newState;
-            }).catch(e => {
-              LogStatus.isLogged = false;
-              return $http.post("自动微信登录", { newState });
-            })
-          );
-        }
-      }
+    $rootScope.$on('$DjPageNavgateStart', function (event, data, lastPromiseData) {
+      onRouterCheckLogin(data, lastPromiseData);
     });
   }]);
 

@@ -2,32 +2,19 @@
 
 !(function (angular, window, undefined) {
   /**
-   *  路由需求
-
+路由需求
 1、页面可以先登录判断，发出请求，得到承诺后显示
-
 2、首页登录页，登录后直接替换页面。可显示登录中，也可以不显示
-
 3、页面数据不变，只替换参数
-
 4、只替换URL，不改变页面
-
 5、只改变页面，不替换URL
-
 6、当改变页面前，用户可以拦截
-
 7、改变页面前，旧页面可以拦截
-
 8、新页面可以禁止改变前的拦截
-
 9、页面可以改变时，生成标题，可以是承诺
-
 10、页面可以改变时，可以设置分享参数等
-
 11、页面改变可以判断前进还是后退
-
 12、监听URL，跳到新页面
-
 13、监听URL，识别仅替换情况
 
 路由事件
@@ -36,16 +23,17 @@
 3、 前进后退
 4、 DjState.go
 5、 DjState.replace
-6、 DjState.otherwise
-7、 DjState.when
+6、 DjState.otherwise(不会改变url)
+7、 DjState.when(不会改变url)
    */
   var defaultRootModuleName = "dj-app";
-  var routerModuleName = "dj.router.ver2";
-  var routerModule = angular.module(routerModuleName, ["ngAnimate"]);
+  var routerModule = angular.module("dj.router.ver2");
 
   var BASE = (function () {
     var STATE_ID = 0;
     var STATE_t = +new Date();
+
+    // console.info("[路由] STATE_t =", STATE_t)
 
     function is_good_state(state) {
       return state && state.t == STATE_t && state.id > 0;
@@ -142,6 +130,7 @@
 
     /** 根据参数，生成 hash */
     function hash(path, search) {
+      if (path[0] == "/") path = path.substr(1, 999);
       search = search || {};
       var queryString = Object.keys(search).map(k => `${k}=${encodeURIComponent(search[k])}`).join("&");
       return path + (queryString && ("?" + queryString) || "");
@@ -153,6 +142,7 @@
     function setPage(page) {
       BASE.page = page;
       BASE.DjState.$search = page.state.search || {};
+      // console.info("[路由] 路由参数=", BASE.DjState.$search, ",hash=", location.hash);
     }
 
     return {
@@ -189,10 +179,9 @@
       }
       var pathName = match[2] || "";
       var queryString = match[4];
-      var search = BASE.parseSearch(queryString);
+      var search = BASE.parseSearch(queryString) || {};
       return new State(pathName, search);
     }
-
 
     /** 状态类 */
     class State {
@@ -203,7 +192,7 @@
           this.search = angular.extend({}, search, path.search);
           return;
         }
-        this.search = search;
+        this.search = search || {};
         this.path = path;
       }
 
@@ -226,7 +215,7 @@
 
 
   /** 工厂用 基类 */
-  routerModule.run(["$q", function ($q) {
+  routerModule.run(["$q", "$rootScope", function ($q, $rootScope) {
 
     var LAST_HASH = "";
 
@@ -234,19 +223,34 @@
       if (path instanceof (BASE.State)) return go(path.path, path.search);
       var hash = "#/" + BASE.hash(path, search);
       var hash = BASE.hash(path, search) || ""; if (hash) hash = "#/" + hash;
-      // console.log("[路由] go  ", { path, search }, { LAST_HASH, hash });
+      // console.info("[路由] go  ", { path, search }, { LAST_HASH, hash });
       //if (LAST_HASH != hash) {
-        LAST_HASH = hash;
-        location.hash = hash;
-        // console.log("准备显示", hash);
+      LAST_HASH = hash;
+      location.hash = hash;
+      // console.log("准备显示", hash);
       //}
     }
 
     function replace(path, search) {
-      var hash = "#/" + BASE.hash(path, search);
+      var hash = BASE.hash(path, search) || ""; if (hash) hash = "#/" + hash;
+      var newState = new BASE.State(path, search);
+      var oldState = BASE.parseHash(location.hash);
+      if (newState.equals(oldState)) {
+        console.warn("[路由] replace 无变化  ", { newState, oldState });
+        return;
+      }
       var history_state = history.state;
-      // console.log("[路由] replace  ", path, search, history_state);
-      BASE.replace_state(hash, history_state);
+      // console.info("[路由] replace  ", path, search, history_state, $rootScope);
+      if ($rootScope.$$phase) {
+        /** 如果是在$digest过程中调用此函数，则需要延时执行，以免造成死循环 */
+        setTimeout(() => {
+          // console.info("[路由] replace  ", path, search, history_state, $rootScope);
+          BASE.replace_state(location.pathname + hash, history_state);
+        });
+      } else {
+        /** 如果不是, 可以立即执行替换 */
+        BASE.replace_state(location.pathname + hash, history_state);
+      }
     }
 
     function when(state) {
@@ -274,8 +278,6 @@
       console.log("otherwise", "#/" + BASE.hash(otherwise), location.hash);
       if (!otherwise.then) return BASE.on_otherwise(otherwise);
       return $q.when(otherwise).then(state => {
-        // LAST_HASH = location.hash = "#/" + BASE.hash(state);
-        //go(state);
         return BASE.on_otherwise(state);
       }).catch(e => console.error(e))
     }
@@ -292,9 +294,7 @@
 
   routerModule.factory("DjState", [function () { return BASE.DjState; }]);
 
-
-
-  routerModule.run(["$rootScope", function ($rootScope) {
+  routerModule.run(["$rootScope", "$q", function ($rootScope, $q) {
 
     var _FIRST_RUN = 1;
     var LAST_STATE = {};
@@ -304,7 +304,7 @@
       var oldHash = BASE.hash_of_url(oldUrl);
       if (newUrl == oldUrl && !_FIRST_RUN) {
         var history_state = BASE.to_good_state(history.state);
-        // console.log("[路由] Start 同一地址 ", newUrl.split("#/")[1], oldUrl.split("#/")[1], c, d, _FIRST_RUN && "程序开始" || "", history_state);
+        // console.info("[路由] Start 同一地址 ", newUrl.split("#/")[1], oldUrl.split("#/")[1], c, d, _FIRST_RUN && "程序开始" || "", history_state);
         // event.preventDefault();
         // 如果 preventDefault, 那么，history 将被改变，导致 replace 错乱
         return;
@@ -312,19 +312,15 @@
       var newState = BASE.parseHash(newHash);
       var oldState = BASE.parseHash(oldHash);
       if (location.hash != newHash && location.hash == oldHash) {
-        console.warn("[路由] Start 非常规路由, 可能是otherwise导致。若不是，请注意。", { newState, oldState });
-        // newState = oldState;
-        // console.log("[路由] Start 非常规状态   ", location.hash, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "", location.hash);
+        console.warn("[路由] Start 非常规路由, 可能是otherwise导致。若不是，请注意。", { newState, oldState }, location.hash, { oldHash, newHash }, { c, d });
       }
 
       if ($rootScope.$broadcast("$DjRouteChangeStart", newState, oldState).defaultPrevented) {
-        // console.log("DjState.go 被阻止", newState);
         event.preventDefault();
-        // console.log("[路由] Start 被阻止   ", newUrl.split("#/")[1], oldUrl.split("#/")[1], c, d, _FIRST_RUN && "程序开始" || "");
+        // console.info("[路由] Start 被阻止   ", newUrl.split("#/")[1], oldUrl.split("#/")[1], c, d, _FIRST_RUN && "程序开始" || "");
         return;
       }
-
-      // console.log("[路由] Start 成功   ", { oldHash, newHash }, c, d, _FIRST_RUN && "程序开始" || "");
+      // console.info("[路由] Start 成功   ", { oldHash, newHash }, c, d, _FIRST_RUN && "程序开始" || "");
     });
 
     $rootScope.$on("$locationChangeSuccess", (event, newUrl, oldUrl, c, d) => {
@@ -333,7 +329,7 @@
 
       if (_FIRST_RUN) setTimeout(() => _FIRST_RUN = 0);
       if (newUrl == oldUrl && !_FIRST_RUN) {
-        // console.log("[路由] Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        // console.info("[路由] Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
 
@@ -343,47 +339,44 @@
 
       /** 是替换页面？ */
       if (history_state.t && angular.equals(LAST_STATE, history_state)) {
-        // console.log("[路由] Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        // console.info("[路由] Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
 
       if (location.hash != newHash) {
         console.warn("[路由] Success 非常规路由, 可能是otherwise导致。若不是，请注意。", location.hash, { oldHash, newHash });
-        // newState = oldState;
       }
 
-      // BASE.DjState.go(newState);
       !(function () {
         if (!BASE.is_good_state(history_state)) {
           var new_history_state = BASE.get_good_state();
           var hash = newState.hash() || ""; if (hash) hash = "#/" + hash;
-          // console.log("[路由] Success replace_state  ", { history_state, newState, new_history_state }, { hash });
-          BASE.replace_state(hash, history_state = new_history_state);
+          // console.info("[路由] Success replace_state  ", { history_state, newState, new_history_state }, { oldHash, newHash }, { c, d }, { hash });
+          BASE.replace_state(location.pathname + hash, history_state = new_history_state);
         }
         newState.id = history_state.id;
       })();
 
-      // console.log("发布 DjRouteChangeSuccess", newState);
-      broadcast_DjRouteChangeSuccess(newState);
-      // console.log("[路由] ●●●●　显示  ", { LAST_STATE, history_state }, { newState, oldState }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
-      LAST_STATE = BASE.to_good_state(history_state);
-
-      var newPage = BASE.on_otherwise(newState);
-      if (newPage.then) {
-        newPage.then(newPage => {
-          BASE.setPage(newPage);
-          $rootScope.$broadcast("$DjPageNavgateStart", newPage);
-        });
-      } else {
+      DjMsg.startPage(newState).then(newPage => {
+        // console.info("[路由] ●●●●　显示  ", { LAST_STATE, history_state }, { newState, oldState }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        LAST_STATE = BASE.to_good_state(history_state);
         BASE.setPage(newPage);
-        $rootScope.$broadcast("$DjPageNavgateStart", newPage);
-      }
+        $rootScope.$broadcast("$DjPageNavgateSuccess", newPage);
+      });
     });
 
-    function broadcast_DjRouteChangeSuccess(newState) {
-      var oldState = broadcast_DjRouteChangeSuccess.oldState;
-      broadcast_DjRouteChangeSuccess.oldState = newState;
-      return $rootScope.$broadcast("$DjRouteChangeSuccess", newState, oldState);
+    var DjMsg = {
+      startPage: (newState) => {
+        return $q.when(BASE.on_otherwise(newState)).then(newPage => {
+          // console.info("[路由] 开始页面  ", { newPage, newState });
+          var data = { newPage, promise: false };
+          $rootScope.$broadcast("$DjPageNavgateStart", data);
+          if (data.promise) {
+            return data.promise.then(() => newPage);
+          }
+          return newPage;
+        });
+      },
     }
 
   }]);
@@ -396,7 +389,6 @@
       scope: {
         p: "=",
       },
-      //template: "<div></div>",
       link: function (scope, element, attr) {
         var componentName = {};
         var oldComponentName = {};
@@ -409,8 +401,6 @@
           ) {
             scope.state = "";
             componentName = oldComponentName;
-            // element.html("");
-            // return;
           } else {
             pageData.$scope = scope;
             scope.state = pageData.state;
@@ -423,8 +413,6 @@
           var template = (`<${componentName} serach="state.search" ng-if="state"></${componentName}>`);
           element.html(template);
           $compile(element.contents())(scope);
-          // var ele = $compile(template)(scope);
-          // element.append(ele);
         });
       }
     };

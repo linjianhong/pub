@@ -9,21 +9,9 @@
 
   var theModule = angular.module('dj-pop');
 
-  console.log("djuiDialog")
-
   theModule.component('djuiDialog', {
     bindings: {
       param: '<',
-    },
-    scope_______: {
-      dialogShow: '=',
-      backClose: '@',
-      dlgBody: '@',
-      dlgTitle: '@',
-      hideCancel: '@',
-      hideOk: '@',
-      onClose: '&',
-      onClickBack: '&'
     },
     transclude: {
       'title': '?djuiDialogTitle',

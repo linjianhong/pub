@@ -79,7 +79,6 @@
           reshow();
         }
 
-
         var router = $scope.router = Observable("app-router");
         ["pageCss", "pageCssMore", "hideTitle", "hideFooter", "statePath"].map(name => {
           router.observe(name, function (v) {
@@ -241,7 +240,7 @@
         return $q.when(value)
       }
 
-      $rootScope.$on("$DjPageNavgateStart", function (event, newPage, oldPage) {
+      $rootScope.$on("$DjPageNavgateSuccess", function (event, newPage, oldPage) {
         console.log();
         router.newPage = newPage;
         router.oldPage = oldPage;
@@ -278,8 +277,9 @@
    * 设置页面标题
    * 由 $http 拦截服务实现
    */
-  theModule.run(["sign", function (sign) {
+  theModule.run(["sign", "$http", "$q", function (sign, $http, $q) {
 
+    var theSiteConfig = $http.post("系统参数").then(v => theSiteConfig = v);
 
     /**
      * 设置 html 页面标题
@@ -304,16 +304,18 @@
      * 设置页面标题, 根据是否显示标题栏，显示不同内容
      */
     function setTitleAuto(title) {
-      var defaultTitle = window.theSiteConfig.title;
-      title = title || "";
-      var hide = !!title.hide;
-      title = title.title || title.text || title || "";
-      if (hide) {
-        setHtmlTitle((title && (title + ' - ') || '') + defaultTitle.text)
-      }
-      else {
-        setHtmlTitle(defaultTitle.text);
-      }
+      $q.when(theSiteConfig).then(theSiteConfig => {
+        var defaultTitle = theSiteConfig.sys_common && theSiteConfig.sys_common['主标题'] || theSiteConfig.app_name || (theSiteConfig.title && theSiteConfig.title.text) || "APP";
+        title = title || "";
+        var hide = !!title.hide;
+        title = title.title || title.text || title || "";
+        if (hide) {
+          setHtmlTitle((title && (title + ' - ') || '') + defaultTitle)
+        }
+        else {
+          setHtmlTitle(defaultTitle);
+        }
+      });
     }
 
     /**

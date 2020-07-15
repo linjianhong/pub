@@ -15,7 +15,36 @@ class CModuleDefine
 {
   public static $CONFIG = [
 
-    '字典配置' => [
+    '系统参数配置' => [
+      'captions' => [
+        [
+          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
+            ['input' => '主标题', 'w' => 8,],
+            ['input' => '主标题2', 'w' => 8,],
+          ]
+        ], [
+          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
+            ['input' => '主要地址', 'w' => 5,],
+          ]
+        ],
+      ],
+
+      'btns' => [
+        [
+          '$var' => [],
+          'show' => [
+            'name' => "保存",
+            'css' => "box-primary",
+            'can_ac' => "=1",
+          ],
+          'disabled' => "=!\$form.dirty",
+          'mode' => 'ajax-json',
+          'data' => [
+            'api' => "admin/sys_update_data",
+            'search' => ['value' => "=\$form.value"],
+          ],
+        ],
+      ],
     ],
 
     '商城后台配置' => [
@@ -65,30 +94,6 @@ class CModuleDefine
             ['input' => '置顶顺序', 'model' => 'price3', 'w' => 2,],
             ['input' => '商品描述', 'w' => 6, 'type' => "textarea",],
           ]
-        ], [
-          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
-            ['input' => '属性选项', 'w' => 5, 'input_css' => 'flex-v-center', 'type' => "tags", 'q-list' => "7天包退,送货上门,食品级保证,订货,零售"],
-          ]
-        ], [
-          'type' => "row", 'css' => "padding-1", 'cells' => [
-            ['css' => "em-15 b-900 padding-1", 'type' => "text", 'text' => "原图(微信分享)"],
-          ]
-        ], [
-          'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
-            ['input' => '标题图(第1张有效)', 'model' => '标题图', 'w' => 2, 'type' => "imgs",],
-            ['input' => '详情图', 'w' => 6, 'type' => "imgs",],
-            ['input' => '分享描述', 'w' => 6, 'type' => "textarea",],
-          ]
-        ], [
-          'type' => "row", 'css' => "padding-1", 'cells' => [
-            ['css' => "em-15 b-900 padding-1", 'type' => "text", 'text' => "相关链接"],
-          ]
-        ], [
-          'type' => "table", 'css' => "row-like-table", 'model' => '相关链接', 'cols' => [
-            ['w' => 5, 'title' => "序号", 'item_css' => "flex-cc", 'type' => "autoindex"],
-            ['w' => 15, 'title' => "商品", 'item_css' => "bk-f", 'model' => "id", 'type' => "dj-dropdown", 'list' => "商城商品"],
-            ['w' => 30, 'title' => "数量", 'item_css' => "", 'model' => "n", 'type' => "input"],
-          ],
         ],
       ],
 
@@ -147,7 +152,7 @@ class CModuleDefine
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
-            ['input' => '上级分类', 'model' => 'v1', 'type' => "dj-dropdown", 'list' => "商品分类",'w' => 8,],
+            ['input' => '上级分类', 'model' => 'v1', 'type' => "dj-dropdown", 'list' => "商品分类", 'w' => 8,],
           ]
         ], [
           'type' => "row", 'css' => "row-like-table flex-stretch", 'k' => 'cells', 'php' => [
@@ -201,6 +206,17 @@ class CModuleDefine
   ];
 
 
+  /** 系统数据, 公共部分 */
+  public static function sys_common_data()
+  {
+    $db = \MyClass\CDbBase::db();
+    $db_row = $db->get(CDbBase::table('shop_res_index'), ['id', 'attr'], ['AND' => ['type' => '系统参数', 'name' => '系统参数']]);
+    $attr = json_decode($db_row['attr'], true);
+    if (!is_array($attr)) $attr = [];
+    if (!is_array($attr['value'])) $attr['value'] = [];
+    return $attr['value'];
+  }
+
   public static function parse_caption_rows($row)
   {
     if (!isset($row['input'])) return [$row];
@@ -240,7 +256,7 @@ class CModuleDefine
   public static function configAll()
   {
     $base_config = self::$CONFIG;
-    foreach (['商城后台配置', '商品分类配置'] as $config_name) {
+    foreach (['系统参数配置', '商城后台配置', '商品分类配置'] as $config_name) {
       $config = &$base_config[$config_name];
       if (isset($config['captions'])) $config['captions'] = \DJApi\map($config['captions'], function ($captions) {
         if (isset($captions['php'])) {
@@ -258,5 +274,4 @@ class CModuleDefine
     }
     return $base_config;
   }
-
 }

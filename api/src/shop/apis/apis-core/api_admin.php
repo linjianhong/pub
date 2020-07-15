@@ -29,6 +29,80 @@ class class_admin
   }
 
 
+  /**
+   * 接口： admin/sys_config
+   * 列表角色, 用于角色管理
+   */
+  public static function 系统参数配置()
+  {
+    $configAll = \APP\CModuleDefine::configAll();
+    return $configAll['系统参数配置'];
+  }
+  /**
+   * 接口： admin/sys_config
+   * 列表角色, 用于角色管理
+   */
+  public static function sys_config($query, $verifyData)
+  {
+    $db = \MyClass\CDbBase::db();
+    $db_row = $db->get(CDbBase::table('shop_res_index'), ['id', 'attr'], ['AND' => ['type' => '系统参数', 'name' => '系统参数']]);
+    $attr = json_decode($db_row['attr'], true);
+    if (!is_array($attr)) $attr = [];
+    $db_row['attr'] = $attr;
+    return \DJApi\API::OK([
+      "config" => self::系统参数配置(),
+      "value" => $db_row,
+    ]);
+  }
+
+
+  /**
+   * 接口： admin/sys_config
+   * 列表角色, 用于角色管理
+   */
+  public static function sys_update_data($query, $verifyData)
+  {
+    $data = json_decode($query['data'], true);
+    $value = $data['value'];
+    $save_config = self::系统参数配置();
+
+    $save_value = [];
+    \DJApi\API::debug(["value" => $value, 'captions' => $save_config['captions']]);
+    foreach ($save_config['captions'] as $captions) {
+      if ($captions['model']) {
+        $k = $captions['model'];
+        if (isset($value[$k])) $save_value[$k] = $value[$k];
+      } else if (is_array($captions['cells'])) foreach ($captions['cells'] as $cell) {
+        if ($cell['model']) {
+          $k = $cell['model'];
+          if (isset($value[$k])) $save_value[$k] = $value[$k];
+        }
+      }
+    }
+    \DJApi\API::debug(["data" => $data, 'goods_config' => $save_config, "save_value" => $save_value]);
+
+    /** 保存数据 */
+    if (count($save_value) > 0) {
+      $db = \MyClass\CDbBase::db();
+      $db_row = $db->get(CDbBase::table('shop_res_index'), ['id', 'attr'], ['AND' => ['type' => '系统参数', 'name' => '系统参数']]);
+      if (!$db_row) {
+        $db_row = ['type' => '系统参数', 'name' => '系统参数'];
+        $db_row['id'] = $db->insert(CDbBase::table('shop_res_index'), $db_row);
+      }
+      \DJApi\API::debug(["db_row" => $db_row, 'DB' => $db->getShow()]);
+      if (is_array($db_row) && $db_row['id']) {
+        $attr = json_decode($db_row['attr'], true);
+        if (!is_array($attr)) $attr = [];
+        foreach ($save_value as $k => $v) {
+          $attr['value'][$k] = $v;
+        }
+        $n = $db->update(CDbBase::table('shop_res_index'), ['attr' => \DJApi\API::cn_json($attr)], ['id' => $db_row['id']]);
+        \DJApi\API::debug(["n" => $n, 'DB' => $db->getShow()]);
+      }
+    }
+    return \DJApi\API::OK(['n' => $n, 'need_update' => ['attr.value' => $save_value]]);
+  }
+
 
 
   /**

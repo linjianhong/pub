@@ -131,6 +131,13 @@
         t3: { text: "角色管理, 各用户根据角色，获得权限" },
         state: "admin-role"
       },
+      "admin-系统参数配置": {
+        fa: "user-secret",
+        color: "#386",
+        text: "系统参数配置",
+        t3: { text: "系统参数配置" },
+        state: "admin-args"
+      },
 
       "商城后台-订单列表": {
         fa: "book",

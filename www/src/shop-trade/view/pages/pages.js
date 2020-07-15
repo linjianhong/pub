@@ -38,7 +38,7 @@
     template: `
       <div class="flex header xp-warning padding-1">
         <div class="flex-1 flex-left flex-v-center padding-1">
-          <div class="padding-1 em-15">广西冻品商城</div>
+          <div class="padding-1 em-15">{{theSiteConfig['sys_common']['主标题']||theSiteConfig.shop_name||'迷你订单系统'}}</div>
         </div>
         <div class="flex">
           <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
@@ -125,6 +125,8 @@
       </div>`,
     controller: ["$scope", "$http", "$q", "$element", "DjState", "SHOP_FN", function ctrl($scope, $http, $q, $element, DjState, SHOP_FN) {
       $element.addClass("flex-v flex-1");
+
+      $http.post("系统参数").then(theSiteConfig => $scope.theSiteConfig = theSiteConfig);
 
       var D = $scope.D = {
         full_list: [],

@@ -136,6 +136,9 @@ class class_app
     $R = CODES[$request->query['app']];
     \DJApi\API::debug(['R' => $R, 'query' => $request->query]);
     $R['timestamp'] = time();
+    $R['shop_name'] = "中国订单";
+    $R['app_name'] = "中国订单APP";
+    $R['sys_common'] = \APP\CModuleDefine::sys_common_data();
     return \DJApi\API::OK($R);
   }
 
