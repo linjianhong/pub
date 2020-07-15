@@ -38,7 +38,7 @@
     template: `
       <div class="flex header xp-warning padding-1">
         <div class="flex-1 flex-left flex-v-center padding-1">
-          <div class="padding-1 em-15">{{theSiteConfig['sys_common']['主标题']||theSiteConfig.shop_name||'迷你订单系统'}}</div>
+          <div class="padding-1 em-15">{{shop_name||'迷你订单系统'}}</div>
         </div>
         <div class="flex">
           <div class="flex-2 fa-icon {{icon.css}}" ng-repeat="icon in icons" ng-click="icon.click()">
@@ -126,7 +126,22 @@
     controller: ["$scope", "$http", "$q", "$element", "DjState", "SHOP_FN", function ctrl($scope, $http, $q, $element, DjState, SHOP_FN) {
       $element.addClass("flex-v flex-1");
 
-      $http.post("系统参数").then(theSiteConfig => $scope.theSiteConfig = theSiteConfig);
+      $http.post("系统参数").then(theSiteConfig => {
+        $scope.theSiteConfig = theSiteConfig;
+        var shop_name = $scope.shop_name = theSiteConfig['sys_common']['主标题'] || theSiteConfig.shop_name || '迷你订单系统';
+        setTimeout(() => {
+          var title = "商城首页";
+          var desc = shop_name;
+          var imgUrl = "";
+          $http.post("WxJssdk/setShare", {
+            title: title, // 分享标题
+            desc: desc || "迷你订单系统", // 分享描述
+            link: location.origin + location.pathname + location.hash, // 分享链接
+            imgUrl: imgUrl || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
+            type: 'link', // 分享类型,music、video或link，不填默认为link
+          });
+        }, 100);
+      });
 
       var D = $scope.D = {
         full_list: [],
@@ -269,6 +284,9 @@
       $scope.icons = [
         { css: "text-e", fa: "user", text: "我的", click: () => { DjState.go("my", {}); } },
       ];
+
+
+
     }]
   });
 
@@ -400,8 +418,6 @@
 
       }).catch(e => console.error(e));
 
-
-
     }]
   });
 
@@ -471,6 +487,23 @@
         { css: "text-e", fa: "user", text: "我的", click: () => { DjState.go("my", {}); } },
       ];
 
+
+      $http.post("系统参数").then(theSiteConfig => {
+        $scope.theSiteConfig = theSiteConfig;
+        var shop_name = $scope.shop_name = theSiteConfig['sys_common']['主标题'] || theSiteConfig.shop_name || '迷你订单系统';
+        setTimeout(() => {
+          var title = "我的订单列表";
+          var desc = shop_name;
+          var imgUrl = "";
+          $http.post("WxJssdk/setShare", {
+            title: title, // 分享标题
+            desc: desc || "迷你订单系统", // 分享描述
+            link: location.origin + location.pathname + location.hash, // 分享链接
+            imgUrl: imgUrl || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
+            type: 'link', // 分享类型,music、video或link，不填默认为link
+          });
+        }, 100);
+      });
     }]
   });
 

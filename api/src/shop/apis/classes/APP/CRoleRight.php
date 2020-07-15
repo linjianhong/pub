@@ -179,14 +179,16 @@ class CRoleRight
   {
     $db = CDbBase::db();
     $db_roles = $db->select(CDbBase::table(self::$TABLE_ROLE), ['id', 'name', 'attr'], ['AND' => ['name[!]' => '', 't2[<]' => '1999-12']]);
+    \DJApi\API::debug(['全部角色' => $db_roles, 'DB' => $db->getShow()]);
     $roles = [];
     foreach ($db_roles as $db_role) {
       $attr = json_decode($db_role['attr'], true);
-      $power = $attr['power'];
-      if (!is_array($power)) $power = "";
+      $powers = $attr['powers'];
+      if (!is_array($powers)) $powers = "";
       $roles[] = [
+        'id' => $db_role['id'],
         'name' => $db_role['name'],
-        'power' => $power,
+        'powers' => $powers,
       ];
     }
     return $roles;
@@ -200,7 +202,7 @@ class CRoleRight
     // });
     $db = CDbBase::db();
     $db_row = $db->get(CDbBase::table(self::$TABLE_USER), ['uid', 'attr'], ['AND' => ['uid' => $uid]]);
-    \DJApi\API::debug(['全部权限' => $全部权限, 'db_row' => $db_row, 'DB' => $db->getShow()]);
+    \DJApi\API::debug(['全部权限' => $全部权限, '全部角色' => $全部角色, 'db_row' => $db_row, 'DB' => $db->getShow()]);
     if (!is_array($db_row)) return [];
     $attr = json_decode($db_row['attr'], true);
     // 超级管理员
@@ -211,30 +213,41 @@ class CRoleRight
     if (!is_array($role_ids)) return [];
     $角色的权限 = [];
     foreach ($全部角色 as $角色) {
-      $角色的权限[$角色['id']] = $角色['power'];
+      $角色的权限[$角色['id']] = $角色['powers'];
     }
+
+    \DJApi\API::debug(['角色的权限' => $角色的权限, 'role_ids' => $role_ids]);
 
     //按角色数据，有哪些权限
     $role_powers = [];
     foreach ($role_ids as $role_id) {
-      foreach ($角色的权限[$role_id] as $role_power) {
-        foreach ($role_power as $group => $arr) {
-          if (!is_array($role_powers[$group])) $role_powers[$group] = [];
-          $role_powers[$group] = array_merge($role_powers[$group], $arr);
-        }
+      foreach ($角色的权限[$role_id] as $group => $arr) {
+        \DJApi\API::debug(['foreach 角色的权限' => $角色的权限, 'role_id' => $role_id, 'group' => $group, 'arr' => $arr]);
+        if (!is_array($role_powers[$group])) $role_powers[$group] = [];
+        $role_powers[$group] = array_merge($role_powers[$group], $arr);
       }
     }
 
+    \DJApi\API::debug(['role_powers' => $role_powers]);
+
     //确保权限符合配置
     $user_powers = [];
-    foreach ($全部权限 as $group => $arr) {
+    foreach ($全部权限 as $item) {
+      $group = $item['name'];
+      $arr = $item['list'];
+      \DJApi\API::debug(['foreach 全部权限' => $全部权限, 'group' => $group, 'arr' => $arr]);
       if (!is_array($role_powers[$group])) continue;
       $powers = [];
       foreach ($arr as $power_name) {
         if (in_array($power_name, $role_powers[$group])) $powers[] = $power_name;
       }
-      if (is_array($powers)) $user_powers[$group] = $powers;
+      if (is_array($powers)) $user_powers[] = [
+        'name' => $group,
+        'list' => $powers,
+      ];
     }
+
+    \DJApi\API::debug(['user_powers' => $user_powers]);
 
     return $user_powers;
   }
@@ -242,6 +255,12 @@ class CRoleRight
   public static function user_has_power($uid, $group, $name)
   {
     $user_powers = self::get_user_power($uid);
-    return is_array($user_powers[$group]) && in_array($name, $user_powers[$group]);
+    if(!is_array($user_powers))return false;
+    foreach($user_powers as $item){
+      if($item['name']==$group){
+        return in_array($name,$item['list']);
+      }
+    }
+    return false;
   }
 }

@@ -110,7 +110,7 @@
     sign.registerHttpHook({
       match: /^系统参数$/,
       hookRequest: function (config, mockResponse, match) {
-        return mockResponse($http.post("缓存请求", { api: "app/site", data: { app: "stock-master" }, delay: 6e5 }).then(json => json.datas));
+        return mockResponse($http.post("缓存请求", { api: "app/site", data: { app: "shop-admin" }, delay: 6e5 }).then(json => json.datas));
       }
     });
   }]);

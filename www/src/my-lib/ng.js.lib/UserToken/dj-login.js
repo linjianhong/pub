@@ -176,7 +176,7 @@
         });
         setTimeout(() => {
           if (UserToken.hasToken()) {
-            defer.resolve(tokenData);
+            defer.resolve(UserToken.copyToken());
           }
         }, 2000);
         return defer.promise;

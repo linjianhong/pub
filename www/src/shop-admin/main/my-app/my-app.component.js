@@ -25,13 +25,6 @@
         $element.addClass("flex-v");
         $scope.appInited = true;
 
-        // if ("首次打开页面，不要动画") {
-        //   $scope.isFirstRun = true;
-        //   $rootScope.$on("$DjRouteChangeStart", function (event, newState, oldState, isFirstRun) {
-        //     $scope.isFirstRun = isFirstRun;
-        //   });
-        // }
-
         var 标题栏 = true;
         var 菜单栏 = true;
 

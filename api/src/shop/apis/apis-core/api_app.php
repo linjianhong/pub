@@ -7,6 +7,11 @@ const APP_WX = [
   "name" => "xls",
   "redirect_uri" => "https://xlsgdjj.com/bridge/wx-auth",
 ];
+const APP_WX_PGY = [
+  "appid" => "wx3a807a2f301479ae",
+  "name" => "pgy-wx",
+  "redirect_uri" => "https://jdyhy.com/bridge/wx-auth",
+];
 const APP_WX3 = [
   "appid" => "wxffc089a88065e759",
   "name" => "pgy-web",
@@ -19,96 +24,43 @@ const APP_WX_XCX = [
 ];
 
 const CODES = [
-  "stock-local" => [
-    "localStorage_KEY_UserToken" => "__stock_user_token__",
-    "app_wx" => APP_WX,
+  "shop-admin" => [
+    "localStorage_KEY_UserToken" => "mini_shop_master_usertoken",
+    "app_wx" => APP_WX_PGY,
     "app_wx3" => APP_WX3,
     "app_wx_xcx" => APP_WX_XCX,
+    "apiRoot" => "https://api.jdyhy.com/api-mini_shop-vers/0.1.0/src/shop/",
     "codes" => [
-      "ver" => "0.2.4",
-      "VER_time" => "2020-03-01 16:00:00",
-      "assetsPath" => "http://sites/xls/2019/www/dist/stock/output/",
-      // 顺序： *.css, lib*.js, *.js
+      "ver" => "0.1.0",
+      "VER_time" => "2020-06-21 16:10:00",
+      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/mini_shop/assert/output/",
       "files" => [
-        "lib-c97c3824a8.css",
-        "lib-7d255fccbb.js",
-        "app-67204ef41e.css",
-        "app-ee8d6a51d2.js"
+        "lib-2cc3ab6c0c.css",
+        "lib-9dc2c90f07.js",
+        "app-fc3fd49517.css",
+        "app-bb736a4f80.js"
       ]
     ]
   ],
-  "stock-master" => [
-    "localStorage_KEY_UserToken" => "stock_master_usertoken",
-    "app_wx" => APP_WX,
+  "shop-trade" => [
+    "localStorage_KEY_UserToken" => "mini_shop_master_usertoken",
+    "app_wx" => APP_WX_PGY,
     "app_wx3" => APP_WX3,
     "app_wx_xcx" => APP_WX_XCX,
+    "apiRoot" => "https://api.jdyhy.com/api-mini_shop-vers/0.1.0/src/shop/",
     "codes" => [
-      "ver" => "0.2.4",
-      "VER_time" => "2020-03-01 16:00:00",
-      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/output/",
-      // 顺序： *.css, lib*.js, *.js
+      "ver" => "0.1.0",
+      "VER_time" => "2020-06-21 16:10:00",
+      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/mini_shop/assert/output/",
       "files" => [
-        "lib-c97c3824a8.css",
-        "lib-7d255fccbb.js",
-        "app-3fdeafe557.css",
-        "app-1b2c8a05f9.js"
+        "lib-2cc3ab6c0c.css",
+        "lib-9dc2c90f07.js",
+        "app-3cda317408.css",
+        "app-4fb81dc8b7.js"
       ]
     ]
   ],
-  "stock-xcx" => [
-    "localStorage_KEY_UserToken" => "stock_master_usertoken",
-    "app_wx" => APP_WX,
-    "app_wx3" => APP_WX3,
-    "app_wx_xcx" => APP_WX_XCX,
-    "codes" => [
-      "ver" => "0.2.4",
-      "VER_time" => "2020-03-01 16:00:00",
-      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/output/",
-      // 顺序： *.css, lib*.js, *.js
-      "files" => [
-        "lib-c97c3824a8.css",
-        "lib-7d255fccbb.js",
-        "app-3fdeafe557.css",
-        "app-1b2c8a05f9.js"
-      ]
-    ]
-  ],
-  "stock-preview" => [
-    "localStorage_KEY_UserToken" => "stock_preview_usertoken",
-    "app_wx" => APP_WX,
-    "app_wx3" => APP_WX3,
-    "app_wx_xcx" => APP_WX_XCX,
-    "codes" => [
-      "ver" => "0.2.4",
-      "VER_time" => "2020-03-01 16:00:00",
-      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/output/",
-      // 顺序： *.css, lib*.js, *.js
-      "files" => [
-        "lib-c97c3824a8.css",
-        "lib-7d255fccbb.js",
-        "app-3fdeafe557.css",
-        "app-1b2c8a05f9.js"
-      ]
-    ]
-  ],
-  "shops-master" => [
-    "localStorage_KEY_UserToken" => "stock_master_usertoken",
-    "app_wx" => APP_WX,
-    "app_wx3" => APP_WX3,
-    "app_wx_xcx" => APP_WX_XCX,
-    "codes" => [
-      "ver" => "0.2.4",
-      "VER_time" => "2020-03-01 16:00:00",
-      "assetsPath" => "https://xlsgdjj.oss-cn-beijing.aliyuncs.com/www/stock/assert/output/",
-      // 顺序： *.css, lib*.js, *.js
-      "files" => [
-        "lib-c97c3824a8.css",
-        "app-d26739a721.css",
-        "lib-7d255fccbb.js",
-        "app-64d731e484.js"
-      ]
-    ]
-  ],
+
 ];
 
 
