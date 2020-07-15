@@ -36,7 +36,7 @@ const CODES = [
         "lib-2cc3ab6c0c.css",
         "lib-9dc2c90f07.js",
         "app-fc3fd49517.css",
-        "app-4b1e57a7c9.js"
+        "app-bb736a4f80.js"
       ]
     ]
   ],
@@ -54,7 +54,7 @@ const CODES = [
         "lib-2cc3ab6c0c.css",
         "lib-9dc2c90f07.js",
         "app-3cda317408.css",
-        "app-d98586d33a.js"
+        "app-4fb81dc8b7.js"
       ]
     ]
   ],
