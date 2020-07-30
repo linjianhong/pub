@@ -1,0 +1,25 @@
+.chain-select-item {
+  padding: .5em .2em .5em 0;
+}
+
+.chain-select-item-sep {
+  padding: .5em .2em .5em 0;
+}
+
+.chain-select-dropdown-item {
+  padding: .5em 2em;
+  font-size: 1.2em;
+  font-weight: 900;
+  border-radius: .3em;
+  margin: .2em;
+}
+
+.chain-select-dropdown {
+  position: absolute;
+  z-index: 6;
+  padding: .5em;
+  background: #fff;
+  box-shadow: 3px 3px 3px #000;
+  width: 100%;
+  border: solid 1px #ccc;
+}

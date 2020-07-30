@@ -1,0 +1,49 @@
+table.dj-caption-table {
+  border-collapse: collapse;
+  table-layout: auto;
+  empty-cells: show;
+  width: 100%;
+  border: solid 2px #000;
+}
+table.dj-caption-table tr td {
+  border: solid 1px #888;
+}
+
+table.dj-caption-table td {
+  height: 20px;
+}
+
+table.dj-caption-table td>dj-item {
+  height: 100%;
+}
+
+
+.dform-input-item.ttb>.body.dform-yn {
+  padding: .5em;
+}
+
+.dform3-yn {
+  border: solid 1px #cccccc;
+  border-radius: 1em;
+  background: #eeeeee;
+  position: relative;
+  width: 5em;
+  height: 2em;
+}
+
+.dform3-yn>.top {
+  position: absolute;
+  width: 3em;
+  top: 0;
+  bottom: 0;
+  border: solid 0;
+  border-radius: 1em;
+  color: #fff;
+  left: 0;
+  background: #ccc;
+}
+
+.dform3-yn.yes>.top {
+  left: 2em;
+  background: #080;
+}

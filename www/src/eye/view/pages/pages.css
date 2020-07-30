@@ -1,0 +1,11 @@
+.header.xp-warning {
+  background: -webkit-linear-gradient( #fa6, #f80);
+  /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient( #fa6, #f80);
+  /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(#fa6, #f80);
+  /* Firefox 3.6 - 15 */
+  background: linear-gradient(#fa6, #f80);
+  /* 标准的语法 */
+  color: #fff;
+}
