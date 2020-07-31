@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html ng-app-ready="my-app">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
   <title>商城</title>
   <style>
-    *{font-size: 1rem;}
+    * {
+      font-size: 1rem;
+    }
   </style>
 
-
   <script>
-    var rat = window.devicePixelRatio;
+    var isPhone = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+    var isMocking = /win/i.test(navigator.platform);
+    var rat = isPhone ? 1 : window.devicePixelRatio;
     var scale = 1 / rat;
     document.getElementById("viewport").setAttribute(
       "content",
@@ -40,6 +44,7 @@
   <!-- endbuild -->
 
 </head>
+
 <body>
 
   <my-app>Loading...</my-app>
@@ -56,4 +61,5 @@
   <!-- endbuild -->
 
 </body>
+
 </html>

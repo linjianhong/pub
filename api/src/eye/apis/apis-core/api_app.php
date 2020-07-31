@@ -35,6 +35,7 @@ class class_app
   {
     $R = [
       'timestamp' => time(),
+      "app_wx3" => APP_WX3,
       'wxShare' => [
         'title' => '', // 分享标题
         'desc' => '', // 分享描述
@@ -42,6 +43,7 @@ class class_app
         'imgUrl' => '', // 分享图标
       ],
       'main_menu' => [
+        [ 'text'=>'打字', 'i'=> 'edit', 'path'=>'ime'],
         [ 'text'=>'查询', 'i'=> 'search', 'path'=>'page2'],
         [ 'text'=>'我的', 'i'=> 'user', 'path'=>'my'],
       ],

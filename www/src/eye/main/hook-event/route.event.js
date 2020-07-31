@@ -12,10 +12,12 @@
     });
 
     /** 是否要求登录 */
-    function checkNeedLogin(state) {
+    function checkNeedLogin(page) {
+      var state = page.state;
+      var component = page.component;
       if (checkNeedLogin.loginPaths.indexOf(state.path) >= 0) return false;
-      var requireLogin = state.requireLogin;
-      if (angular.isFunction(requireLogin)) {
+      var requireLogin = component.param.requireLogin;
+      while (angular.isFunction(requireLogin)) {
         requireLogin = requireLogin(DjState);
       }
       if (requireLogin === false) return false;
@@ -81,7 +83,7 @@
       }).catch(e => {
         var newPage = data.newPage;
         var newState = newPage.state;
-        return $q.when(checkNeedLogin(newState)).then(needLogin => {
+        return $q.when(checkNeedLogin(newPage)).then(needLogin => {
           if (!needLogin) return "无需登录";
           return $http.post("自动微信登录", { newState }).then(() => lastPromiseData);
         });

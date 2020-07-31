@@ -263,22 +263,29 @@
     }
 
     BASE.on_otherwise = function (state) {
-      state = new BASE.State(state);
+      on_otherwise.history = [];
+      return on_otherwise(state);
+    }
+
+    function on_otherwise(base_state) {
+      if (!base_state) return {
+        component: {},
+        state: {},
+      };
+      state = new BASE.State(base_state);
       var component = BASE.getComponent(state);
       if (component) return {
         component,
         state,
       };
-      var otherwise = BASE.Router_otherwise;
-      if (angular.isFunction(otherwise)) otherwise = otherwise(base_state);
-      if (!otherwise) return {
-        component: component || {},
-        state,
-      };
-      console.log("otherwise", "#/" + BASE.hash(otherwise), location.hash);
-      if (!otherwise.then) return BASE.on_otherwise(otherwise);
-      return $q.when(otherwise).then(state => {
-        return BASE.on_otherwise(state);
+      var Router_otherwise = BASE.Router_otherwise;
+      while (angular.isFunction(Router_otherwise)) Router_otherwise = Router_otherwise(base_state);
+      console.log("Router otherwise", "#/" + BASE.hash(Router_otherwise), location.hash);
+      if (!Router_otherwise.then) return on_otherwise(Router_otherwise);
+      return $q.when(Router_otherwise).then(state => {
+        if (on_otherwise.history.indexOf(state) >= 0) return "";
+        on_otherwise.history.push(state);
+        return on_otherwise(state);
       }).catch(e => console.error(e))
     }
 

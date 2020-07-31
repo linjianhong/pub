@@ -20,8 +20,12 @@
 
 
   theApp.run(["DjState", "$http", function (DjState, $http) {
+    var otherwise = window.theSiteConfig.otherwise;
+    function otherwise_by_login() {
+      return $http.post("用户登录/状态").then(() => otherwise.loged || otherwise || "").catch(() => otherwise.unloged || otherwise || "");
+    }
     DjState.when("bbb", "query")
-      .otherwise($http.post("用户登录/状态").then(() => "home").catch(() => "home"));
+      .otherwise(otherwise_by_login);
   }]);
 
   theApp.config(["$sceDelegateProvider", "$locationProvider",
@@ -89,7 +93,7 @@
       match: /^系统参数$/,
       hookRequest: function (config, mockResponse, match) {
         var ajax = $http.post("缓存请求", { api: "app/site", data: { app: "shop-trade" }, delay: 6e5 });
-        return mockResponse(ajax.then(json => json.datas));
+        return mockResponse(ajax.then(json => angular.extend({},window.theSiteConfig, json.datas)));
       }
     });
   }]);
