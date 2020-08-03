@@ -85,7 +85,9 @@
         var newState = newPage.state;
         return $q.when(checkNeedLogin(newPage)).then(needLogin => {
           if (!needLogin) return "无需登录";
-          return $http.post("自动微信登录", { newState }).then(() => lastPromiseData);
+          return $http.post("自动微信登录", { newState }).then(() => lastPromiseData).catch(e => {
+            DjState.go(-1);
+          });
         });
       });
     }

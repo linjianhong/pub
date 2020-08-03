@@ -203,6 +203,7 @@
           return tokenData;
         }).catch(e => {
           console.log("请求登录失败, e", e, ",param=", param);
+          FN["登录失败"](e);
           return $q.reject(e);
         });
       },

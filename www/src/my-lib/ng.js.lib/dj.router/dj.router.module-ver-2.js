@@ -219,7 +219,21 @@
 
     var LAST_HASH = "";
 
+    function state_404(path, search) {
+      BASE.state_404 = new BASE.State(path, search)
+    }
+
     function go(path, search) {
+      if (path === -1) {
+        console.log("DjState 后退", BASE.lastPage);
+        if (BASE.lastPage) {
+          return go(BASE.lastPage.state)
+        }
+        if (BASE.state_404) {
+          return go(BASE.state_404);
+        }
+        return;
+      }
       if (path instanceof (BASE.State)) return go(path.path, path.search);
       var hash = "#/" + BASE.hash(path, search);
       var hash = BASE.hash(path, search) || ""; if (hash) hash = "#/" + hash;
@@ -290,6 +304,7 @@
     }
 
     angular.extend(BASE.DjState, {
+      state_404,
       go,
       replace,
       when,
@@ -365,6 +380,7 @@
       })();
 
       DjMsg.startPage(newState).then(newPage => {
+        BASE.lastPage = newPage;
         // console.info("[路由] ●●●●　显示  ", { LAST_STATE, history_state }, { newState, oldState }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         LAST_STATE = BASE.to_good_state(history_state);
         BASE.setPage(newPage);

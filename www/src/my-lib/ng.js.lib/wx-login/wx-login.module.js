@@ -279,7 +279,7 @@
           params: {
             backClose: 1, // 点击背景是否关闭对话框
           },
-          options: {}
+          options: { param }
         }, param && param.dlgParam);
         console.log("dlgParam", dlgParam);
         var dlg = $http.post("显示对话框/dialog", dlgParam).then(result => {
@@ -305,8 +305,13 @@
    */
   q3Module.component("loginByWxQrcode", {
     template: `<div id="${idWxLoginDiv}" class="flex-cc">Loading weixin ...</div>`,
-    controller: ["$http", function ($http) {
+    controller: ["$http", "$scope", function ($http, $scope) {
       if (isWx) { return; }
+
+      this.$onDestroy = () => {
+        console.log("onDestroy 微信二维码登录组件", this, $scope);
+      }
+
       this.$onInit = () => {
         $http.post("系统参数").then(json_datas => json_datas.app_wx3).then(wx_app => {
           var authParam = getAuthParam(location.hash, wx_app);

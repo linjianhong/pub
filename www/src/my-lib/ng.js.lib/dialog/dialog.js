@@ -1,11 +1,11 @@
 !(function (angular, window, undefined) {
 
-  var theConfigModule = angular.module('dj-ui')
+  var theConfigModule = angular.module("dj-ui")
 
   /**
    * 显示对话框
    */
-  theConfigModule.run(['sign', 'DjPop', function (sign, DjPop) {
+  theConfigModule.run(["$timeout", "sign", "DjPop", function ($timeout, sign, DjPop) {
     var paramMaps = [
       { type: "input", arg: ["title", "text"] },
       { type: "toast", arg: ["text", "delay"] },
@@ -18,7 +18,7 @@
     sign.registerHttpHook({
       match: /^显示对话框\/(.*)$/,
       hookRequest: function (config, mockResponse, match) {
-        console.log("显示对话框",config)
+        console.log("显示对话框", config)
         var param = config.data;
         if (!angular.isArray(param) && angular.isObject(param)) {
           var paramList = paramMaps.find(item => item.type == match[1]);
@@ -29,9 +29,12 @@
             param = Object.keys(param).map(k => param[k]);
           }
         }
-        var dlg = DjPop[match[1]].apply({}, param);
-        dlg.catch(e => console.error(e));
-        return mockResponse.resolve(dlg);
+        var dlg_$timeout = $timeout(() => {
+          var dlg = DjPop[match[1]].apply({}, param);
+          dlg.catch(e => console.error(e));
+          return dlg;
+        }, 16)
+        return mockResponse.resolve(dlg_$timeout);
       }
     });
   }]);
