@@ -316,7 +316,7 @@
 
   routerModule.factory("DjState", [function () { return BASE.DjState; }]);
 
-  routerModule.run(["$rootScope", "$q", function ($rootScope, $q) {
+  routerModule.run(["$rootScope", "$q", "$location", function ($rootScope, $q, $location) {
 
     var _FIRST_RUN = 1;
     var LAST_STATE = {};
@@ -339,6 +339,10 @@
 
       if ($rootScope.$broadcast("$DjRouteChangeStart", newState, oldState).defaultPrevented) {
         event.preventDefault();
+
+        //$location.$$parse(oldUrl);
+        //$location.$$state = oldState;
+
         // console.info("[路由] Start 被阻止   ", newUrl.split("#/")[1], oldUrl.split("#/")[1], c, d, _FIRST_RUN && "程序开始" || "");
         return;
       }

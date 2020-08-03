@@ -75,19 +75,19 @@
 !(function (angular, window, undefined) {
 
   /** 配置参数, code 登录前的页面 */
-  const PATH_CODE = "/wx-code-login";
+  var PATH_CODE = "/wx-code-login";
 
   /** 配置参数, code 登录的 API 请求地址
    * 携带的参数：
    * @param code
    * @param name
    */
-  const API_PATH = "app/wx_code_login";
+  var API_PATH = "app/wx_code_login";
 
-  const MODE_H5 = "微信内置浏览器登录";
-  const MODE_Q3 = "微信二维码扫描登录";
-  const HOOK_REQUIRE_WX_LOGIN = "自动微信登录";
-  const HOOKAPI_WX_CODE_LOGIN = "微信code登录";
+  var MODE_H5 = "微信内置浏览器登录";
+  var MODE_Q3 = "微信二维码扫描登录";
+  var HOOK_REQUIRE_WX_LOGIN = "自动微信登录";
+  var HOOKAPI_WX_CODE_LOGIN = "微信code登录";
 
 
   var idWxLoginDiv = "wx-lg_cnt_" + (+new Date());
@@ -95,7 +95,7 @@
 
 
   /** 通用基础模块 */
-  var commonModule = angular.module("dj-wx-login-base", []);
+  var commonModule = angular.module("dj-wx-login-base", ["dj-http"]);
 
   /** 微信浏览器模块, 登录需跳转到微信 OAuth2 页面 */
   var h5Module = angular.module("dj-wx-login-h5", ["dj-wx-login-base"]);
@@ -153,9 +153,14 @@
           var name = isWx ? "h5" : "q3";
           var mode = isWx ? MODE_H5 : MODE_Q3;
 
+          //alert("请求登录:\n" + JSON.stringify({ mode, data: { name } }));
           // 登录后，登录到需要的地址
           var login = $http.post("用户登录/请求登录", { mode, data: { name } }).then(json => {
             console.log("这会出现吗？");
+            //alert("请求登录, OK:\n" + JSON.stringify("json"));
+          }).catch(e => {
+            //alert("请求登录, 失败:\n" + JSON.stringify("e"));
+            return $q.reject(e);
           });
           return mockResponse(login);
         }
@@ -204,7 +209,7 @@
         match: `自定义登录-${HOOKAPI_WX_CODE_LOGIN}`,
         hookRequest: function (config, mockResponse, match) {
           var param = config.data;
-          console.log("微信code登录...");
+          console.log("微信code登录...", { param });
           $http.post("我的-基本信息", { reset: 1 }).then(() => $http.post("我的-基本信息"));
           var login = $http.post(API_PATH, { code: param.code, name: param.name }).then(json => {
             var token = json.datas;
@@ -223,6 +228,7 @@
 
   /** 微信内置浏览器登录 */
   h5Module.run(["$http", "sign", function ($http, sign) {
+    //alert(`^自定义登录 2-${MODE_H5}$`);
 
     /**
      * 登录请求入口
@@ -230,23 +236,27 @@
     sign.registerHttpHook({
       match: `^自定义登录-${MODE_H5}$`,
       hookRequest: function (config, mockResponse, match) {
+        //alert(`^自定义登录 3 -${MODE_H5}$`);
         var param = config.data;
         /**
          * 微信浏览器中，网页授权登录
          */
         if (isWx) {
-          $http.post("系统参数").then(json_datas => json_datas.app_wx).then(wx_app => {
+          var go = $http.post("系统参数").then(json_datas => json_datas.app_wx).then(wx_app => {
             var authParam = getAuthParam(location.hash, wx_app);
             var wxAuthUrl =
               "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + authParam.appid +
               "&redirect_uri=" + authParam.redirect_uri +
               "&response_type=code&scope=snsapi_base&state=" + authParam.state +
               "#wechat_redirect";
-            setTimeout(() => {
-              window.location.href = wxAuthUrl;
-            });
+            //setTimeout(() => {
+            window.location.href = wxAuthUrl;
+            //});
+          }).catch(e => {
+            console.error("微信内置浏览器登录", e);
+            return "网页要跳转了";
           });
-          return mockResponse.reject("网页要跳转了");
+          return mockResponse(go);
         }
         /**
          * 非微信浏览器，显示二维码

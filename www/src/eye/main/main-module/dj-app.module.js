@@ -76,7 +76,7 @@
       if (!ignorSign(url)) {
         if (!UserToken.hasToken()) {
           console.log("未登录, 不请求", url)
-          return mockResponse.reject("未登录, 不请求");
+          return mockResponse.reject("未登录, 不请求, url:\n" + url);
         }
         post = angular.extend({}, UserToken.signToken(), config.data);
       }
@@ -93,7 +93,7 @@
       match: /^系统参数$/,
       hookRequest: function (config, mockResponse, match) {
         var ajax = $http.post("缓存请求", { api: "app/site", data: { app: "shop-trade" }, delay: 6e5 });
-        return mockResponse(ajax.then(json => angular.extend({},window.theSiteConfig, json.datas)));
+        return mockResponse(ajax.then(json => angular.extend({}, window.theSiteConfig, json.datas)));
       }
     });
   }]);

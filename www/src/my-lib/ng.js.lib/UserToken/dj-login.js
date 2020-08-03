@@ -188,7 +188,7 @@
         var mode = param && param.mode;
         if (!mode) return FN.call("状态");
         return $http.post(`自定义登录-${param.mode}`, param.data).then(json => {
-          var token = json.token || json.datas.token;
+          var token = json && (json.token || json.datas && json.datas.token);
           /** 登录失败，不破坏原登录状态 */
           if (!UserToken.hasToken(token)) {
             // $rootScope.$broadcast("用户登录状态", { mode: false, prompt: "登录失败" });

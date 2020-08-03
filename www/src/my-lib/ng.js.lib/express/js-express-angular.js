@@ -702,7 +702,7 @@
     /**
      * 天数功能
      */
-    const ONE_DAY = 3600 * 24 * 1000;
+    var ONE_DAY = 3600 * 24 * 1000;
 
     function _days_of_(str) {
       var days = ~~(Date.parseDate(str) / ONE_DAY);

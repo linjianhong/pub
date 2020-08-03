@@ -36,6 +36,7 @@ class class_app
     $R = [
       'timestamp' => time(),
       "app_wx3" => APP_WX3,
+      "app_wx" => APP_WX_PGY,
       'wxShare' => [
         'title' => '', // 分享标题
         'desc' => '', // 分享描述
