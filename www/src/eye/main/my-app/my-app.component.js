@@ -20,8 +20,8 @@
     bindings: {
     },
     controller: [
-      '$scope', '$http', '$q', '$rootScope', 'DjState', '$element', '$browser', 'Observable',
-      function ($scope, $http, $q, $rootScope, DjState, $element, $browser, Observable) {
+      '$scope', '$http', '$q', '$rootScope', 'DjState', '$element', '$timeout', 'Observable',
+      function ($scope, $http, $q, $rootScope, DjState, $element, $timeout, Observable) {
 
         if ("首次打开页面，不要动画") {
           $scope.isFirstRun = true;
@@ -38,6 +38,12 @@
         $scope.clickMenu = item => {
           // console.log('点击菜单,', item);
           DjState.go(item.path, item.param || {});
+          $timeout(() => {
+            $scope.a = $scope.a ? $scope.a + 1 : 0;
+          }, 100)
+          $timeout(() => {
+            $scope.a = $scope.a ? $scope.a + 1 : 0;
+          }, 500)
         }
 
         /**
@@ -216,7 +222,7 @@
   /**
    * 页面路由参数监听（Observable）
    */
-  angular.module("dj-view").run([
+  theModule.run([
     "$rootScope",
     "$q",
     "$http",

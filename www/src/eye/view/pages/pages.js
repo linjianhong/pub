@@ -25,7 +25,7 @@
     requireLogin: false,
     pageCss: "bk-e",
     header: { hide: true },
-    footer: { hide: true },
+    //footer: { hide: true },
     template: `
       <div class="flex header xp-warning padding-1">
         <div class="flex-1 flex-left flex-v-center padding-1">
