@@ -80,8 +80,9 @@
       var post = config.data;
       if (!ignorSign(url)) {
         if (!UserToken.hasToken()) {
-          console.log("未登录, 不请求", { url, post })
-          return mockResponse.reject("未登录, 不请求, url:\n" + url);
+          var errmsg = "未登录, 不请求";
+          console.log(errmsg, { url, post })
+          return mockResponse.reject({ errmsg, url, post });
         }
         post = angular.extend({}, UserToken.signToken(), config.data);
       }

@@ -1,6 +1,6 @@
 !(function (angular, window, undefined) {
 
-  var theConfigModule = angular.module('dj-view');
+  var theConfigModule = angular.module('dj-app');
 
 
   /** 路由监听 */
@@ -87,6 +87,7 @@
           if (!needLogin) return "无需登录";
           return $http.post("自动微信登录", { newState }).then(() => lastPromiseData).catch(e => {
             DjState.go(-1);
+            return $q.reject(e);
           });
         });
       });

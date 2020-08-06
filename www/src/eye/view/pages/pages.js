@@ -4,7 +4,7 @@
 
   theModule.component("pageMy", {
     pageTitle: "首页",
-    requireLogin: false,
+    requireLogin: true,
     pageCss: "bk-e",
     header: { hide: true },
     // footer: { hide: true },
@@ -40,7 +40,7 @@
 
   theModule.component("pagePage2", {
     pageTitle: "Page2",
-    //requireLogin: false,
+    requireLogin: false,
     pageCss: "bk-e",
     header: { hide: true },
     //footer: { hide: true },

@@ -26,6 +26,9 @@
 6、 DjState.otherwise(不会改变url)
 7、 DjState.when(不会改变url)
    */
+  function log(a, b, c, d, e, f, g) {
+    // console.log("[路由] " + a, b, c, d, e, f, g)
+  }
   var defaultRootModuleName = "dj-app";
   var routerModule = angular.module("dj.router-ver3", ["ngAnimate", "dj.core-sign"]);
 
@@ -244,25 +247,29 @@
         BASE.page = newPage;
         BASE.DjState.$search = newPage.state.search || {};
         $rootScope.$broadcast("$DjPageNavgateSuccess", newPage);
-        console.info("[路由] 显示页面   ", newPage);
+        log("显示页面   ", newPage);
       }, 16)
     }
 
-    function startPage(newState) {
-      return $q.when(BASE.get_final_page(newState)).then(newPage => {
-        // console.log("[路由] 开始页面  ", { newPage, newState });
-        var data = { newPage, promise: false };
-        $rootScope.$broadcast("$DjPageNavgateStart", data);
-        if (data.promise) {
-          return data.promise.then(() => newPage);
-        }
+    function showPage$broadcast(newPage) {
+      var data = { newPage, promise: false };
+      $rootScope.$broadcast("$DjPageNavgateStart", data);
+      if (data.promise) {
+        return data.promise.then(() => newPage);
+      }
+      return $q.when(newPage);
+    }
+
+    function broadcast_and_showPage(newPage) {
+      return showPage$broadcast(newPage).then(newPage => {
+        BASE.setPage(newPage);
         return newPage;
       });
     }
 
     function get_final_page(base_state) {
       _get_final_page.history = [];
-      return _get_final_page(base_state);
+      return $q.when(_get_final_page(base_state));
     }
 
     function _get_final_page(base_state) {
@@ -290,9 +297,9 @@
     angular.extend(BASE, {
       State,
       parseHash,
-      startPage,
       setPage,
       get_final_page,
+      broadcast_and_showPage,
     });
   }]);
 
@@ -319,18 +326,14 @@
       var newState = path;
       if (newState.equals(BASE.pushedState)) return;
 
-      return $q.when(BASE.get_final_page(newState)).then(newPage => {
-        newState.pushState();
-        console.log("[路由] DjState.go  ", { newPage, newState });
-        var data = { newPage, promise: false };
-        $rootScope.$broadcast("$DjPageNavgateStart", data);
-        if (data.promise) {
-          return data.promise.then(() => newPage);
-        }
-        return newPage;
-      }).then(newPage => {
-        console.log("[路由] DjState.go 成功  ", newPage);
-        BASE.setPage(newPage);
+      return BASE.get_final_page(newState).then(newPage => {
+        log("DjState.go  ", { newPage, newState });
+        BASE.broadcast_and_showPage(newPage).then(newPage => {
+          log("DjState.go 成功  ", newPage);
+          newState.pushState();
+        }).catch(e => {
+          console.error("[路由] 失败", e)
+        });
       });
     }
 
@@ -386,7 +389,7 @@
     $rootScope.$on("$locationChangeStart", (event, newUrl, oldUrl, c, d) => {
       // var newHash = BASE.hash_of_url(newUrl);
       // if (newHash == location.hash && !_FIRST_RUN) {
-      //   console.log("[路由] Start 同一地址", { oldUrl, newHash, hash: location.hash }, _FIRST_RUN && "程序开始" || "");
+      //   log("Start 同一地址", { oldUrl, newHash, hash: location.hash }, _FIRST_RUN && "程序开始" || "");
       //   event.preventDefault();
       // }
     });
@@ -399,7 +402,7 @@
 
       if (_FIRST_RUN) setTimeout(() => _FIRST_RUN = 0);
       if (newUrl == oldUrl && !_FIRST_RUN) {
-        console.log("[路由] Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        log("Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
 
@@ -407,7 +410,7 @@
 
       /** 是替换页面？ */
       if (history_state.t && angular.equals(LAST_STATE, history_state)) {
-        console.log("[路由] Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        log("Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
 
@@ -415,20 +418,18 @@
         console.warn("[路由] Success 非常规路由, 可能是otherwise导致。若不是，请注意。", location.hash, { oldHash, newHash });
       }
 
-      BASE.startPage(newState).then(newPage => {
+      return BASE.get_final_page(newState).then(newPage => {
         if (newPage.state.equals(BASE.page.state) || newPage.state.equals(BASE.pushedState)) {
-          console.log("[路由] 同一页面", { newPage, BASE: BASE.page }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+          log("同一页面", { newPage, BASE: BASE.page }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
           return;
         }
 
-        newState.id = BASE.auto_replace_good_state();
+        newPage.state.id = BASE.auto_replace_good_state();
+        log("Success 准备显示  ", { history_state, newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
 
-        console.log("[路由] Success 准备显示  ", { history_state, newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
-        BASE.lastPage = newPage;
-        console.log("[路由] ●●●●　显示  ", { LAST_STATE, history_state }, { newState, oldState }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
-        LAST_STATE = BASE.to_good_state(history_state);
-        BASE.setPage(newPage);
-        $rootScope.$broadcast("$DjPageNavgateSuccess", newPage);
+        BASE.broadcast_and_showPage(newPage).then(newPage => {
+          log("●●●●　显示成功  ", newPage);
+        });
       });
     });
 
