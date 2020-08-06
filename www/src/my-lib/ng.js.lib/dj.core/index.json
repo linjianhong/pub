@@ -1,0 +1,7 @@
+{
+    "modules": [
+        "dj-http",
+        "dj-observable"
+    ],
+    "": ""
+}

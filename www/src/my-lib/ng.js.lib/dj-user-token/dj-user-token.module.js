@@ -1,0 +1,1 @@
+!!angular.module("dj.usertoken", ["dj.core-sign"]);
