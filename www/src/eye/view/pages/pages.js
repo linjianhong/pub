@@ -7,7 +7,7 @@
     requireLogin: false,
     pageCss: "bk-f",
     header: { hide: true },
-    // footer: { hide: true },
+    footer: { hide: true },
     template: `
       <div class="flex-1 flex-cc">
         <div class="em-50 b-900 text-stop">404</div>

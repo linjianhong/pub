@@ -112,13 +112,13 @@
           }
           /** header 数据 */
           $scope.header = {
-            hide: true,
+            hide: {},
             text: "标题",
             left: [btnGoback],
             right: [btnHome],
           };
           $scope.footer = {
-            hide: true,
+            hide: {},
           };
           router.observe("pageTitle", function (pageTitle) {
             $scope.header.text = pageTitle;
