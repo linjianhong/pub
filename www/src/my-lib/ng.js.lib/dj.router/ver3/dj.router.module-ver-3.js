@@ -1,33 +1,11 @@
-/** 路由 ver 2 */
+/**
+ * @license 路由 v3
+ * (c) 2020-08-08 LJH
+ */
 
 !(function (angular, window, undefined) {
-  /**
-路由需求
-1、页面可以先登录判断，发出请求，得到承诺后显示
-2、首页登录页，登录后直接替换页面。可显示登录中，也可以不显示
-3、页面数据不变，只替换参数
-4、只替换URL，不改变页面
-5、只改变页面，不替换URL
-6、当改变页面前，用户可以拦截
-7、改变页面前，旧页面可以拦截
-8、新页面可以禁止改变前的拦截
-9、页面可以改变时，生成标题，可以是承诺
-10、页面可以改变时，可以设置分享参数等
-11、页面改变可以判断前进还是后退
-12、监听URL，跳到新页面
-13、监听URL，识别仅替换情况
-
-路由事件
-1、 进入系统
-2、 输入新地址
-3、 前进后退
-4、 DjState.go
-5、 DjState.replace
-6、 DjState.otherwise(不会改变url)
-7、 DjState.when(不会改变url)
-   */
   function log(a, b, c, d, e, f, g) {
-    // console.log("[路由] " + a, b, c, d, e, f, g)
+    // console.warn("[路由] " + a, b, c, d, e, f, g)
   }
   var defaultRootModuleName = "dj-app";
   var routerModule = angular.module("dj.router-ver3", ["ngAnimate", "dj.core-sign"]);
@@ -36,36 +14,17 @@
     var STATE_ID = 0;
     var STATE_t = +new Date();
 
-    // console.info("[路由] STATE_t =", STATE_t)
-
     function is_good_state(state) {
       return state && state.t == STATE_t && state.id > 0;
     }
 
-    function to_good_state(state) {
-      if (!is_good_state(state)) return {};
-      return angular.extend({}, state);
+    function make_state(id) {
+      return { t: STATE_t, id };
     }
 
     function get_good_state() {
       return { t: STATE_t, id: ++STATE_ID };
     }
-
-    function replace_state(url, state) {
-      return history.replaceState(state, null, url);
-    }
-
-    function auto_replace_good_state(newState) {
-      var history_state = to_good_state(history.state);
-      if (is_good_state(history_state)) return history.state.id;
-      var new_history_state = get_good_state();
-      var hash = (newState ? newState.hash() : location.hash.substr(2)) || ""; if (hash) hash = "#/" + hash;
-      replace_state(location.pathname + hash, new_history_state);
-      return new_history_state.id;
-    }
-
-
-
 
     /** 组件类 */
     class Component {
@@ -156,10 +115,9 @@
 
     return {
       is_good_state,
-      to_good_state,
+      make_state,
       get_good_state,
-      replace_state,
-      auto_replace_good_state,
+
       getComponent,
 
       Component,
@@ -222,15 +180,28 @@
         return state && state.hash && this.hash() == state.hash() || this.hash() == state;
       }
 
+      setGoodState(state) {
+        BASE.is_good_state(state) && (this.id = state.id);
+        if (this.id <= 0) this.id = BASE.get_good_state().id;
+        return BASE.make_state(this.id);
+      }
+
       pushState() {
         setTimeout(() => {
-          var new_history_state = BASE.get_good_state();
+          var history_state = this.setGoodState();
           var hash = this.clean_hash();
-          history.pushState(new_history_state, null, location.pathname + hash);
+          history.pushState(history_state, null, location.pathname + hash);
           BASE.pushedState = new State(this);
-          $location.$$state = new_history_state;
         });
-        // if (!$rootScope.$$phase) return push();
+      }
+
+      replaceState() {
+        setTimeout(() => {
+          var history_state = this.setGoodState();
+          var hash = this.clean_hash();
+          history.replaceState(history_state, null, location.pathname + hash);
+          BASE.pushedState = new State(this);
+        });
       }
     }
 
@@ -238,6 +209,24 @@
       constructor(state, component) {
         this.state = state || {};
         this.component = component || {};
+      }
+
+      ready(nth) {
+        nth = nth || 0;
+        var list = BASE.DjState_register_list["can_load_page"];
+        if (list.length <= nth) return $q.when(this);
+        var can_load_page = list[nth];
+        while (angular.isFunction(can_load_page)) can_load_page = can_load_page(this);
+        return $q.when(can_load_page).then(() => this.ready(nth + 1));
+      }
+
+      on_page_load(nth){
+        nth = nth || 0;
+        var list = BASE.DjState_register_list["on_page_load"];
+        if (list.length <= nth) return $q.when(this);
+        var on_page_load = list[nth];
+        while (angular.isFunction(on_page_load)) on_page_load = on_page_load(this);
+        return $q.when(on_page_load).then(() => this.ready(nth + 1));
       }
     }
 
@@ -296,6 +285,7 @@
 
     angular.extend(BASE, {
       State,
+      Page,
       parseHash,
       setPage,
       get_final_page,
@@ -307,8 +297,12 @@
   /** 工厂用 基类 */
   routerModule.run(["$q", "$rootScope", function ($q, $rootScope) {
 
-    function state_404(path, search) {
-      BASE.state_404 = new BASE.State(path, search)
+    function goto$404() {
+      var state_404 = { path: "404" };
+      var component = BASE.getComponent(state_404);
+      if(!component)return $q.reject("404页面未定义");
+      var newPage = new BASE.Page(state_404, component);
+      BASE.page = newPage;
     }
 
     function go(path, search) {
@@ -317,46 +311,29 @@
         if (BASE.lastPage) {
           return go(BASE.lastPage.state)
         }
-        if (BASE.state_404) {
-          return go(BASE.state_404);
-        }
-        return;
+        return goto$404();
       }
       if (!(path instanceof (BASE.State))) return go(new BASE.State(path, search));
       var newState = path;
       if (newState.equals(BASE.pushedState)) return;
 
-      return BASE.get_final_page(newState).then(newPage => {
+      return BASE.get_final_page(newState).then(newPage => newPage.ready()).then(newPage => {
+        newPage.state.setGoodState();
         log("DjState.go  ", { newPage, newState });
         BASE.broadcast_and_showPage(newPage).then(newPage => {
           log("DjState.go 成功  ", newPage);
-          newState.pushState();
-        }).catch(e => {
-          console.error("[路由] 失败", e)
+          newPage.state.pushState();
         });
+      }).catch(e => {
+        console.error("[路由] 失败", e);
+        return $q, reject(e);
       });
     }
 
     function replace(path, search) {
-      var hash = BASE.hash(path, search) || ""; if (hash) hash = "#/" + hash;
-      var newState = new BASE.State(path, search);
-      var oldState = BASE.parseHash(location.hash);
-      if (newState.equals(oldState)) {
-        console.warn("[路由] replace 无变化  ", { newState, oldState });
-        return;
-      }
-      var history_state = history.state;
-      // console.info("[路由] replace  ", path, search, history_state, $rootScope);
-      if ($rootScope.$$phase) {
-        /** 如果是在$digest过程中调用此函数，则需要延时执行，以免造成死循环 */
-        setTimeout(() => {
-          // console.info("[路由] replace  ", path, search, history_state, $rootScope);
-          BASE.replace_state(location.pathname + hash, history_state);
-        });
-      } else {
-        /** 如果不是, 可以立即执行替换 */
-        BASE.replace_state(location.pathname + hash, history_state);
-      }
+      if (!(path instanceof (BASE.State))) return replace(new BASE.State(path, search));
+      var newState = path;
+      newState.replaceState();
     }
 
     function when(state) {
@@ -368,13 +345,27 @@
       return BASE.DjState;
     }
 
-    angular.extend(BASE.DjState, {
-      state_404,
-      go,
-      replace,
-      when,
-      otherwise,
-      $search: {}
+    var DjState_register_list = {
+      "can_load_page": [],
+      "on_page_load": [],
+      "when": [],
+    }
+    function register(name, arg) {
+      if (!DjState_register_list[name] || !arg) return BASE.DjState;
+      DjState_register_list[name].push(arg);
+      return BASE.DjState;
+    }
+
+    angular.extend(BASE, {
+      DjState_register_list,
+      DjState: {
+        register,
+        go,
+        replace,
+        when,
+        otherwise,
+        $search: {}
+      }
     });
 
   }]);
@@ -406,10 +397,8 @@
         return;
       }
 
-      var history_state = BASE.to_good_state(history.state);
-
       /** 是替换页面？ */
-      if (history_state.t && angular.equals(LAST_STATE, history_state)) {
+      if (BASE.is_good_state(history.state) && angular.equals(LAST_STATE, history.state)) {
         log("Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
@@ -419,16 +408,20 @@
       }
 
       return BASE.get_final_page(newState).then(newPage => {
-        if (newPage.state.equals(BASE.page.state) || newPage.state.equals(BASE.pushedState)) {
+        if (newPage.state.equals(BASE.page.state)) {
           log("同一页面", { newPage, BASE: BASE.page }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
           return;
         }
 
-        newPage.state.id = BASE.auto_replace_good_state();
-        log("Success 准备显示  ", { history_state, newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
+        newPage.ready().then(newPage => {
+          newPage.state.setGoodState(history.state);
+          log("Success 准备显示  ", { newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
 
-        BASE.broadcast_and_showPage(newPage).then(newPage => {
-          log("●●●●　显示成功  ", newPage);
+          BASE.broadcast_and_showPage(newPage).then(newPage => {
+            log("●●●●　显示成功  ", newPage);
+            newPage.state.replaceState();
+            newPage.on_page_load();
+          });
         });
       });
     });
@@ -475,7 +468,7 @@
   routerModule.component("djFrame", {
     template: `
       <dj-frame-host class="{{$ctrl.hostCss||''}} {{page.component.param.pageCss}}"
-        ng-show="page.visible"
+        ng-if="page.visible"
         p="page.visible&&page"
         ng-repeat="page in PAGES track by $index"
       ></dj-frame-host>`,
@@ -486,12 +479,11 @@
       $scope.BASE = BASE;
 
       $scope.$watch("BASE.page", (vNew, vOld) => {
-        // console.log("页面改变", vNew, vOld);
         vNew && vNew.component && reshow(vNew, vOld);
       });
 
       var oldPage = {};
-      var PAGES = $scope.PAGES = [oldPage, {}];
+      var PAGES = $scope.PAGES = [oldPage];
       function reshow() {
         oldPage.visible = false;
         BASE.page.visible = true;

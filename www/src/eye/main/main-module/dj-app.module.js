@@ -1,26 +1,9 @@
 !(function (angular, window, undefined) {
 
   var theApp = angular.module("dj-app", [
-    "ngTouch",
     "angularMoment",
     "ngAnimate",
-
-    "dj.core",
-    "dj.router-ver3",
-    "dj.usertoken",
-
-    //"dj-view",
-    //"dj-service",
-    //"dj-filter",
-
-    //"dj-login",
-    //"dj-wx-login",
-    //"wx-jssdk",
-
-    //"mock",
-
-    //"dform",
-    //"shop",
+    "dj-view",
   ])
 
 
@@ -29,8 +12,7 @@
     function otherwise_by_login() {
       return $http.post("用户登录/状态").then(() => otherwise.loged || otherwise || "").catch(() => otherwise.unloged || otherwise || "");
     }
-    DjState.when("bbb", "query")
-      .otherwise(otherwise_by_login);
+    DjState.otherwise(otherwise_by_login);
   }]);
 
   theApp.config(["$sceDelegateProvider", "$locationProvider",

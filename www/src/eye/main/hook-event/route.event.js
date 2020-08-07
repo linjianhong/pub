@@ -35,7 +35,6 @@
 
       /** 微信分享 */
       var wxShareParam = param.wxShareParam;
-      console.log("微信分享", wxShareParam);
       if (wxShareParam !== false) {
         if (angular.isFunction(wxShareParam)) wxShareParam = wxShareParam(newPage, $http, $q);
         if (!wxShareParam) {
@@ -71,31 +70,24 @@
 
 
     /** 监听路由, 检查登录 */
-    function onRouterCheckLogin(data, lastPromiseData) {
-      if (data.promise) return data.promise.then(promiseData => {
-        data.promise = false;
-        return onRouterCheckLogin(data, promiseData);
-      });
+    DjState.register("can_load_page", newPage => {
+      console.log("can_load_page, newPage=", newPage);
+      var newState = newPage.state;
+      return $q.when(checkNeedLogin(newPage)).then(needLogin => {
+        if (!needLogin) return "无需登录";
+        return $http.post("用户登录/状态").then(() => {
+          // console.log("用户登录/状态", tokenData);
+          return "已登录";
+        }).catch(e => {
+          // return $q.reject(e);
+          return $http.post("自动微信登录", { newState }).then(() => {
 
-      data.promise = $http.post("用户登录/状态").then(() => {
-        // console.log("用户登录/状态", tokenData);
-        return "已登录";
-      }).catch(e => {
-        var newPage = data.newPage;
-        var newState = newPage.state;
-        return $q.when(checkNeedLogin(newPage)).then(needLogin => {
-          if (!needLogin) return "无需登录";
-          return $http.post("自动微信登录", { newState }).then(() => lastPromiseData).catch(e => {
+          }).catch(e => {
             DjState.go(-1);
             return $q.reject(e);
           });
         });
       });
-    }
-
-    /** 路由监听 */
-    $rootScope.$on('$DjPageNavgateStart', function (event, data, lastPromiseData) {
-      onRouterCheckLogin(data, lastPromiseData);
     });
   }]);
 

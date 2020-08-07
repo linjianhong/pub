@@ -112,11 +112,14 @@
           }
           /** header 数据 */
           $scope.header = {
+            hide: true,
             text: "标题",
             left: [btnGoback],
             right: [btnHome],
           };
-          $scope.footer = {};
+          $scope.footer = {
+            hide: true,
+          };
           router.observe("pageTitle", function (pageTitle) {
             $scope.header.text = pageTitle;
           });
@@ -137,10 +140,14 @@
 
         })();
 
+        var oldState = { id: 0 };
         /** 路由和历史监听 */
-        $rootScope.$on("$DjRouteChangeSuccess", function (event, newState, oldState, newComponent, a, b, c) {
+        $rootScope.$on("$DjPageNavgateSuccess", function (event, newPage) {
+          var newState = newPage.state;
           $scope.isGoBack = oldState && oldState.id > newState.id;
           $scope.canBack = newState.id > 1;
+          // console.log("newState: ", oldState.id, " -> ", newState.id);
+          oldState = newState;
         });
 
       }]
