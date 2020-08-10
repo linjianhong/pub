@@ -4,7 +4,7 @@
     "angularMoment",
     "ngAnimate",
     "dj-view",
-  ])
+  ]);
 
 
   theApp.run(["DjState", "$http", function (DjState, $http) {
@@ -84,6 +84,11 @@
         return mockResponse(ajax.then(json => angular.extend({}, window.theSiteConfig, json.datas)));
       }
     });
+
+    UserToken.set_sys_config(() => {
+      return $http.post("系统参数")
+    });
+
   }]);
 
 })(angular, window);

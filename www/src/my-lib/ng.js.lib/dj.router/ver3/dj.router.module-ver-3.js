@@ -215,18 +215,18 @@
         nth = nth || 0;
         var list = BASE.DjState_register_list["can_load_page"];
         if (list.length <= nth) return $q.when(this);
-        var can_load_page = list[nth];
-        while (angular.isFunction(can_load_page)) can_load_page = can_load_page(this);
-        return $q.when(can_load_page).then(() => this.ready(nth + 1));
+        var res = list[nth];
+        while (angular.isFunction(res)) res = res(this);
+        return $q.when(res).then(() => this.ready(nth + 1));
       }
 
-      on_page_load(nth){
+      on_page_load(nth) {
         nth = nth || 0;
         var list = BASE.DjState_register_list["on_page_load"];
         if (list.length <= nth) return $q.when(this);
-        var on_page_load = list[nth];
-        while (angular.isFunction(on_page_load)) on_page_load = on_page_load(this);
-        return $q.when(on_page_load).then(() => this.ready(nth + 1));
+        var res = list[nth];
+        while (angular.isFunction(res)) res = res(this);
+        return $q.when(res).then(() => this.on_page_load(nth + 1));
       }
     }
 
@@ -300,7 +300,7 @@
     function goto$404() {
       var state_404 = { path: "404" };
       var component = BASE.getComponent(state_404);
-      if(!component)return $q.reject("404页面未定义");
+      if (!component) return $q.reject("404页面未定义");
       var newPage = new BASE.Page(state_404, component);
       BASE.page = newPage;
     }
@@ -326,14 +326,28 @@
         });
       }).catch(e => {
         console.error("[路由] 失败", e);
-        return $q, reject(e);
+        return $q.reject(e);
       });
     }
 
-    function replace(path, search) {
-      if (!(path instanceof (BASE.State))) return replace(new BASE.State(path, search));
+    function replace(path, search, reshow) {
+      if (!(path instanceof (BASE.State))) return replace(new BASE.State(path, search), "", reshow);
       var newState = path;
-      newState.replaceState();
+      if (reshow) {
+        return BASE.get_final_page(newState).then(newPage => newPage.ready()).then(newPage => {
+          newPage.state.setGoodState();
+          log("DjState.replace  ", { newPage, newState });
+          BASE.broadcast_and_showPage(newPage).then(newPage => {
+            log("DjState.replace 成功  ", newPage);
+            newPage.state.replaceState();
+          });
+        }).catch(e => {
+          console.error("[路由] 失败", e);
+          return $q.reject(e);
+        });
+      } else {
+        newState.replaceState();
+      }
     }
 
     function when(state) {

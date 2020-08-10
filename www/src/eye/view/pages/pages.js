@@ -51,7 +51,7 @@
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
 
-      this.$onDestroy=()=>{
+      this.$onDestroy = () => {
         console.log("页面关闭", "打字");
       }
     }]
@@ -72,7 +72,7 @@
       <div class="flex padding-3">
         <div class="padding-3 text-active" ng-click="click_TAB($index)" ng-repeat="item in TAB">{{item.text||item}}</div>
       </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
+    controller: ["$scope", "$http", "$q", "$element", "DjState", "HookDlg", function ctrl($scope, $http, $q, $element, DjState, HookDlg) {
       $element.addClass("flex-v flex-1");
 
       $scope.TAB = [
@@ -83,6 +83,10 @@
 
       $scope.click_TAB = index => {
         DjState.replace("page2", { tab: index + 1 });
+        HookDlg.modal({
+          component: "login-by-wx-qrcode",
+          backClose: 1,
+        });
       }
     }]
   });

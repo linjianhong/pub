@@ -1,10 +1,10 @@
 !(function (angular, window, undefined) {
 
-  var theConfigModule = angular.module('dj-app');
+  var theConfigModule = angular.module("dj-app");
 
 
   /** 路由监听 */
-  theConfigModule.run(['$rootScope', '$http', '$q', 'DjState', function ($rootScope, $http, $q, DjState) {
+  theConfigModule.run(["$rootScope", "$http", "$q", "DjState", "UserToken", function ($rootScope, $http, $q, DjState, UserToken) {
 
     var theSiteConfig_promise = $http.post("系统参数").then(theSiteConfig => {
       theSiteConfig_promise = theSiteConfig;
@@ -40,10 +40,10 @@
         if (!wxShareParam) {
           $q.when(theSiteConfig_promise).then(theSiteConfig => {
             $scope.theSiteConfig = theSiteConfig;
-            var title = theSiteConfig['wxShare']['title'] || '分享标题';
-            var desc = theSiteConfig['wxShare']['desc'] || '分享描述';
-            var link = theSiteConfig['wxShare']['link'] || (location.origin + location.pathname + location.hash);
-            var imgUrl = theSiteConfig['wxShare']['imgUrl'] || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png";
+            var title = theSiteConfig["wxShare"]["title"] || "分享标题";
+            var desc = theSiteConfig["wxShare"]["desc"] || "分享描述";
+            var link = theSiteConfig["wxShare"]["link"] || (location.origin + location.pathname + location.hash);
+            var imgUrl = theSiteConfig["wxShare"]["imgUrl"] || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png";
 
             // console.log("使用默认分享", wxShareParam);
             return $http.post("WxJssdk/setShare", {
@@ -51,7 +51,7 @@
               desc,
               link,
               imgUrl,
-              type: 'link', // 分享类型,music、video或link，不填默认为link
+              type: "link", // 分享类型,music、video或link，不填默认为link
             }).then(json => {
               // console.log("分享成功", json);
             });
@@ -75,15 +75,13 @@
       var newState = newPage.state;
       return $q.when(checkNeedLogin(newPage)).then(needLogin => {
         if (!needLogin) return "无需登录";
-        return $http.post("用户登录/状态").then(() => {
-          // console.log("用户登录/状态", tokenData);
-          return "已登录";
-        }).catch(e => {
-          // return $q.reject(e);
-          return $http.post("自动微信登录", { newState }).then(() => {
-
+        return UserToken.login_test().then(token => {
+          // console.log("原已登录", token);
+        }).catch(msg => {
+          return UserToken.login_by_wx(newState.hash()).then(token => {
+            // console.log("登录成功", token);
           }).catch(e => {
-            DjState.go(-1);
+            // DjState.go(-1);
             return $q.reject(e);
           });
         });
@@ -92,7 +90,7 @@
   }]);
 
   /** 微信登录成功，监听 */
-  theConfigModule.run(['$rootScope', '$timeout', 'DjState', function ($rootScope, $timeout, DjState) {
+  theConfigModule.run(["$rootScope", "$timeout", "DjState", function ($rootScope, $timeout, DjState) {
     $rootScope.$on("$wxCodeLoginSuccess", function (event, data) {
       console.log("收到：微信登录成功， data = ", data);
       $timeout(() => {
