@@ -271,7 +271,7 @@ class API{
 /**
  * 一些PHP版本兼容性函数
  */
-class FN{
+class FUN{
 
   static function array_column($arr, $k1, $k2 = false){
     if($k2 === true){

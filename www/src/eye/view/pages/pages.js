@@ -41,13 +41,8 @@
     requireLogin: false,
     pageCss: "bk-f",
     header: { hide: true },
-    //footer: { hide: true },
-    template: `
-      <div class="flex header xp-warning padding-1">
-        <div class="flex-1 flex-left flex-v-center padding-1">
-          <div class="padding-1 em-15">{{title||'打字'}}</div>
-        </div>
-      </div>`,
+    footer: { hide: true },
+    template: `<ime-page class="flex-1 flex-stretch"></ime-page>`,
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
 

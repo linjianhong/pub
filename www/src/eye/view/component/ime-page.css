@@ -1,0 +1,74 @@
+.ime-course {
+    position: relative;
+    background: #ccc;
+    color: #080;
+}
+
+.ime-course.v {
+    width: 5vw;
+}
+
+.ime-course.h {
+    height: 5vw;
+}
+
+.ime-course>* {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ime-course>.process {
+    z-index: 1;
+}
+
+.ime-course>.process>* {
+    background: rgba(0, 128, 0, .5);
+}
+
+.ime-course>.process>:nth-child(2) {
+    background: transparent;
+}
+
+.ime-course>.top {
+    z-index: 2;
+}
+
+.ime-left {
+    transition: all ease 1.3s;
+    background: linear-gradient(0deg, #080 100px, #ccc 100px)
+}
+
+.ime-content {
+    background: #388;
+}
+
+.ime-content textarea {
+    border: solid 0;
+    background: #eee;
+}
+
+.ime-content .ime-bh-row {
+    height: 2em;
+}
+
+.ime-item-list {}
+
+.ime-item {
+    background: #fff;
+    width: 25%;
+    height: 33%;
+    border-right: solid 1px #388;
+    border-bottom: solid 1px #388;
+    background: #ccc;
+}
+
+.ime-item.active {
+    background: #fff;
+}
+
+.ime-item:nth-child(4), .ime-item:nth-child(8), .ime-item:nth-child(12) {
+    border-right: solid 0;
+}
