@@ -4,6 +4,7 @@
     "angularMoment",
     "ngAnimate",
     "dj-view",
+    "IME-BH",
   ]);
 
 
