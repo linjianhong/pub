@@ -3,7 +3,7 @@
   var theModule = angular.module("dj-app");
 
   var MENUS = [
-    { name: "笔画", fn: "menu", subfn: "key", sub: ["一", "丨", "丿", "丶", "乛", "退一笔", "选字"] },
+    { name: "笔画", fn: "menu", subfn: "key", sub: ["一", "丨", "丿", "丶", "乛", "退一笔", "选字", "第一字"] },
     { name: "符号", fn: "menu", subfn: "text", sub: "，。！？；：“”…" },
     { name: "数字", fn: "menu", subfn: "text", sub: "1234567890.-+×÷" },
     { name: "abc", fn: "menu", subfn: "text", sub: "abcdefghijklmnopqrstuvwxya" },
@@ -42,8 +42,8 @@
         <div class="ime-content flex-1 padding-1 flex-v flex-stretch ">
           <textarea rows=3 class="em-30 b-900" ng-model="D.text">显示内容</textarea>
           <div class="ime-bh-row flex flex-v-center em-20 b-900 text-f padding-1">
-            <div class="ime-bh">{{D.bh}}</div>
-            <div class="ime-bh">{{D.pretext}}</div>
+            <div class="flex-1 shrink0">{{D.bh}}</div>
+            <div class="flex-1 line___1">{{D.words.join(' ').substr(0,50)}}</div>
           </div>
           <div class="ime-item-list flex-wrap flex-left align-top flex-1 padding-v-1 v-scroll">
             <div class="ime-item flex-cc em-20 b-900 {{$index==D.item_index&&'active'}}" ng-click="D.exec(item)" ng-repeat="item in D.items track by $index">{{item.name||item}}</div>
@@ -67,8 +67,10 @@
         <div class="top flex-cc" ng-mouseover="D.over('right',$event)" ng-mouseout="D.out('left',$event)">确<br>定</div>
       </div>
     </div>`,
-    controller: ["$scope", "$http", "$q", "$element", "$animateCss", function ctrl($scope, $http, $q, $element, $animateCss) {
+    controller: ["$scope", "$http", "$q", "$element", "$animateCss", "IME", "ImeBH", function ctrl($scope, $http, $q, $element, $animateCss, IME, ImeBH) {
       //$element.addClass("flex-v flex-1");
+
+      var myIME = IME.create({ getPreshow: ImeBH.getPreshow });
 
       var Settings = $scope.Settings = (function () {
         var KEY = "打字配置";
@@ -104,6 +106,10 @@
 
         COURSE: {
           left: () => {
+            if (D.status == "选字") {
+              D.EXEC["menu"](MENUS[0]);
+              return;
+            }
             D.items = MENUS;
             D.item_index = 0;
           },
@@ -120,7 +126,10 @@
 
         EXEC: {
           "menu": item => {
-            if (item.name == "笔画") D.bh = "";
+            if (item.name == "笔画") {
+              if (D.status != "选字") D.bh = "";
+              D.status = "笔画";
+            }
             if (item.subfn) {
               var sub = item.sub;
               if (angular.isString(sub)) sub = sub.split("");
@@ -133,20 +142,22 @@
           },
           "text": item => {
             D.text += item.text || item.name;
+            if (D.status == "选字") {
+              D.bh = "";
+              D.EXEC["menu"](MENUS[0]);
+            }
             var textarea = $element.find('textarea')[0];
             textarea.blur();
             setTimeout(
-              function(){
+              function () {
                 //textarea.selectionStart = textarea.selectionEnd = R.pos;
                 textarea.focus();
               }, 20
             );
           },
           "key": item => {
-            if (item.name == "选字") {
-
-            }
-            else if (item.name == "退一笔") {
+            if (D.EXEC[item.name]) return D.EXEC[item.name](item);
+            if (item.name == "退一笔") {
               if (D.bh.length) D.bh = D.bh.substr(0, D.bh.length - 1);
               else D.text = D.text.substr(0, D.text.length - 1);
             }
@@ -156,8 +167,24 @@
             console.log(item)
             if (D.EXEC[item.name]) return D.EXEC[item.name](item);
           },
+
           "全屏": item => {
             toggleFullScreen();
+          },
+
+          "选字": item => {
+            D.status = "选字";
+            D.items = D.words.filter((a, n) => n < 80).map(text => ({
+              fn: "text",
+              name: text,
+            }));
+            D.item_index = 0;
+          },
+
+          "第一字": item => {
+            D.words && D.words[0] && D.EXEC["text"]({ text: D.words[0] });
+            D.status = "";
+            D.EXEC["menu"](MENUS[0]);
           },
 
           "速度+": item => {
@@ -165,7 +192,7 @@
               var duration = data.duration || 0.9;
               duration -= 0.1;
               if (duration < 0.3) duration = 0.3;
-              Settings.saveValue({duration});
+              Settings.saveValue({ duration });
             });
           },
 
@@ -173,8 +200,8 @@
             Settings.load().then(data => {
               var duration = data.duration || 0.9;
               duration += 0.1;
-              if (duration >2) duration = 2;
-              Settings.saveValue({duration});
+              if (duration > 2) duration = 2;
+              Settings.saveValue({ duration });
             });
           },
         },
@@ -199,6 +226,7 @@
               animatorParams.duration = duration;
               D.animator = $animateCss(e.children().eq(0).children().eq(1), animatorParams);
               D.animator.start().then(() => {
+                if (D.processing != name) return;
                 console.log("动画完成");
                 D.processing = "";
                 D.COURSE[name]();
@@ -207,22 +235,22 @@
           })
         },
         "out": (name, event) => {
-          D.processing && D.animator.end()
+          D.processing && D.animator && D.animator.end()
           console.log("out,", name, event)
           D.processing = "";
         },
       }
 
-      //var animator = $animateCss(angular.element(box), {
-      //  from: { width: "0" },
-      //  to: { width: "11em" },
-      //  easing: 'ease',
-      //  duration: 0.3 // 秒
-      //});
-      //animator.start().then(() => {
-      //  boxOpened = box;
-      //  boxOpening = false;
-      //});
+
+      $scope.$watch("D.bh", (bh) => {
+        if (!bh) {
+          D.words = [];
+          return;
+        }
+        myIME.getPreshow(bh).then(function (words) {
+          D.words = words;
+        });
+      })
     }]
   });
 
