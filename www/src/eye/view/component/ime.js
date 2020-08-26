@@ -13,9 +13,10 @@
       fn: "menu",
       subfn: "call",
       sub: [
-        "字使用", "删一字", "换行"
+        "全屏", "速度+", "速度-"
       ]
     },
+    { name: "换行", fn: "text", text: "\n" },
   ];
 
   theModule.component("imePage", {
@@ -40,11 +41,11 @@
         </div>
         <div class="ime-content flex-1 padding-1 flex-v flex-stretch ">
           <textarea rows=3 class="em-30 b-900" ng-model="D.text">显示内容</textarea>
-          <div class="ime-bh-row flex flex-v-center text-f padding-1">
+          <div class="ime-bh-row flex flex-v-center em-20 b-900 text-f padding-1">
             <div class="ime-bh">{{D.bh}}</div>
             <div class="ime-bh">{{D.pretext}}</div>
           </div>
-          <div class="ime-item-list flex-wrap flex-left align-top flex-1 padding-v-1">
+          <div class="ime-item-list flex-wrap flex-left align-top flex-1 padding-v-1 v-scroll">
             <div class="ime-item flex-cc em-20 b-900 {{$index==D.item_index&&'active'}}" ng-click="D.exec(item)" ng-repeat="item in D.items track by $index">{{item.name||item}}</div>
           </div>
         </div>
@@ -68,6 +69,31 @@
     </div>`,
     controller: ["$scope", "$http", "$q", "$element", "$animateCss", function ctrl($scope, $http, $q, $element, $animateCss) {
       //$element.addClass("flex-v flex-1");
+
+      var Settings = $scope.Settings = (function () {
+        var KEY = "打字配置";
+        function load() {
+          return $q.when(1).then(() => {
+            var str = localStorage.getItem(KEY) || "{}";
+            return JSON.parse(str);
+          }).catch(e => {
+            return {};
+          });
+        }
+
+        function saveValue(moreData) {
+          return load().then(data => {
+            data = angular.extend({}, data, moreData);
+            localStorage.removeItem(KEY);
+            localStorage.setItem(KEY, JSON.stringify(data));
+            return data;
+          }).catch(e => {
+            console.error(e);
+            return$q.reject(e);
+          });
+        }
+        return { load, saveValue };
+      })();
 
       var D = $scope.D = {
         text: "",
@@ -106,7 +132,7 @@
             }
           },
           "text": item => {
-            D.text += item.name;
+            D.text += item.text || item.name;
           },
           "key": item => {
             if (item.name == "选字") {
@@ -117,6 +143,31 @@
               else D.text = D.text.substr(0, D.text.length - 1);
             }
             else D.bh += item.name;
+          },
+          "call": item => {
+            console.log(item)
+            if (D.EXEC[item.name]) return D.EXEC[item.name](item);
+          },
+          "全屏": item => {
+            toggleFullScreen();
+          },
+
+          "速度+": item => {
+            Settings.load().then(data => {
+              var duration = data.duration || 0.9;
+              duration -= 0.1;
+              if (duration < 0.3) duration = 0.3;
+              Settings.saveValue({duration});
+            });
+          },
+
+          "速度-": item => {
+            Settings.load().then(data => {
+              var duration = data.duration || 0.9;
+              duration += 0.1;
+              if (duration >2) duration = 2;
+              Settings.saveValue({duration});
+            });
           },
         },
 
@@ -130,16 +181,20 @@
             from: {},
             to: {},
             //easing: 'ease',
-            duration: 1.3 // 秒
+            duration: 0.8 // 秒
           }
           animatorParams.from[attrName] = "100%";
           animatorParams.to[attrName] = 0;
           setTimeout(() => {
-            D.animator = $animateCss(e.children().eq(0).children().eq(1), animatorParams);
-            D.animator.start().then(() => {
-              console.log("动画完成");
-              D.processing = "";
-              D.COURSE[name]();
+            Settings.load().then(data => {
+              var duration = data.duration || 0.9;
+              animatorParams.duration = duration;
+              D.animator = $animateCss(e.children().eq(0).children().eq(1), animatorParams);
+              D.animator.start().then(() => {
+                console.log("动画完成");
+                D.processing = "";
+                D.COURSE[name]();
+              });
             });
           })
         },
@@ -163,5 +218,19 @@
     }]
   });
 
+
+  /**
+   * 全屏切换
+   */
+  function toggleFullScreen() {
+    if (toggleFullScreen.fullScreen) {
+      document.webkitCancelFullScreen();
+      toggleFullScreen.fullScreen = false;
+    }
+    else {
+      document.body.webkitRequestFullscreen();
+      toggleFullScreen.fullScreen = true;
+    }
+  }
 
 })(angular, window);
