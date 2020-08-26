@@ -5,7 +5,7 @@
   var MENUS = [
     { name: "笔画", fn: "menu", subfn: "key", sub: ["一", "丨", "丿", "丶", "乛", "退一笔", "选字"] },
     { name: "符号", fn: "menu", subfn: "text", sub: "，。！？；：“”…" },
-    { name: "数字", fn: "menu", subfn: "text", sub: "1234567890" },
+    { name: "数字", fn: "menu", subfn: "text", sub: "1234567890.-+×÷" },
     { name: "abc", fn: "menu", subfn: "text", sub: "abcdefghijklmnopqrstuvwxya" },
     { name: "ABC", fn: "menu", subfn: "text", sub: "ABCDEFGHIJKLMNOPQRSTUVWXYA" },
     {
@@ -133,6 +133,14 @@
           },
           "text": item => {
             D.text += item.text || item.name;
+            var textarea = $element.find('textarea')[0];
+            textarea.blur();
+            setTimeout(
+              function(){
+                //textarea.selectionStart = textarea.selectionEnd = R.pos;
+                textarea.focus();
+              }, 20
+            );
           },
           "key": item => {
             if (item.name == "选字") {
