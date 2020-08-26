@@ -104,6 +104,16 @@
         item_index: 0,
         items: MENUS,
 
+        words: [],
+        setWords: (words) => {
+          D.words = angular.extend([], words);
+          if (D.words.length <= 0) D.EXEC["menu"](MENUS[0]);
+          else D.items = D.words.filter((a, n) => n < 80).map(text => ({
+            fn: "text",
+            name: text,
+          }));
+        },
+
         COURSE: {
           left: () => {
             if (D.status == "选字") {
@@ -141,10 +151,19 @@
             }
           },
           "text": item => {
-            D.text += item.text || item.name;
+            var input = item.text || item.name;
+            if (!input) {
+              return;
+            }
+            D.text += input;
             if (D.status == "选字") {
               D.bh = "";
-              D.EXEC["menu"](MENUS[0]);
+
+              myIME.selectPreshow(input).then(function (words) {
+                D.setWords(words);
+              }).catch(function (e) {
+                D.setWords([]);
+              });
             }
             var textarea = $element.find('textarea')[0];
             textarea.blur();
@@ -174,17 +193,14 @@
 
           "选字": item => {
             D.status = "选字";
-            D.items = D.words.filter((a, n) => n < 80).map(text => ({
-              fn: "text",
-              name: text,
-            }));
+            D.setWords(D.words);
             D.item_index = 0;
           },
 
           "第一字": item => {
+            D.status = "选字";
             D.words && D.words[0] && D.EXEC["text"]({ text: D.words[0] });
-            D.status = "";
-            D.EXEC["menu"](MENUS[0]);
+            // D.EXEC["menu"](MENUS[0]);
           },
 
           "速度+": item => {
