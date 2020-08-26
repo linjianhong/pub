@@ -2,22 +2,157 @@
 
   var theModule = angular.module("dj-app");
 
-  var MENUS = [
-    { name: "笔画", fn: "menu", subfn: "key", sub: ["一", "丨", "丿", "丶", "乛", "退一笔", "选字", "第一字"] },
-    { name: "符号", fn: "menu", subfn: "text", sub: "，。！？；：“”…" },
-    { name: "数字", fn: "menu", subfn: "text", sub: "1234567890.-+×÷" },
-    { name: "abc", fn: "menu", subfn: "text", sub: "abcdefghijklmnopqrstuvwxya" },
-    { name: "ABC", fn: "menu", subfn: "text", sub: "ABCDEFGHIJKLMNOPQRSTUVWXYA" },
-    {
-      name: "功能",
-      fn: "menu",
-      subfn: "call",
-      sub: [
-        "全屏", "速度+", "速度-"
-      ]
-    },
-    { name: "换行", fn: "text", text: "\n" },
-  ];
+  var MENU = (function () {
+
+    var MENU_KEYS = [
+      "name",
+      "fn",
+      "subfn",
+      "sub",
+      "statusFrom",
+      "status",
+      "subMenu",
+      "defaultIndex",
+      "menuCache",
+      "canShow",
+    ];
+
+    class CMenu {
+      constructor(options) {
+        this.extend(options);
+      }
+
+      extend(options) {
+        MENU_KEYS.map(k => {
+          if (options.hasOwnProperty(k)) this[k] = options[k];
+        });
+        return this;
+      }
+
+      extendCopy(options) {
+        return new CMenu(this).extend(options);
+      }
+
+      getItems() {
+        if (angular.isArray(this.subMenu)) {
+          return this.subMenu.map(subItem => Menu({
+            fn: this.subfn,
+            name: subItem,
+          }).extend(subItem));
+        }
+        if (this.subfn) {
+          var sub = this.sub;
+          if (angular.isString(sub)) sub = sub.split("");
+          return sub.map(text => Menu({
+            fn: this.subfn,
+            name: text,
+          }));
+        }
+
+        return false;
+      }
+    }
+
+    function Menu(options) { return new CMenu(options); }
+
+    var TMP_STATUS = "临时";
+
+    var Menu_BH, Menu_$, Menu_123, Menu_abc, Menu_ABC, Menu_SETTINGS;
+
+    var ALL_MENUS = [
+
+      Menu_BH = Menu({ name: "笔画", status: "笔画", fn: "menu", subfn: "key", sub: ["一", "丨", "丿", "丶", "乛"] }),
+      Menu_$ = Menu({ name: "符号", status: "连续输入", fn: "menu", subfn: "text", sub: "，。！？；：“”…" }),
+      Menu_123 = Menu({ name: "数字", status: "连续输入", fn: "menu", subfn: "text", sub: "1234567890.-+×÷" }),
+      Menu_abc = Menu({ name: "abc", status: "连续输入", fn: "menu", subfn: "text", sub: "abcdefghijklmnopqrstuvwxya" }),
+      Menu_ABC = Menu({ name: "ABC", status: "连续输入", fn: "menu", subfn: "text", sub: "ABCDEFGHIJKLMNOPQRSTUVWXYA" }),
+      Menu_SETTINGS = Menu({ name: "功能", status: "菜单", fn: "menu", subfn: "call", sub: ["全屏", "速度+", "速度-"] }),
+
+      Menu_INPUTS = Menu({ name: "各种输入", status: "菜单", fn: "menu", subMenu: [Menu_$, Menu_123, Menu_abc, Menu_ABC] }),
+
+      Menu({
+        name: "正在输入笔画时弹出",
+        statusFrom: "笔画",
+        canShow: (D) => { return D.words && D.words.length; },
+        status: TMP_STATUS,
+        subMenu: [
+          { name: "第一字", fn: "call" },
+          { name: "选字", fn: "call" },
+          { name: "退格", fn: "call" },
+        ]
+      }),
+
+      Menu({
+        name: "无笔画时弹出",
+        statusFrom: "笔画",
+        canShow: (D) => { return !D.words || !D.words.length; },
+        status: TMP_STATUS,
+        subMenu: [
+          Menu_INPUTS,
+          { name: "退格", fn: "call" },
+          Menu_SETTINGS,
+          { name: "换行", fn: "text", text: "\n" },
+        ]
+      }),
+
+      Menu({
+        name: "连续输入时弹出",
+        statusFrom: "连续输入",
+        canShow: (D) => { return 1; },
+        status: TMP_STATUS,
+        subMenu: [
+          Menu_BH,
+          Menu_INPUTS,
+          { name: "退格", fn: "call" },
+          Menu_SETTINGS,
+          { name: "换行", fn: "text", text: "\n" },
+        ]
+      }),
+
+      Menu_BH.extendCopy({
+        statusFrom: "选字",
+      })
+    ];
+
+    ALL_MENUS.push(Menu({
+      name: "主菜单",
+      status: "菜单",
+      subMenu: [
+        getMenuByName("笔画"),
+        getMenuByName("符号"),
+        getMenuByName("数字"),
+        getMenuByName("abc"),
+        getMenuByName("ABC"),
+        getMenuByName("功能"),
+        { name: "换行", fn: "text", text: "\n" },
+      ],
+    }));
+
+    function getMenuByStatus(statusFrom, D) {
+      if (!statusFrom) return false;
+      return ALL_MENUS.find(menu => {
+        if (menu.statusFrom != statusFrom) return false;
+        if (!D) return true;
+        if (!menu.canShow) return true;
+        return menu.canShow(D);
+      });
+    }
+
+    function getMenuByName(name) {
+      if (!name) return false;
+      return ALL_MENUS.find(menu => menu.name == name);
+    }
+
+
+    return {
+      TMP_STATUS,
+      getMenuByStatus,
+      getMenuByName,
+      CMenu,
+      Menu,
+    }
+  })();
+
 
   theModule.component("imePage", {
     template: `
@@ -55,7 +190,11 @@
             <div class=""></div>
             <div class="flex-1"></div>
           </div>
-          <div class="top flex-cc" ng-mouseover="D.over('down',$event)" ng-mouseout="D.out('down',$event)">下一个</div>
+          <div class="top flex " ng-mouseover="D.over('down',$event)" ng-mouseout="D.out('down',$event)">
+            <div class="flex-1 text-b">栈:{{D.panelCache.length||0}} 　项:{{D.items.length||0}}</div>
+            <div class="flex-1 flex cc">下一个</div>
+            <div class=" text-b">{{D.status}}</div>
+          </div>
         </div>
       </div>
       <div class="ime-course v br-ccc flex" ng-click="D.COURSE.right()">
@@ -72,6 +211,7 @@
 
       var myIME = IME.create({ getPreshow: ImeBH.getPreshow });
 
+      /** 本地配置缓存 */
       var Settings = $scope.Settings = (function () {
         var KEY = "打字配置";
         function load() {
@@ -97,36 +237,83 @@
         return { load, saveValue };
       })();
 
+      var firstMenu = MENU.getMenuByName("笔画");
+
+      /** 核心功能 */
       var D = $scope.D = {
         text: "",
         bh: "",
         pretext: "",
-        item_index: 0,
-        items: MENUS,
 
         words: [],
         setWords: (words) => {
           D.words = angular.extend([], words);
-          if (D.words.length <= 0) D.EXEC["menu"](MENUS[0]);
-          else D.items = D.words.filter((a, n) => n < 80).map(text => ({
-            fn: "text",
-            name: text,
-          }));
+          if (D.words.length <= 0) D.setMenu(MENU.getMenuByName("笔画"));
+          else {
+            var sub = D.words.filter((a, n) => n < 80);
+            D.setMenu(MENU.Menu({
+              status: "选字", //MENU.TMP_STATUS,
+              subfn: "text",
+              sub,
+            }));
+            //D.items = D.words.filter((a, n) => n < 80).map(text => MENU.Menu({
+            //  fn: "text",
+            //  name: text,
+            //}))
+          };
+        },
+
+
+        item_index: firstMenu.defaultIndex || 0,
+        status: firstMenu.status || "就绪",
+        items: firstMenu.getItems(),
+        panelCache: [],
+        pushPanel: () => {
+          D.panelCache.push({ status: D.status, items: D.items, item_index: D.item_index });
+        },
+        popPanel: () => {
+          if (D.panelCache.length > 0) {
+            var panel = D.panelCache.pop();
+            angular.extend(D, panel);
+            return panel;
+          }
+          return false;
+        },
+
+        setMenu: (next_menu) => {
+          /** 跳到笔画界面时，不是在“选字”状态，就清笔画 */
+          if (next_menu.name == "笔画" && D.status != "选字") D.bh = "";
+
+          D.menu = next_menu;
+          D.items = angular.extend([], next_menu.getItems());
+          D.status = next_menu.status || MENU.TMP_STATUS;
+          D.item_index = next_menu.defaultIndex || 0;
         },
 
         COURSE: {
           left: () => {
-            if (D.status == "选字") {
-              D.EXEC["menu"](MENUS[0]);
+            if (D.status == MENU.TMP_STATUS) {
+              if (D.popPanel()) return;
+              D.setMenu(MENU.getMenuByName("主菜单"));
               return;
+            } else {
+              var next_menu = MENU.getMenuByStatus(D.status, D);
+              if (next_menu) {
+                D.pushPanel();
+                D.setMenu(next_menu);
+                return;
+              } else {
+                D.setMenu(MENU.getMenuByName("主菜单"));
+              }
             }
-            D.items = MENUS;
-            D.item_index = 0;
           },
+
           right: () => {
             D.exec(D.items[D.item_index]);
           },
+
           up: () => { D.item_index--; if (D.item_index < 0) D.item_index = D.items.length - 1; },
+
           down: () => { D.item_index++; if (D.item_index >= D.items.length) D.item_index = 0; },
         },
 
@@ -135,10 +322,23 @@
         },
 
         EXEC: {
-          "menu": item => {
+          "menu": (menu) => {
+            D.setMenu(menu);
+            return;
+            var next_menu = MENU.getMenuByItem(item);
+            if (!next_menu) next_menu = MENU.getMenuByName("主菜单");
+
+            //if (D.EXEC[D.status]) return D.EXEC[D.status](item);
             if (item.name == "笔画") {
               if (D.status != "选字") D.bh = "";
               D.status = "笔画";
+            }
+            if (angular.isArray(item.subMenu)) {
+              D.items = item.subMenu.map(menu => angular.extend({
+                fn: item.subfn,
+                name: menu,
+              }, menu));
+              return;
             }
             if (item.subfn) {
               var sub = item.sub;
@@ -150,6 +350,7 @@
               D.item_index = 0;
             }
           },
+
           "text": item => {
             var input = item.text || item.name;
             if (!input) {
@@ -161,27 +362,19 @@
 
               myIME.selectPreshow(input).then(function (words) {
                 D.setWords(words);
+                D.item_index = 0;
               }).catch(function (e) {
                 D.setWords([]);
+                D.item_index = 0;
               });
             }
-            var textarea = $element.find('textarea')[0];
-            textarea.blur();
-            setTimeout(
-              function () {
-                //textarea.selectionStart = textarea.selectionEnd = R.pos;
-                textarea.focus();
-              }, 20
-            );
           },
+
           "key": item => {
             if (D.EXEC[item.name]) return D.EXEC[item.name](item);
-            if (item.name == "退一笔") {
-              if (D.bh.length) D.bh = D.bh.substr(0, D.bh.length - 1);
-              else D.text = D.text.substr(0, D.text.length - 1);
-            }
-            else D.bh += item.name;
+            D.bh += item.name;
           },
+
           "call": item => {
             console.log(item)
             if (D.EXEC[item.name]) return D.EXEC[item.name](item);
@@ -189,6 +382,11 @@
 
           "全屏": item => {
             toggleFullScreen();
+          },
+
+          "退格": item => {
+            if (D.bh.length) D.bh = D.bh.substr(0, D.bh.length - 1);
+            else D.text = D.text.substr(0, D.text.length - 1);
           },
 
           "选字": item => {
@@ -200,7 +398,6 @@
           "第一字": item => {
             D.status = "选字";
             D.words && D.words[0] && D.EXEC["text"]({ text: D.words[0] });
-            // D.EXEC["menu"](MENUS[0]);
           },
 
           "速度+": item => {
@@ -224,7 +421,7 @@
 
         "over": (name, event) => {
           var e = angular.element(event.target);
-          if (!e.hasClass("ime-course")) e = e.parent();
+          while (e && !e.hasClass("ime-course")) e = e.parent();
           console.log("over,", name, e);
           D.processing = name;
           var attrName = ["up", "down"].indexOf(name) < 0 && "height" || "width";
@@ -266,7 +463,16 @@
         myIME.getPreshow(bh).then(function (words) {
           D.words = words;
         });
-      })
+      });
+
+      $scope.$watch("D.text", () => {
+        var textarea = $element.find('textarea')[0];
+        textarea.blur();
+        setTimeout(() => {
+          //textarea.selectionStart = textarea.selectionEnd = R.pos;
+          textarea.focus();
+        }, 20);
+      });
     }]
   });
 
