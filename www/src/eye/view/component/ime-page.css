@@ -18,9 +18,6 @@
     top: 0;
     right: 0;
     bottom: 0;
-}
-
-.ime-course>.process {
     z-index: 1;
 }
 
@@ -54,8 +51,6 @@
     height: 2em;
 }
 
-.ime-item-list {}
-
 .ime-item {
     background: #fff;
     width: 25%;
@@ -63,6 +58,18 @@
     border-right: solid 1px #388;
     border-bottom: solid 1px #388;
     background: #ccc;
+}
+
+.ime-item.menu {
+    color: #ba3;
+}
+
+.ime-item.menu.active {
+    color: #ca6;
+}
+
+.ime-item.call {
+    color: #00f;
 }
 
 .ime-item.active {
