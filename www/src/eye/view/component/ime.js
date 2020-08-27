@@ -193,6 +193,10 @@
 
         var myIME = IME.create({ getPreshow: ImeBH.getPreshow });
 
+        Settings.load().then(data => {
+          D.text = data.inputing || "";
+        });
+
         var firstMenu = MENU.getMenuByName("笔画");
 
         /** 核心功能 */
@@ -380,7 +384,8 @@
           });
         });
 
-        $scope.$watch("D.text", () => {
+        $scope.$watch("D.text", (inputing) => {
+          Settings.saveValue({ inputing });
           var textarea = $element.find('textarea')[0];
           textarea.blur();
           setTimeout(() => {
