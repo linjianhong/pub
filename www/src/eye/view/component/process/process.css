@@ -1,0 +1,43 @@
+process-box {
+  position: relative;
+  background: #ccc;
+  color: #080;
+}
+
+process-box.v {
+  width: 5vw;
+}
+
+process-box.h {
+  height: 5vw;
+}
+
+process-box>*, process-box>.transclude>* {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+process-box>.transclude>* {
+  z-index: 2;
+}
+
+process-box>.top {
+  z-index: 3;
+}
+
+process-box>.top.v {
+  -webkit-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+}
+
+process-box>.process>* {
+  background: rgba(0, 128, 0, .5);
+}
+
+process-box>.process>:nth-child(2) {
+  background: transparent;
+}
