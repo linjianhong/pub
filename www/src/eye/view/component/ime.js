@@ -162,7 +162,7 @@
           <div class=""></div>
           <div class="flex-1"></div>
         </div>
-        <div class="top flex-cc" ng-mouseover="D.over('left',$event)" ng-mouseout="D.out('left',$event)">菜<br>单</div>
+        <div class="top flex-cc" ng-mouseover="D.over('left',$event)" ng-mouseout="D.out('left',$event)">上<br>一<br>个</div>
       </div>
       <div class="ime-middle flex-1 flex-v">
         <div class="ime-course h bb-ccc bk-c flex-cc" ng-click="D.COURSE.up()">
@@ -171,7 +171,7 @@
             <div class=""></div>
             <div class="flex-1"></div>
           </div>
-          <div class="top flex-cc" ng-mouseover="D.over('up',$event)" ng-mouseout="D.out('up',$event)">上一个</div>
+          <div class="top flex-cc" ng-mouseover="D.over('up',$event)" ng-mouseout="D.out('up',$event)">菜单</div>
         </div>
         <div class="ime-content flex-1 padding-1 flex-v flex-stretch ">
           <textarea rows=3 class="em-30 b-900" ng-model="D.text">显示内容</textarea>
@@ -180,7 +180,11 @@
             <div class="flex-1 line___1">{{D.words.join(' ').substr(0,50)}}</div>
           </div>
           <div class="ime-item-list flex-wrap flex-left align-top flex-1 padding-v-1 v-scroll">
-            <div class="ime-item {{item.fn}} flex-cc em-20 b-900 {{$index==D.item_index&&'active'}}" ng-click="D.exec(item)" ng-repeat="item in D.items track by $index">{{item.name||item}}</div>
+            <div class="ime-item {{item.fn}} flex-cc em-20 b-900 {{$index==D.item_index&&'active'}}"
+              ng-click="D.exec(item)"
+              ng-show="$index>=D.firstIndex"
+              ng-repeat="item in D.items track by $index"
+            >{{item.name||item}}</div>
           </div>
         </div>
         <div class="ime-course h bt-ccc bk-c flex-cc" ng-click="D.COURSE.down()">
@@ -191,9 +195,9 @@
           </div>
           <div class="flex">
             <div class="text-b">栈:{{D.panelCache.length||0}} 　项:{{D.items.length||0}}</div>
-            <div class="text-b">{{D.status}}</div>
+            <div class="text-b">{{D.firstIndex}}  {{D.status}}</div>
           </div>
-          <div class="top flex-cc" ng-mouseover="D.over('down',$event)" ng-mouseout="D.out('down',$event)">下一个</div>
+          <div class="top flex-cc" ng-mouseover="D.over('down',$event)" ng-mouseout="D.out('down',$event)">确定</div>
         </div>
       </div>
       <div class="ime-course v br-ccc flex" ng-click="D.COURSE.right()">
@@ -202,7 +206,7 @@
           <div class=""></div>
           <div class="flex-1"></div>
         </div>
-        <div class="top flex-cc" ng-mouseover="D.over('right',$event)" ng-mouseout="D.out('left',$event)">确<br>定</div>
+        <div class="top flex-cc" ng-mouseover="D.over('right',$event)" ng-mouseout="D.out('left',$event)">下<br>一<br>个</div>
       </div>
     </div>`,
     controller: ["$scope", "$http", "$q", "$element", "$animateCss", "IME", "ImeBH", function ctrl($scope, $http, $q, $element, $animateCss, IME, ImeBH) {
@@ -246,6 +250,7 @@
 
         words: [],
         setWords: (words) => {
+          D.firstIndex = 0;
           D.words = angular.extend([], words);
           if (D.words.length <= 0) D.setMenu(MENU.getMenuByName("笔画"));
           else {
@@ -279,11 +284,22 @@
           return false;
         },
 
+        firstIndex: 0,
+        setIndex: (n) => {
+          D.item_index = +n || 0;
+          if (D.item_index < 0) D.item_index = D.items.length - 1;
+          if (D.item_index >= D.items.length) D.item_index = 0;
+          if (D.item_index - D.firstIndex >= 12) D.firstIndex = (D.item_index - 8) >> 2 << 2;
+          if (D.item_index - D.firstIndex < 0) D.firstIndex = (D.item_index) >> 2 << 2;
+          if (D.firstIndex < 0) D.firstIndex = 0;
+        },
         setMenu: (next_menu) => {
           if (next_menu.name == "主菜单") D.panelCache.length = 0;
           /** 跳到笔画界面时，不是在“选字”状态，就清笔画 */
           if (next_menu.name == "笔画" && D.status != "选字") D.bh = "";
+          if (!D.bh) D.words.length = 0;
 
+          D.firstIndex = 0;
           D.menu = next_menu;
           D.items = angular.extend([], next_menu.getItems());
           D.status = next_menu.status || MENU.TMP_STATUS;
@@ -291,7 +307,7 @@
         },
 
         COURSE: {
-          left: () => {
+          up: () => {
             /** 需要返回上级菜单 */
             if (D.menu.mustReturn(D)) {
               D.popPanel();
@@ -308,13 +324,13 @@
             D.setMenu(MENU.getMenuByName("主菜单"));
           },
 
-          right: () => {
+          down: () => {
             D.exec(D.items[D.item_index]);
           },
 
-          up: () => { D.item_index--; if (D.item_index < 0) D.item_index = D.items.length - 1; },
+          left: () => { D.setIndex(D.item_index - 1); },
 
-          down: () => { D.item_index++; if (D.item_index >= D.items.length) D.item_index = 0; },
+          right: () => { D.setIndex(D.item_index + 1); },
         },
 
         exec: item => {
