@@ -16,7 +16,7 @@
     "退格": "backspace",
   }
 
-  theModule.factory("CPanel", ["$q", "$timeout", "MENU", function ($q, $timeout, MENU) {
+  theModule.factory("CPanel", ["$q", "$timeout", "MENU", "Settings", function ($q, $timeout, MENU, Settings) {
     var nullMenu = MENU.Menu({})
 
     class CPanel {
