@@ -1,0 +1,28 @@
+
+table.border-cc {
+  border-collapse: collapse;
+  table-layout: auto;
+  empty-cells: show;
+  border: solid 2px #888;
+}
+
+table.border-cc>*>tr>td {
+  border: solid 1px #ccc;
+}
+
+table.border-cc>*>tr>td.center {
+  text-align: center;
+}
+table.border-cc>*>tr>td.right {
+  text-align: right;
+}
+
+body{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
