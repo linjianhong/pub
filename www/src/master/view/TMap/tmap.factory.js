@@ -11,10 +11,29 @@
       return new this.MAP.LatLng(lat, lng);
     }
 
-    setCenter(center) {
-      this.map.setCenter(center);
+    getCenter() {
+      return this.map.getCenter();
     }
 
+    setCenter(center) {
+      this.map.setCenter(center);
+      return this;
+    }
+
+    getZoom() {
+      return this.map.getZoom();
+    }
+
+    setZoom(zoom) {
+      this.map.setZoom(zoom);
+      return this;
+    }
+
+    on_bounds_changed(callback) {
+      this.map.on("bounds_changed", (a, b, c) => {
+        callback(a.bounds);
+      });
+    }
     // 移除缩放控件
     removeControl(name) {
       this.controls[name] = this.controls[name] || this.map.getControl(TMap.constants.DEFAULT_CONTROL_ID[name]);
@@ -40,7 +59,9 @@
       var theMap = new this.MAP.Map(ele, mapOptions);
       this.map = theMap;
 
-      if (mapOptions.autoCenter !== false) {
+      if (mapOptions.center) {
+        theMap.setCenter(mapOptions.center)
+      } else if (mapOptions.autoCenter !== false) {
         CMAP.getPosition().then(data => {
           var center = this.LatLng(data.lat, data.lng)
           this.setCenter(center)

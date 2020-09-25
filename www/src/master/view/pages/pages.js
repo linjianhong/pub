@@ -36,6 +36,7 @@
     }]
   });
 
+  var area = {};
   theModule.component("pageHome", {
     pageTitle: "首页",
     requireLogin: false,
@@ -45,18 +46,25 @@
     template: `
     <div class="flex-1" id="echart-amap-id-01"></div>
     `,
-    controller: ["$scope", "$http", "$q", "$element", "DjState", "TMAP", function ctrl($scope, $http, $q, $element, DjState, MAP) {
+    controller: ["$scope", "$http", "$q", "$element", "Settings", "TMAP", function ctrl($scope, $http, $q, $element, Settings, MAP) {
       $element.addClass("flex-v flex-1");
       console.log("首页");
 
-      MAP.attach("echart-amap-id-01", { zoom: 16 }).then(Map => {
+      MAP.attach("echart-amap-id-01", angular.extend({ zoom: 16 }, area)).then(Map => {
         Map.removeControl("LOGO");
         Map.removeControl("ZOOM");
         Map.removeControl("ROTATION");
         Map.addControl("FLOOR");
+        Map.on_bounds_changed(function () {
+          var zoom = Map.getZoom();
+          var center = Map.getCenter();
+          area = { zoom, center };
+          Settings.saveValue(area)
+
+        })
       }).catch(e => {
         console.error("定位", e)
-      })
+      });
 
       this.$onDestroy = () => {
         console.log("页面关闭", "打字");
