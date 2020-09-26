@@ -9,3 +9,7 @@
   /* 标准的语法 */
   color: #fff;
 }
+
+#echart-amap-id-01>div>div>a>*, #echart-amap-id-01>div>.smnoprint {
+  opacity: 0;
+}

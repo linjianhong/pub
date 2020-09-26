@@ -60,8 +60,7 @@
           var zoom = Map.getZoom();
           var center = Map.getCenter();
           area = { zoom, center };
-          Settings.saveValue(area)
-
+          Settings.saveValue({area})
         })
       }).catch(e => {
         console.error("定位", e)

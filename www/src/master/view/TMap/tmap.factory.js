@@ -35,7 +35,7 @@
       // });
       this.MAP.event.addListener(
         this.map,
-        'zoom_changed',
+        'bounds_changed',
         function (a) {
           callback(a);
         }
@@ -72,7 +72,7 @@
         CMAP.getPosition().then(data => {
           console.log("定位", data)
           var center = this.LatLng(data.lat, data.lng)
-          //this.setCenter(center)
+          this.setCenter(center)
         }).catch(e => {
           console.error("定位失败", e)
         })
@@ -125,16 +125,23 @@
       jsapi.charset = 'utf-8';
       jsapi.src = url;
       document.head.appendChild(jsapi);
-      //alert("高德地图初始化")
       jsapi.onload = function () {
         setTimeout(() => {
-          var geolocation = new qq.maps.Geolocation();
-          geolocation.getLocation(function (position) {
-            defer.resolve(position);
-          }, function (e) {
-            defer.reject(e);
-          }, options);
-          //alert("高德地图就绪")
+          var geolocation = new qq.maps.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
+          if (angular.isPC || angular.isWindows) {
+            geolocation.getIpLocation(function (position) {
+              defer.resolve(position);
+            }, function (e) {
+              defer.reject(e);
+            });
+          }
+          else {
+            geolocation.getLocation(function (position) {
+              defer.resolve(position);
+            }, function (e) {
+              defer.reject(e);
+            });
+          }
         });
       }
       return defer.promise;
