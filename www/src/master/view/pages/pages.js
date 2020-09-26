@@ -51,11 +51,12 @@
       console.log("首页");
 
       MAP.attach("echart-amap-id-01", angular.extend({ zoom: 16 }, area)).then(Map => {
-        Map.removeControl("LOGO");
-        Map.removeControl("ZOOM");
-        Map.removeControl("ROTATION");
-        Map.addControl("FLOOR");
-        Map.on_bounds_changed(function () {
+        // Map.removeControl("LOGO");
+        // Map.removeControl("ZOOM");
+        // Map.removeControl("ROTATION");
+        // Map.addControl("FLOOR");
+        Map.on_bounds_changed(function (a) {
+          console.log("on_bounds_changed", a)
           var zoom = Map.getZoom();
           var center = Map.getCenter();
           area = { zoom, center };
