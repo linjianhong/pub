@@ -34,9 +34,9 @@ const CODES = [
       "assetsPath" => "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/dgf/assert/output/",
       "files" => [
         "lib-2cc3ab6c0c.css",
-        "app-4a64ed5175.css",
         "lib-9dc2c90f07.js",
-        "app-c0768d0f9d.js"
+        "app-4e068c9ff6.css",
+        "app-258422f969.js"
       ]
     ]
   ],

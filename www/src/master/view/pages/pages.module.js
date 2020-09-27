@@ -1,1 +1,1 @@
-!angular.module("dj.pages", ["tmap"]);
+!angular.module("dj.pages", ["tmap", "wx-jssdk"]);

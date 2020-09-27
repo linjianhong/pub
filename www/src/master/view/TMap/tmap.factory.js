@@ -72,7 +72,7 @@
   }
 
   /** 地理位置 */
-  angular.module('tmap').factory("TMAP", ["$q", function ($q) {
+  angular.module('tmap').factory("TMAP", ["$q", "$http", function ($q, $http) {
 
     var url = "https://map.qq.com/api/js?v=2.exp&key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&callback=init_tmap";
     //var url = "https://mapapi.qq.com/jsapi_v2/2/4/135/main.js";
@@ -134,32 +134,55 @@
 
 
     function getPosition(options) {
-      var url = "https://apis.map.qq.com/tools/geolocation/min?key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&referer=myapp";
-      var defer = $q.defer();
-      var jsapi = document.createElement('script');
-      jsapi.charset = 'utf-8';
-      jsapi.src = url;
-      document.head.appendChild(jsapi);
-      jsapi.onload = function () {
-        setTimeout(() => {
-          var geolocation = new qq.maps.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
-          if (angular.isPC || angular.isWindows) {
-            geolocation.getIpLocation(function (position) {
-              defer.resolve(position);
-            }, function (e) {
-              defer.reject(e);
+      return $http.post("微信位置").then(position => {
+        console.log("有 ", position);
+        return position;
+      }).catch(e => {
+        console.error("无 微信位置", e);
+
+        var defer = $q.defer();
+        if (window.wx && wx.getLocation) {
+          wx.getLocation({
+            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+              defer.resolve({
+                lat: res.latitude,
+                lng: res.longitude,
+                accuracy: res.accuracy,
+                speed: res.speed,
+              })
+            }
+          });
+          return defer.promise;
+        }
+        else {
+          var url = "https://apis.map.qq.com/tools/geolocation/min?key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&referer=myapp";
+          var jsapi = document.createElement('script');
+          jsapi.charset = 'utf-8';
+          jsapi.src = url;
+          document.head.appendChild(jsapi);
+          jsapi.onload = function () {
+            setTimeout(() => {
+              var geolocation = new qq.maps.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
+              if (angular.isPC || angular.isWindows) {
+                geolocation.getIpLocation(function (position) {
+                  defer.resolve(position);
+                }, function (e) {
+                  defer.reject(e);
+                });
+              }
+              else {
+                geolocation.getLocation(function (position) {
+                  defer.resolve(position);
+                }, function (e) {
+                  defer.reject(e);
+                });
+              }
             });
           }
-          else {
-            geolocation.getLocation(function (position) {
-              defer.resolve(position);
-            }, function (e) {
-              defer.reject(e);
-            });
-          }
-        });
-      }
-      return defer.promise;
+        }
+        return defer.promise;
+      });
     }
     CMAP.getPosition = getPosition;
 

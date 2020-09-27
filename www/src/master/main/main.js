@@ -1,7 +1,7 @@
 !(function (window, angular, undefined) {
 
   angular.isPC = !/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
-  angular.isWindows = !/Windows/i.test(navigator.userAgent);
+  angular.isWindows = /Windows/i.test(navigator.userAgent);
 
   // alert(location.href + "\n\n" + decodeURIComponent(location.href));
 
