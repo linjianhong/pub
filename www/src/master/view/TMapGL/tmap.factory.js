@@ -30,13 +30,26 @@
     }
 
     on_bounds_changed(callback) {
-      this.MAP.event.addListener(
-        this.map,
-        'bounds_changed',
-        function (a) {
-          callback(a);
-        }
-      );
+      this.map.on("bounds_changed", (a, b, c) => {
+        callback(a.bounds);
+      });
+    }
+    // 移除缩放控件
+    removeControl(name) {
+      this.controls[name] = this.controls[name] || this.map.getControl(TMap.constants.DEFAULT_CONTROL_ID[name]);
+      if (!this.map.getControl(TMap.constants.DEFAULT_CONTROL_ID[name])) { // 如果map上不存在该控件则直接返回
+        return;
+      }
+      this.map.removeControl(TMap.constants.DEFAULT_CONTROL_ID[name]);
+      return this;
+    }
+
+    // 把存储的缩放控件添加到地图上
+    addControl(name) {
+      var control = this.map.getControl(TMap.constants.DEFAULT_CONTROL_ID[name]);
+      if (control || !this.controls[name]) return;
+      this.map.addControl(this.controls[name]);
+      return this;
     }
 
     attach(id, options) {
@@ -50,35 +63,39 @@
         theMap.setCenter(mapOptions.center)
       } else if (mapOptions.autoCenter !== false) {
         CMAP.getPosition().then(data => {
-          console.log("定位", data)
           var center = this.LatLng(data.lat, data.lng)
           this.setCenter(center)
         }).catch(e => {
           console.error("定位失败", e)
         })
       }
+
+      // 隐藏 腾讯 LOGO
+      ele.querySelector(".logo-text").parentElement.style.display = "none"
+
       return this;
     }
   }
 
   /** 地理位置 */
-  angular.module('tmap').factory("TMAP", ["$q", function ($q) {
+  angular.module('tmap-GL').factory("TMAP", ["$q", function ($q) {
 
-    var url = "https://map.qq.com/api/js?v=2.exp&key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&callback=init_tmap";
-    //var url = "https://mapapi.qq.com/jsapi_v2/2/4/135/main.js";
+    var url = "https://map.qq.com/api/gljs?v=1.exp&key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4";
     var theAmapDefer = $q.defer();
     var theAmapPromise = theAmapDefer.promise;
     var jsapi = document.createElement('script');
     jsapi.charset = 'utf-8';
     jsapi.src = url;
     document.head.appendChild(jsapi);
-    window.init_tmap = function () {
-      CMAP.MAP = window.qq.maps;
-      theAmapDefer.resolve(theAmapPromise = window.qq.maps);
+    jsapi.onload = function () {
+      setTimeout(() => {
+        CMAP.MAP = window.TMap;
+        theAmapDefer.resolve(theAmapPromise = window.TMap);
+      });
     }
 
     function ready() {
-      return $q.when(theAmapPromise);
+      return $q.when(theAmapPromise)
     }
 
     function attach(id, options) {
