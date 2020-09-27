@@ -27,7 +27,7 @@
   margin-left: 0;
 }
 
-.fa-btn {
+.fa-btn, .fa-btn>.fa-btn-inner {
   border-radius: 100%;
   background: rgba(255, 255, 255, .8);
   box-shadow: 0 0 5px #000;

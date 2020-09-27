@@ -16,7 +16,7 @@
     }
 
     setCenter(lat, lng) {
-      if(lat.hasOwnProperty("lat")){
+      if (lat.hasOwnProperty("lat")) {
         return this.setCenter(lat.lat, lat.lng);;
       }
       var center = this.LatLng(lat, lng);
@@ -37,9 +37,7 @@
       this.MAP.event.addListener(
         this.map,
         'bounds_changed',
-        function (a) {
-          callback(a);
-        }
+        callback
       );
     }
 
@@ -48,11 +46,11 @@
       var mapOptions = angular.extend({
         zoom: 15,
         //disableDefaultUI: true,
-        panControl: false,         //平移控件的初始启用/停用状态。      
-        zoomControl: true,       //缩放控件的初始启用/停用状态。
-        zoomControlOptions: {position: qq.maps.ControlPosition.BOTTOM_RIGHT},       //缩放控件的初始启用/停用状态。
-        scaleControl: false,
-        mapTypeControl: false,
+        panControl: false,       //平移控件的初始:停用状态。
+        zoomControl: true,       //缩放控件的初始:启用状态。
+        zoomControlOptions: { position: qq.maps.ControlPosition.RIGHT_BOTTOM, style: 2 }, //缩放控件的位置和风格
+        scaleControl: false,    //比例尺控件的初始:停用状态。
+        mapTypeControl: false,  //地图类型控件的初始:停用状态。
       }, options);
       // 构造腾讯地图
       var theMap = new this.MAP.Map(ele, mapOptions);

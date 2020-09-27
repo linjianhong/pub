@@ -49,11 +49,11 @@
       <div class="fa-btn flex-cc" ng-click="setCenter()">
         <i class="fa fa-crosshairs em-16 text-info"></i>
       </div>
-      <div class="fa-btn flex-cc" ng-click="popMenu()">
-        <i class="fa fa-bars em-12 text-8"></i>
-        <div class="fa-btn-menu up" ng-if="popMenu.open">
-          <div class="item bb-ccc">个人中心</div>
-          <div class="item">设置</div>
+      <div class="fa-btn flex-cc" out-click-watch="POP.open" on-out-click="POP.open=false">
+        <div class="fa-btn-inner flex-cc" ng-click="popMenu()"><i class="fa fa-bars em-12 text-8"></i></div>
+        <div class="fa-btn-menu up" ng-if="POP.open">
+          <div class="item bb-ccc" ng-click="gotoHome();POP.open=false">个人中心</div>
+          <div class="item" ng-click="gotoSettings()">设置</div>
         </div>
       </div>
     </div>
@@ -66,13 +66,6 @@
 
       MAP.attach("echart-amap-id-01", angular.extend({ zoom: 16 }, area)).then(Map => {
         $scope.Map = Map;
-        // Map.removeControl("LOGO");
-        // Map.removeControl("ZOOM");
-        // Map.removeControl("ROTATION");
-        // Map.addControl("FLOOR");
-        Map.on_map_load = () => {
-          console.log("on_map_load");
-        }
         Map.on_bounds_changed(function (a) {
           // console.log("on_bounds_changed", a)
           var zoom = Map.getZoom();
@@ -92,12 +85,20 @@
         })
       }
 
-      $scope.popMenu = () => {
-        if ($scope.popMenu.open) {
-          $scope.popMenu.open = false;
+      $scope.gotoHome = () => {
+        console.log("个人中心");
+      }
+
+      $scope.gotoSettings = () => {
+        console.log("设置");
+      }
+
+      var POP = $scope.POP = $scope.popMenu = () => {
+        if (POP.open) {
+          POP.open = false;
           return;
         }
-        $scope.popMenu.open = true;
+        POP.open = true;
       }
 
       this.$onDestroy = () => {
