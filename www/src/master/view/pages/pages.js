@@ -55,12 +55,15 @@
         // Map.removeControl("ZOOM");
         // Map.removeControl("ROTATION");
         // Map.addControl("FLOOR");
+        Map.on_map_load = () => {
+          console.log("on_map_load");
+        }
         Map.on_bounds_changed(function (a) {
-          console.log("on_bounds_changed", a)
+          // console.log("on_bounds_changed", a)
           var zoom = Map.getZoom();
           var center = Map.getCenter();
           area = { zoom, center };
-          Settings.saveValue({area})
+          Settings.saveValue({ area });
         })
       }).catch(e => {
         console.error("定位", e)

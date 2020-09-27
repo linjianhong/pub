@@ -41,7 +41,14 @@
 
     attach(id, options) {
       var ele = document.getElementById(id)
-      var mapOptions = angular.extend({ zoom: 15 }, options);
+      var mapOptions = angular.extend({
+        zoom: 15,
+        //disableDefaultUI: true,
+        panControl: false,         //平移控件的初始启用/停用状态。      
+        zoomControl: true,       //缩放控件的初始启用/停用状态。
+        scaleControl: false,
+        mapTypeControl: false,
+      }, options);
       // 构造腾讯地图
       var theMap = new this.MAP.Map(ele, mapOptions);
       this.map = theMap;
@@ -83,7 +90,42 @@
 
     function attach(id, options) {
       return ready().then(MAP => {
-        return new CMAP(MAP).attach(id, options);
+        var theMap = new CMAP(MAP).attach(id, options);
+
+        var ele = document.getElementById(id)
+        var deferred = $q.defer();
+
+        function checkLoaded() {
+          // console.log("检查", checkLoaded.n);
+          if (ele.children[0] && ele.children[0].childElementCount > 1) {
+            console.log("检查, 有", ele.children[0].childElementCount);
+            deferred.resolve(1);
+            return $q.when(1);
+          }
+          setTimeout(() => {
+            checkLoaded.n = (checkLoaded.n || 0) + 1;
+            if (checkLoaded.n > 1e3) {
+              deferred.reject("太久了")
+              return;
+            }
+            checkLoaded();
+          }, 16);
+          return deferred.promise;
+        }
+
+        return checkLoaded().then(() => {
+          //setTimeout(() => {
+          // 隐藏LOGO和copyright
+          if (angular.isPC) ele.children[0].children[2].remove();
+          ele.children[0].children[1].remove();
+          // var n = ele.children[0].childElementCount;
+          // for (var i = n - 1; i > 0; i--) ele.children[0].children[i].remove();
+          // for (var i = n - 1; i > 0; i--) ele.children[0].children[i].remove();
+          theMap.on_map_load && theMap.on_map_load();
+          //});
+          return theMap;
+        });
+
       });
     }
 
