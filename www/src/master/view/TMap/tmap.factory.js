@@ -15,7 +15,11 @@
       return this.map.getCenter();
     }
 
-    setCenter(center) {
+    setCenter(lat, lng) {
+      if(lat.hasOwnProperty("lat")){
+        return this.setCenter(lat.lat, lat.lng);;
+      }
+      var center = this.LatLng(lat, lng);
       this.map.setCenter(center);
       return this;
     }
@@ -46,6 +50,7 @@
         //disableDefaultUI: true,
         panControl: false,         //平移控件的初始启用/停用状态。      
         zoomControl: true,       //缩放控件的初始启用/停用状态。
+        zoomControlOptions: {position: qq.maps.ControlPosition.BOTTOM_RIGHT},       //缩放控件的初始启用/停用状态。
         scaleControl: false,
         mapTypeControl: false,
       }, options);

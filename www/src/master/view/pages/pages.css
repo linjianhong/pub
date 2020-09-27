@@ -9,3 +9,48 @@
   /* 标准的语法 */
   color: #fff;
 }
+
+.fixed {
+  position: fixed;
+}
+
+.fixed.lb {
+  left: 1em;
+  bottom: 1em;
+}
+
+.flex.fa-btns>* {
+  margin-left: .8em;
+}
+
+.flex.fa-btns>*:first-child {
+  margin-left: 0;
+}
+
+.fa-btn {
+  border-radius: 100%;
+  background: rgba(255, 255, 255, .8);
+  box-shadow: 0 0 5px #000;
+  width: 2em;
+  height: 2em;
+  position: relative;
+}
+
+.fa-btn-menu {
+  position: absolute;
+  box-shadow: 0 0 5px #000;
+  background: #eee;
+  border: solid 1px #ccc;
+  border-radius: .3em;
+}
+
+.fa-btn-menu>.item {
+  padding: .5em 1em;
+  color: #00f;
+  width: max-content;
+}
+
+.fa-btn-menu.up {
+  bottom: calc(100% + 1em);
+  left: 0;
+}
