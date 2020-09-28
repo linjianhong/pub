@@ -11,6 +11,16 @@
       return new this.MAP.LatLng(lat, lng);
     }
 
+    panTo(lat, lng, options) {
+      if (lat.hasOwnProperty("lat")) {
+        return this.panTo(lat.lat, lat.lng, lng);;
+      }
+      var center = this.LatLng(lat, lng);
+      if (angular.isNumber(options)) options = { duration: options };
+      this.map.panTo(center, angular.extend({ duration: 100 }, options));
+      return this;
+    }
+
     getCenter() {
       return this.map.getCenter();
     }
@@ -132,56 +142,67 @@
       });
     }
 
+    function qqGeoReady() {
+      if (qqGeoReady.promise) {
+        return $q.when(qqGeoReady.promise);
+      }
+      var defer = $q.defer();
+      qqGeoReady.promise = defer.promise;
 
+      //var url = "https://apis.map.qq.com/tools/geolocation/min?key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&referer=myapp";
+      var url = "https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js";
+      var jsapi = document.createElement('script');
+      jsapi.charset = 'utf-8';
+      jsapi.src = url;
+      document.head.appendChild(jsapi);
+      jsapi.onload = function () {
+        defer.resolve(qqGeoReady.promise = qq.maps);
+      }
+      return qqGeoReady.promise;
+    }
+
+    function promiseOfCaller(caller, self) {
+      var defer = $q.defer();
+      caller.call(self, function (position) {
+        defer.resolve(position);
+      }, function (e) {
+        defer.reject(e);
+      });
+      return defer.promise;
+    }
+
+    function getQQGeoPosition(options) {
+      return qqGeoReady().then(MAP => {
+        var geolocation = new MAP.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
+        return promiseOfCaller(geolocation.getLocation, geolocation);
+      });
+    }
+
+    function getQQIpPosition(options) {
+      return qqGeoReady().then(MAP => {
+        var geolocation = new MAP.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
+        return promiseOfCaller(geolocation.getIpLocation, geolocation);
+      });
+    }
+
+    function getWxPosition(options) {
+      return $http.post("微信位置");
+    }
+
+    /** 自动定位: 微信位置 - IP定位 - 精确定位 */
     function getPosition(options) {
-      return $http.post("微信位置").then(position => {
-        console.log("有 ", position);
+      return getWxPosition().then(position => {
+        console.log("有 微信位置", position);
         return position;
       }).catch(e => {
         console.error("无 微信位置", e);
-
-        var defer = $q.defer();
-        if (window.wx && wx.getLocation) {
-          wx.getLocation({
-            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-            success: function (res) {
-              defer.resolve({
-                lat: res.latitude,
-                lng: res.longitude,
-                accuracy: res.accuracy,
-                speed: res.speed,
-              })
-            }
-          });
-          return defer.promise;
-        }
-        else {
-          var url = "https://apis.map.qq.com/tools/geolocation/min?key=NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4&referer=myapp";
-          var jsapi = document.createElement('script');
-          jsapi.charset = 'utf-8';
-          jsapi.src = url;
-          document.head.appendChild(jsapi);
-          jsapi.onload = function () {
-            setTimeout(() => {
-              var geolocation = new qq.maps.Geolocation("NBLBZ-2WKCW-UP2RA-RYWTX-E673J-F5BE4", "myapp");
-              if (angular.isPC || angular.isWindows) {
-                geolocation.getIpLocation(function (position) {
-                  defer.resolve(position);
-                }, function (e) {
-                  defer.reject(e);
-                });
-              }
-              else {
-                geolocation.getLocation(function (position) {
-                  defer.resolve(position);
-                }, function (e) {
-                  defer.reject(e);
-                });
-              }
-            });
-          }
-        }
-        return defer.promise;
+        return getQQIpPosition();
+      }).catch(e => {
+        console.error("IP定位失败", e);
+        return getQQGeoPosition();
+      }).catch(e => {
+        console.error("定位失败", e);
+        return $q.reject(e);
       });
     }
     CMAP.getPosition = getPosition;
@@ -190,6 +211,9 @@
     return {
       ready,
       attach,
+      getQQGeoPosition,
+      getQQIpPosition,
+      getWxPosition,
       getPosition,
     }
 

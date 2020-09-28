@@ -33,6 +33,16 @@
     controller: ["$scope", "$http", "$q", "$element", "DjState", function ctrl($scope, $http, $q, $element, DjState) {
       $element.addClass("flex-v flex-1");
 
+      var title = "看见";
+      var desc = "是我";
+      var imgUrl = "";
+      $http.post("WxJssdk/setShare", {
+        title: title, // 分享标题
+        desc: desc, // 分享描述
+        link: location.origin + location.pathname + "#/my", // 分享链接
+        imgUrl: imgUrl || "https://jdyhy.oss-cn-beijing.aliyuncs.com/www/store/assert/images/xls.logo.png", // 分享图标
+        type: 'link', // 分享类型,music、video或link，不填默认为link
+      });
     }]
   });
 
@@ -51,14 +61,18 @@
       </div>
       <div class="fa-btn flex-cc" out-click-watch="POP.open" on-out-click="POP.open=false">
         <div class="fa-btn-inner flex-cc" ng-click="popMenu()"><i class="fa fa-bars em-12 text-8"></i></div>
-        <div class="fa-btn-menu up" ng-if="POP.open">
+        <div class="fa-btn-menu up flex-v flex-stretch" ng-if="POP.open">
           <div class="item bb-ccc" ng-click="gotoHome();POP.open=false">个人中心</div>
           <div class="item" ng-click="gotoSettings()">设置</div>
+          <div class="item" ng-click="setCenter(0)">精确定位</div>
+          <div class="item" ng-click="setCenter(1)">微信定位</div>
+          <div class="item" ng-click="setCenter(2)">IP定位</div>
+          <div class="item">最后定位: {{Geo.last_good_mode}}</div>
         </div>
       </div>
     </div>
     `,
-    controller: ["$scope", "$http", "$q", "$element", "Settings", "TMAP", function ctrl($scope, $http, $q, $element, Settings, MAP) {
+    controller: ["$scope", "$http", "$q", "$element", "Settings", "DjState", "TMAP", function ctrl($scope, $http, $q, $element, Settings, DjState, MAP) {
       $element.addClass("flex-v flex-1");
       console.log("首页");
 
@@ -77,15 +91,57 @@
         console.error("定位", e)
       });
 
-      $scope.setCenter = () => {
-        console.log("定位居中");
-        MAP.getPosition().then(pos => {
-          if (!$scope.Map) return;
-          $scope.Map.setCenter(pos)
-        })
+      var Geo = $scope.Geo = {
+        last_good_mode: "",
+        modes: [
+          { name: "精确定位", fn: "getQQGeoPosition", next_t: +new Date, error_count: 0 },
+          { name: "微信定位", fn: "getWxPosition", next_t: +new Date, error_count: 0 },
+          { name: "IP定位", fn: "getQQIpPosition", next_t: +new Date, error_count: 0 },
+        ],
+        t: +new Date,
+        getPosition_by_mode: (mode) => {
+          var now = +new Date;
+          if (mode.next_t > now) return $q.reject("未到重新尝试时间");
+          return MAP[mode.fn]().then(data => {
+            mode.error_count = 0;
+            mode.next_t = now;
+            Geo.last_good_mode = mode.name;
+            return data;
+          }).catch(e => {
+            mode.error_count++;
+            mode.next_t = now + (10 << mode.error_count);
+            return $q.reject(e)
+          });
+        },
+        getPosition: () => {
+          Geo.getPosition_by_mode(Geo.modes[0])
+            //.catch(e => Geo.getPosition_by_mode(Geo.modes[1]))
+            .catch(e => Geo.getPosition_by_mode(Geo.modes[2]))
+            .then(pos => {
+              if (!$scope.Map) return;
+              $scope.Map.panTo(pos);
+            }).catch(e => {
+              console.error("重新定位失败", e)
+            })
+        },
+      }
+      $scope.setCenter = (n) => {
+        if (angular.isNumber(n)) {
+          Geo.getPosition_by_mode(Geo.modes[n])
+            .then(pos => {
+              if (!$scope.Map) return;
+              $scope.Map.panTo(pos);
+            }).catch(e => {
+              console.error("重新定位失败", e)
+            })
+        } else {
+          console.log("定位居中");
+          Geo.getPosition();
+        }
       }
 
       $scope.gotoHome = () => {
+        DjState.go("my")
         console.log("个人中心");
       }
 

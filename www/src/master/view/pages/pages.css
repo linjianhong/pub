@@ -42,12 +42,13 @@
   background: #eee;
   border: solid 1px #ccc;
   border-radius: .3em;
+  width: max-content;
 }
 
 .fa-btn-menu>.item {
   padding: .5em 1em;
   color: #00f;
-  width: max-content;
+  min-width: max-content;
 }
 
 .fa-btn-menu.up {
