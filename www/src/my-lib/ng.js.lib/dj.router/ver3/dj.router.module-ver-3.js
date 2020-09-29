@@ -4,9 +4,17 @@
  */
 
 !(function (angular, window, undefined) {
-  function log(a, b, c, d, e, f, g) {
-    // console.warn("[路由] " + a, b, c, d, e, f, g)
-  }
+
+  /** log 开关 */
+  var console = window.console;
+  !(function () {
+    var SHOW_LOG = false;
+    if (!SHOW_LOG) {
+      var non = () => 0;
+      console = { log: non, info: non, error: non, warn: non, }
+    }
+  })();
+
   var defaultRootModuleName = "dj-app";
   var routerModule = angular.module("dj.router-ver3", ["ngAnimate", "dj.core-sign"]);
 
@@ -197,7 +205,9 @@
 
       replaceState() {
         setTimeout(() => {
-          var history_state = this.setGoodState();
+          //var lastState=history.state;
+          //if(is_good_state(lastState))
+          var history_state = this.setGoodState(history.state);
           var hash = this.clean_hash();
           history.replaceState(history_state, null, location.pathname + hash);
           BASE.pushedState = new State(this);
@@ -236,7 +246,7 @@
         BASE.page = newPage;
         BASE.DjState.$search = newPage.state.search || {};
         $rootScope.$broadcast("$DjPageNavgateSuccess", newPage);
-        log("显示页面   ", newPage);
+        console.log("显示页面   ", newPage);
       }, 16)
     }
 
@@ -319,9 +329,9 @@
 
       return BASE.get_final_page(newState).then(newPage => newPage.ready()).then(newPage => {
         newPage.state.setGoodState();
-        log("DjState.go  ", { newPage, newState });
+        console.log("DjState.go  ", { newPage, newState });
         BASE.broadcast_and_showPage(newPage).then(newPage => {
-          log("DjState.go 成功  ", newPage);
+          console.log("DjState.go 成功  ", newPage);
           newPage.state.pushState();
         });
       }).catch(e => {
@@ -336,9 +346,9 @@
       if (reshow) {
         return BASE.get_final_page(newState).then(newPage => newPage.ready()).then(newPage => {
           newPage.state.setGoodState();
-          log("DjState.replace  ", { newPage, newState });
+          console.log("DjState.replace  ", { newPage, newState });
           BASE.broadcast_and_showPage(newPage).then(newPage => {
-            log("DjState.replace 成功  ", newPage);
+            console.log("DjState.replace 成功  ", newPage);
             newPage.state.replaceState();
           });
         }).catch(e => {
@@ -394,7 +404,7 @@
     $rootScope.$on("$locationChangeStart", (event, newUrl, oldUrl, c, d) => {
       // var newHash = BASE.hash_of_url(newUrl);
       // if (newHash == location.hash && !_FIRST_RUN) {
-      //   log("Start 同一地址", { oldUrl, newHash, hash: location.hash }, _FIRST_RUN && "程序开始" || "");
+      //   console.log("Start 同一地址", { oldUrl, newHash, hash: location.hash }, _FIRST_RUN && "程序开始" || "");
       //   event.preventDefault();
       // }
     });
@@ -407,32 +417,37 @@
 
       if (_FIRST_RUN) setTimeout(() => _FIRST_RUN = 0);
       if (newUrl == oldUrl && !_FIRST_RUN) {
-        log("Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        console.log("Success 同一地址", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
       }
 
       /** 是替换页面？ */
       if (BASE.is_good_state(history.state) && angular.equals(LAST_STATE, history.state)) {
-        log("Success 替换state", { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+        console.log("Success 替换state", { LAST_STATE, oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
         return;
+      } else {
+        console.log("不是替换页面", history.state, { LAST_STATE, c, d });
       }
 
       if (location.hash != newHash) {
         console.warn("[路由] Success 非常规路由, 可能是otherwise导致。若不是，请注意。", location.hash, { oldHash, newHash });
       }
 
+      console.warn("[路由] Success 核对最后一个页面", { newState: newState.path, BASE: (BASE.page.state || {}).path }, { oldHash, newHash }, { c, d });
       return BASE.get_final_page(newState).then(newPage => {
         if (newPage.state.equals(BASE.page.state)) {
-          log("同一页面", { newPage, BASE: BASE.page }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
+          LAST_STATE = history.state;
+          console.log("同一页面", { newPage, BASE: BASE.page }, { oldHash, newHash }, { c, d }, _FIRST_RUN && "程序开始" || "");
           return;
         }
 
         newPage.ready().then(newPage => {
-          newPage.state.setGoodState(history.state);
-          log("Success 准备显示  ", { newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
+          var goodState = newPage.state.setGoodState(history.state);
+          console.log("Success 准备显示  ", { goodState, newState, pushedState: BASE.pushedState }, { oldHash, newHash }, { c, d });
+          LAST_STATE = goodState;
 
           BASE.broadcast_and_showPage(newPage).then(newPage => {
-            log("●●●●　显示成功  ", newPage);
+            console.log("●●●●　显示成功  ", newPage);
             newPage.state.replaceState();
             newPage.on_page_load();
           });
