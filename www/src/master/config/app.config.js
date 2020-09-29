@@ -7,6 +7,7 @@
     localStorage_KEY_UserToken: "__stock_user_token__",
     apiRoot: "../../api/src/master/", //本地的API
     otherwise: "home",
+    title:{text:"看见"}
   }, window.theSiteConfig);
 
 })(window, angular);

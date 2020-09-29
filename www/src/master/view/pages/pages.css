@@ -10,6 +10,17 @@
   color: #fff;
 }
 
+.header.xp {
+  background: -webkit-linear-gradient( #eee, #ddd);
+  /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient( #eee, #ddd);
+  /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(#eee, #ddd);
+  /* Firefox 3.6 - 15 */
+  background: linear-gradient(#eee, #ddd);
+  /* 标准的语法 */
+}
+
 .fixed {
   position: fixed;
 }

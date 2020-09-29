@@ -45,6 +45,7 @@ class class_app
       ],
       'main_menu' => [
         [ 'text'=>'看看', 'i'=> 'edit', 'path'=>'ime'],
+        [ 'text'=>'通讯录', 'i'=> 'user-o', 'path'=>'friends'],
         [ 'text'=>'查询', 'i'=> 'search', 'path'=>'page2'],
         [ 'text'=>'我的', 'i'=> 'user', 'path'=>'my'],
       ],

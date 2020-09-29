@@ -48,7 +48,7 @@
 
   var area = {};
   theModule.component("pageHome", {
-    pageTitle: "首页",
+    pageTitle: "看看",
     requireLogin: false,
     pageCss: "bk-f",
     header: { hide: true },
@@ -162,6 +162,45 @@
       }
     }]
   });
+
+  theModule.component("pageFriends", {
+    pageTitle: "通讯录",
+    requireLogin: false,
+    pageCss: "bk-e",
+    header: { hide: true },
+    //footer: { hide: true },
+    template: `
+      <div class="flex header xp padding-1">
+        <div class="flex-1 flex-left flex-v-center padding-1">
+          <div class="padding-1 em-15">通讯录</div>
+        </div>
+        <div class="flex flex-stretch padding-h-1">
+          <div class="flex-cc em-15 padding-h-2"><i class="fa fa-search"></i></div>
+          <div class="flex-cc em-15 padding-h-2"><i class="fa fa-plus"></i></div>
+        </div>
+      </div>
+      <div class="flex padding-3">
+        <div class="padding-3 text-active" ng-click="click_TAB($index)" ng-repeat="item in TAB">{{item.text||item}}</div>
+      </div>`,
+    controller: ["$scope", "$http", "$q", "$element", "DjState", "HookDlg", function ctrl($scope, $http, $q, $element, DjState, HookDlg) {
+      $element.addClass("flex-v flex-1");
+
+      $scope.TAB = [
+        { text: "标签1" },
+        { text: "标签2" },
+        { text: "标签3" },
+      ];
+
+      $scope.click_TAB = index => {
+        DjState.replace("friends", { tab: index + 1 });
+        // HookDlg.modal({
+        //   component: "login-by-wx-qrcode",
+        //   backClose: 1,
+        // });
+      }
+    }]
+  });
+
 
   theModule.component("pagePage2", {
     pageTitle: "Page2",
